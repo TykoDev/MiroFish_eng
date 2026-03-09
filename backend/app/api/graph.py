@@ -15,6 +15,7 @@ from ..services.graph_builder import GraphBuilderService
 from ..services.text_processor import TextProcessor
 from ..utils.file_parser import FileParser
 from ..utils.logger import get_logger
+from ..utils.error_handler import error_response, log_error
 from ..models.task import TaskManager, TaskStatus
 from ..models.project import ProjectManager, ProjectStatus
 
@@ -247,11 +248,8 @@ def generate_ontology():
         })
         
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }), 500
+        log_error(logger, e, "API请求失败")
+        return error_response(f"请求失败: {str(e)}", 500, original_error=e)
 
 
 # ============== 接口2：构建图谱 ==============
@@ -491,16 +489,21 @@ def build_graph():
                 # 更新项目状态为失败
                 build_logger.error(f"[{task_id}] 图谱构建失败: {str(e)}")
                 build_logger.debug(traceback.format_exc())
-                
+
                 project.status = ProjectStatus.FAILED
                 project.error = str(e)
                 ProjectManager.save_project(project)
-                
+
+                # Only include traceback in debug mode
+                error_detail = str(e)
+                if Config.DEBUG:
+                    error_detail = traceback.format_exc()
+
                 task_manager.update_task(
                     task_id,
                     status=TaskStatus.FAILED,
                     message=f"构建失败: {str(e)}",
-                    error=traceback.format_exc()
+                    error=error_detail
                 )
         
         # 启动后台线程
@@ -517,11 +520,8 @@ def build_graph():
         })
         
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }), 500
+        log_error(logger, e, "API请求失败")
+        return error_response(f"请求失败: {str(e)}", 500, original_error=e)
 
 
 # ============== 任务查询接口 ==============
@@ -582,11 +582,8 @@ def get_graph_data(graph_id: str):
         })
         
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }), 500
+        log_error(logger, e, "API请求失败")
+        return error_response(f"请求失败: {str(e)}", 500, original_error=e)
 
 
 @graph_bp.route('/delete/<graph_id>', methods=['DELETE'])
@@ -610,8 +607,5 @@ def delete_graph(graph_id: str):
         })
         
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }), 500
+        log_error(logger, e, "API请求失败")
+        return error_response(f"请求失败: {str(e)}", 500, original_error=e)

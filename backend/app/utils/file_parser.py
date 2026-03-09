@@ -4,8 +4,11 @@
 """
 
 import os
+import logging
 from pathlib import Path
 from typing import List, Optional
+
+logger = logging.getLogger(__name__)
 
 
 def _read_text_with_fallback(file_path: str) -> str:
@@ -39,8 +42,9 @@ def _read_text_with_fallback(file_path: str) -> str:
         best = from_bytes(data).best()
         if best and best.encoding:
             encoding = best.encoding
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f"charset_normalizer detection failed: {e}")
+        # Continue to chardet fallback
     
     # 回退到 chardet
     if not encoding:
@@ -48,8 +52,9 @@ def _read_text_with_fallback(file_path: str) -> str:
             import chardet
             result = chardet.detect(data)
             encoding = result.get('encoding') if result else None
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"chardet detection failed: {e}")
+            # Will use UTF-8 with errors='replace' as final fallback
     
     # 最终兜底：使用 UTF-8 + replace
     if not encoding:

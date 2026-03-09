@@ -4,6 +4,8 @@
 """
 
 import os
+import secrets
+import warnings
 from dotenv import load_dotenv
 
 # 加载项目根目录的 .env 文件
@@ -19,10 +21,20 @@ else:
 
 class Config:
     """Flask配置类"""
-    
-    # Flask配置
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'mirofish-secret-key')
-    DEBUG = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+
+    # Flask配置 - SECRET_KEY should be set via environment variable for security
+    _secret_key = os.environ.get('SECRET_KEY')
+    if not _secret_key:
+        warnings.warn(
+            "SECRET_KEY not set in environment variables. Using a temporary key for this session. "
+            "Please set SECRET_KEY in your .env file for production use.",
+            UserWarning
+        )
+        _secret_key = secrets.token_hex(32)
+    SECRET_KEY = _secret_key
+
+    # DEBUG mode should default to False for security
+    DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     
     # JSON配置 - 禁用ASCII转义，让中文直接显示（而不是 \uXXXX 格式）
     JSON_AS_ASCII = False

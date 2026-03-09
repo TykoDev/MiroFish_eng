@@ -39,8 +39,22 @@ def create_app(config_class=Config):
         logger.info("MiroFish Backend 启动中...")
         logger.info("=" * 50)
     
-    # 启用CORS
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # 启用CORS - 使用环境变量配置允许的来源，开发环境默认为localhost，生产环境应明确设置
+    allowed_origins = os.environ.get('CORS_ALLOWED_ORIGINS',
+        'http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173')
+    origins_list = [origin.strip() for origin in allowed_origins.split(',')]
+
+    # 在DEBUG模式下，如果未设置CORS_ALLOWED_ORIGINS，则允许所有本地开发端口
+    if debug_mode and os.environ.get('CORS_ALLOWED_ORIGINS') is None:
+        # 开发模式：允许本地开发服务器
+        CORS(app, resources={r"/api/*": {"origins": "http://localhost:*", "http://127.0.0.1:*"}})
+        if should_log_startup:
+            logger.warning("DEBUG模式: CORS配置为允许本地开发服务器（不推荐用于生产环境）")
+    else:
+        # 生产模式：只允许明确配置的来源
+        CORS(app, resources={r"/api/*": {"origins": origins_list}})
+        if should_log_startup:
+            logger.info(f"CORS已配置允许的来源: {origins_list}")
     
     # 注册模拟进程清理函数（确保服务器关闭时终止所有模拟进程）
     from .services.simulation_runner import SimulationRunner
