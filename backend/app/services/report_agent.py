@@ -1114,14 +1114,37 @@ class ReportAgent:
         """校验解析出的 JSON 是否是合法的工具调用"""
         # 支持 {"name": ..., "parameters": ...} 和 {"tool": ..., "params": ...} 两种键名
         tool_name = data.get("name") or data.get("tool")
-        if tool_name and tool_name in self.VALID_TOOL_NAMES:
-            # 统一键名为 name / parameters
-            if "tool" in data:
-                data["name"] = data.pop("tool")
-            if "params" in data and "parameters" not in data:
-                data["parameters"] = data.pop("params")
+        if not tool_name:
+            return False
+
+        # 精确匹配
+        if tool_name in self.VALID_TOOL_NAMES:
+            self._normalize_tool_call(data)
             return True
+
+        # 容错匹配：处理常见格式错误
+        # interviewagents -> interview_agents
+        # quicksearch -> quick_search
+        # panoramasearch -> panorama_search
+        # insightforge -> insight_forge
+        normalized = tool_name.replace("search", "_search").replace("forge", "_forge")
+        normalized = normalized.replace("agents", "_agents")
+
+        # 尝试匹配
+        for valid_name in self.VALID_TOOL_NAMES:
+            if normalized == valid_name or tool_name == valid_name:
+                data["name"] = valid_name  # 修正为正确名称
+                self._normalize_tool_call(data)
+                return True
+
         return False
+
+    def _normalize_tool_call(self, data: dict):
+        """统一键名格式"""
+        if "tool" in data:
+            data["name"] = data.pop("tool")
+        if "params" in data and "parameters" not in data:
+            data["parameters"] = data.pop("params")
     
     def _get_tools_description(self) -> str:
         """生成工具描述文本"""

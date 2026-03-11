@@ -13,8 +13,13 @@ flask-cors>=6.0.0
 # OpenAI SDK（统一使用 OpenAI 格式调用 LLM）
 openai>=1.0.0
 
-# ============= Zep Cloud =============
-zep-cloud==3.13.0
+# ============= 知识图谱 =============
+# 根据 KNOWLEDGE_GRAPH_MODE 选择使用
+# cloud 模式: zep-cloud
+# local 模式: graphiti-core + neo4j
+zep-cloud>=3.13.0
+graphiti-core>=0.5.0
+neo4j>=5.0.0
 
 # ============= OASIS 社交媒体模拟 =============
 # OASIS 社交模拟框架
