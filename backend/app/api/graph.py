@@ -10,8 +10,8 @@ from flask import request, jsonify
 
 from . import graph_bp
 from ..config import Config
-from ..services.ontology_generator import OntologyGenerator
-from ..services.graph_builder import GraphBuilderService
+from ..services.generation.ontology_generator import OntologyGenerator
+from ..services.graph.subsystems.neo4j_graph_builder import Neo4jGraphBuilder
 from ..services.text_processor import TextProcessor
 from ..utils.file_parser import FileParser
 from ..utils.logger import get_logger
@@ -121,7 +121,7 @@ def reset_project(project_id: str):
 @graph_bp.route('/ontology/generate', methods=['POST'])
 def generate_ontology():
     """
-    接口1：上传文件，分析生成本体定义
+    接口1：上传文件，分析生成本体定义（异步任务）
     
     请求方式：multipart/form-data
     
@@ -136,18 +136,13 @@ def generate_ontology():
             "success": true,
             "data": {
                 "project_id": "proj_xxxx",
-                "ontology": {
-                    "entity_types": [...],
-                    "edge_types": [...],
-                    "analysis_summary": "..."
-                },
-                "files": [...],
-                "total_text_length": 12345
+                "task_id": "task_xxxx",
+                "message": "本体生成任务已启动"
             }
         }
     """
     try:
-        logger.info("=== 开始生成本体定义 ===")
+        logger.info("=== 开始创建本体生成任务 ===")
         
         # 获取参数
         simulation_requirement = request.form.get('simulation_requirement', '')
@@ -171,17 +166,22 @@ def generate_ontology():
                 "error": "请至少上传一个文档文件"
             }), 400
         
+        # 检查文件格式
+        for file in uploaded_files:
+            if file and file.filename and not allowed_file(file.filename):
+                return jsonify({
+                    "success": False,
+                    "error": f"不支持的文件格式: {file.filename}, 支持的格式: {','.join(Config.ALLOWED_EXTENSIONS)}"
+                }), 400
+        
         # 创建项目
         project = ProjectManager.create_project(name=project_name)
         project.simulation_requirement = simulation_requirement
         logger.info(f"创建项目: {project.project_id}")
         
-        # 保存文件并提取文本
-        document_texts = []
-        all_text = ""
-        
+        # 先保存上传的文件
         for file in uploaded_files:
-            if file and file.filename and allowed_file(file.filename):
+            if file and file.filename:
                 # 保存文件到项目目录
                 file_info = ProjectManager.save_file_to_project(
                     project.project_id, 
@@ -190,63 +190,142 @@ def generate_ontology():
                 )
                 project.files.append({
                     "filename": file_info["original_filename"],
+                    "saved_filename": file_info["saved_filename"],
                     "size": file_info["size"]
                 })
+        
+        # 创建异步任务
+        task_manager = TaskManager()
+        task_id = task_manager.create_task(f"生成本体: {project_name}")
+        logger.info(f"创建本体生成任务: task_id={task_id}, project_id={project.project_id}")
+        
+        # 更新项目状态
+        project.status = ProjectStatus.ONTOLOGY_GENERATING
+        project.ontology_generation_task_id = task_id
+        ProjectManager.save_project(project)
+        
+        # 启动后台任务
+        def ontology_task():
+            task_logger = get_logger('mirofish.ontology')
+            try:
+                task_logger.info(f"[{task_id}] 开始生成本体...")
+                task_manager.update_task(
+                    task_id, 
+                    status=TaskStatus.PROCESSING,
+                    message="初始化本体生成服务...",
+                    progress=5
+                )
                 
                 # 提取文本
-                text = FileParser.extract_text(file_info["path"])
-                text = TextProcessor.preprocess_text(text)
-                document_texts.append(text)
-                all_text += f"\n\n=== {file_info['original_filename']} ===\n{text}"
+                task_manager.update_task(
+                    task_id,
+                    message="提取文档文本内容...",
+                    progress=10
+                )
+                
+                document_texts = []
+                all_text = ""
+                
+                # 获取文件实际路径映射
+                files_dir = ProjectManager._get_project_files_dir(project.project_id)
+                for file_info in ProjectManager.get_project_files(project.project_id):
+                    # 构建文件实际路径
+                    file_path = os.path.join(files_dir, file_info["saved_filename"])
+                    # 提取文本
+                    text = FileParser.extract_text(file_path)
+                    text = TextProcessor.preprocess_text(text)
+                    document_texts.append(text)
+                    all_text += f"\n\n=== {file_info['filename']} ===\n{text}"
+                
+                if not document_texts:
+                    raise Exception("没有成功处理任何文档，请检查文件格式")
+                
+                # 保存提取的文本
+                project.total_text_length = len(all_text)
+                ProjectManager.save_extracted_text(project.project_id, all_text)
+                task_logger.info(f"文本提取完成，共 {len(all_text)} 字符")
+                
+                task_manager.update_task(
+                    task_id,
+                    message=f"文本提取完成，共 {len(all_text)} 字符，正在调用LLM生成本体...",
+                    progress=30
+                )
+                
+                # 生成本体
+                generator = OntologyGenerator()
+                ontology = generator.generate(
+                    document_texts=document_texts,
+                    simulation_requirement=simulation_requirement,
+                    additional_context=additional_context if additional_context else None
+                )
+                
+                # 保存本体到项目
+                entity_count = len(ontology.get("entity_types", []))
+                edge_count = len(ontology.get("edge_types", []))
+                task_logger.info(f"本体生成完成: {entity_count} 个实体类型, {edge_count} 个关系类型")
+                
+                task_manager.update_task(
+                    task_id,
+                    message=f"本体生成完成: {entity_count} 个实体类型, {edge_count} 个关系类型",
+                    progress=90
+                )
+                
+                project.ontology = {
+                    "entity_types": ontology.get("entity_types", []),
+                    "edge_types": ontology.get("edge_types", [])
+                }
+                project.analysis_summary = ontology.get("analysis_summary", "")
+                project.status = ProjectStatus.ONTOLOGY_GENERATED
+                ProjectManager.save_project(project)
+                task_logger.info(f"=== 本体生成完成 === 项目ID: {project.project_id}")
+                
+                # 完成
+                task_manager.update_task(
+                    task_id,
+                    status=TaskStatus.COMPLETED,
+                    message="本体生成完成",
+                    progress=100,
+                    result={
+                        "project_id": project.project_id,
+                        "project_name": project.name,
+                        "ontology": project.ontology,
+                        "analysis_summary": project.analysis_summary,
+                        "files": project.files,
+                        "total_text_length": project.total_text_length
+                    }
+                )
+                
+            except Exception as e:
+                # 更新项目状态为失败
+                task_logger.error(f"[{task_id}] 本体生成失败: {str(e)}")
+                task_logger.debug(traceback.format_exc())
+                
+                project.status = ProjectStatus.FAILED
+                project.error = str(e)
+                ProjectManager.save_project(project)
+                
+                task_manager.update_task(
+                    task_id,
+                    status=TaskStatus.FAILED,
+                    message=f"本体生成失败: {str(e)}",
+                    error=traceback.format_exc()
+                )
         
-        if not document_texts:
-            ProjectManager.delete_project(project.project_id)
-            return jsonify({
-                "success": False,
-                "error": "没有成功处理任何文档，请检查文件格式"
-            }), 400
-        
-        # 保存提取的文本
-        project.total_text_length = len(all_text)
-        ProjectManager.save_extracted_text(project.project_id, all_text)
-        logger.info(f"文本提取完成，共 {len(all_text)} 字符")
-        
-        # 生成本体
-        logger.info("调用 LLM 生成本体定义...")
-        generator = OntologyGenerator()
-        ontology = generator.generate(
-            document_texts=document_texts,
-            simulation_requirement=simulation_requirement,
-            additional_context=additional_context if additional_context else None
-        )
-        
-        # 保存本体到项目
-        entity_count = len(ontology.get("entity_types", []))
-        edge_count = len(ontology.get("edge_types", []))
-        logger.info(f"本体生成完成: {entity_count} 个实体类型, {edge_count} 个关系类型")
-        
-        project.ontology = {
-            "entity_types": ontology.get("entity_types", []),
-            "edge_types": ontology.get("edge_types", [])
-        }
-        project.analysis_summary = ontology.get("analysis_summary", "")
-        project.status = ProjectStatus.ONTOLOGY_GENERATED
-        ProjectManager.save_project(project)
-        logger.info(f"=== 本体生成完成 === 项目ID: {project.project_id}")
+        # 启动后台线程
+        thread = threading.Thread(target=ontology_task, daemon=True)
+        thread.start()
         
         return jsonify({
             "success": True,
             "data": {
                 "project_id": project.project_id,
-                "project_name": project.name,
-                "ontology": project.ontology,
-                "analysis_summary": project.analysis_summary,
-                "files": project.files,
-                "total_text_length": project.total_text_length
+                "task_id": task_id,
+                "message": "本体生成任务已启动，请通过 /task/{task_id} 查询进度"
             }
         })
         
     except Exception as e:
+        logger.error(f"创建本体生成任务失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -282,10 +361,12 @@ def build_graph():
     try:
         logger.info("=== 开始构建图谱 ===")
         
-        # 检查配置
+        # 检查配置 (使用本地 Neo4j)
         errors = []
-        if not Config.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY未配置")
+        if not Config.LLM_API_KEY:
+            errors.append("LLM_API_KEY未配置")
+        if not Config.NEO4J_PASSWORD:
+            errors.append("NEO4J_PASSWORD未配置")
         if errors:
             logger.error(f"配置错误: {errors}")
             return jsonify({
@@ -319,6 +400,13 @@ def build_graph():
             return jsonify({
                 "success": False,
                 "error": "项目尚未生成本体，请先调用 /ontology/generate"
+            }), 400
+            
+        if project.status == ProjectStatus.ONTOLOGY_GENERATING:
+            return jsonify({
+                "success": False,
+                "error": "本体正在生成中，请等待生成完成后再构建图谱",
+                "task_id": project.ontology_generation_task_id
             }), 400
         
         if project.status == ProjectStatus.GRAPH_BUILDING and not force:
@@ -381,8 +469,8 @@ def build_graph():
                     message="初始化图谱构建服务..."
                 )
                 
-                # 创建图谱构建服务
-                builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+                # 创建图谱构建服务 (使用本地 Neo4j)
+                builder = Neo4jGraphBuilder()
                 
                 # 分块
                 task_manager.update_task(
@@ -567,13 +655,7 @@ def get_graph_data(graph_id: str):
     获取图谱数据（节点和边）
     """
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY未配置"
-            }), 500
-        
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+        builder = Neo4jGraphBuilder()
         graph_data = builder.get_graph_data(graph_id)
         
         return jsonify({
@@ -592,16 +674,10 @@ def get_graph_data(graph_id: str):
 @graph_bp.route('/delete/<graph_id>', methods=['DELETE'])
 def delete_graph(graph_id: str):
     """
-    删除Zep图谱
+    删除图谱
     """
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY未配置"
-            }), 500
-        
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+        builder = Neo4jGraphBuilder()
         builder.delete_graph(graph_id)
         
         return jsonify({

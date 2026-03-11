@@ -21,13 +21,23 @@ from enum import Enum
 from ..config import Config
 from ..utils.llm_client import LLMClient
 from ..utils.logger import get_logger
-from .zep_tools import (
-    ZepToolsService, 
-    SearchResult, 
-    InsightForgeResult, 
-    PanoramaResult,
-    InterviewResult
-)
+from .graph.factory import GraphServiceFactory
+
+# 根据配置选择导入
+if Config.use_neo4j():
+    from .graph.subsystems.neo4j_tools import (
+        Neo4jToolsService as GraphToolsService,
+        SearchResult,
+        InsightForgeResult,
+        PanoramaResult,
+    )
+else:
+    from .graph.subsystems.zep_tools import (
+        ZepToolsService as GraphToolsService,
+        SearchResult,
+        InsightForgeResult,
+        PanoramaResult,
+    )
 
 logger = get_logger('mirofish.report_agent')
 
@@ -886,7 +896,7 @@ class ReportAgent:
         simulation_id: str,
         simulation_requirement: str,
         llm_client: Optional[LLMClient] = None,
-        zep_tools: Optional[ZepToolsService] = None
+        zep_tools: Optional[GraphToolsService] = None
     ):
         """
         初始化Report Agent
@@ -903,7 +913,7 @@ class ReportAgent:
         self.simulation_requirement = simulation_requirement
         
         self.llm = llm_client or LLMClient()
-        self.zep_tools = zep_tools or ZepToolsService()
+        self.zep_tools = zep_tools or GraphServiceFactory.get_graph_tools()
         
         # 工具定义
         self.tools = self._define_tools()

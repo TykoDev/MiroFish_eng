@@ -5,7 +5,7 @@
 
 import json
 from typing import Dict, Any, List, Optional
-from ..utils.llm_client import LLMClient
+from ...utils.llm_client import LLMClient
 
 
 # 本体生成的系统提示词

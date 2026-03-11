@@ -9,10 +9,10 @@ from flask import request, jsonify, send_file
 
 from . import simulation_bp
 from ..config import Config
-from ..services.zep_entity_reader import ZepEntityReader
-from ..services.oasis_profile_generator import OasisProfileGenerator
-from ..services.simulation_manager import SimulationManager, SimulationStatus
-from ..services.simulation_runner import SimulationRunner, RunnerStatus
+from ..services.graph.factory import GraphServiceFactory
+from ..services.generation.oasis_profile_generator import OasisProfileGenerator
+from ..services.simulation.manager import SimulationManager, SimulationStatus
+from ..services.simulation.runner import SimulationRunner, RunnerStatus
 from ..utils.logger import get_logger
 from ..models.project import ProjectManager
 
@@ -68,7 +68,7 @@ def get_graph_entities(graph_id: str):
         
         logger.info(f"获取图谱实体: graph_id={graph_id}, entity_types={entity_types}, enrich={enrich}")
         
-        reader = ZepEntityReader()
+        reader = GraphServiceFactory.get_entity_reader()
         result = reader.filter_defined_entities(
             graph_id=graph_id,
             defined_entity_types=entity_types,
@@ -93,13 +93,7 @@ def get_graph_entities(graph_id: str):
 def get_entity_detail(graph_id: str, entity_uuid: str):
     """获取单个实体的详细信息"""
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY未配置"
-            }), 500
-        
-        reader = ZepEntityReader()
+        reader = GraphServiceFactory.get_entity_reader()
         entity = reader.get_entity_with_context(graph_id, entity_uuid)
         
         if not entity:
@@ -134,7 +128,7 @@ def get_entities_by_type(graph_id: str, entity_type: str):
         
         enrich = request.args.get('enrich', 'true').lower() == 'true'
         
-        reader = ZepEntityReader()
+        reader = GraphServiceFactory.get_entity_reader()
         entities = reader.get_entities_by_type(
             graph_id=graph_id,
             entity_type=entity_type,
@@ -471,7 +465,7 @@ def prepare_simulation():
         # 这样前端在调用prepare后立即就能获取到预期Agent总数
         try:
             logger.info(f"同步获取实体数量: graph_id={state.graph_id}")
-            reader = ZepEntityReader()
+            reader = GraphServiceFactory.get_entity_reader()
             # 快速读取实体（不需要边信息，只统计数量）
             filtered_preview = reader.filter_defined_entities(
                 graph_id=state.graph_id,
@@ -1396,7 +1390,7 @@ def generate_profiles():
         use_llm = data.get('use_llm', True)
         platform = data.get('platform', 'reddit')
         
-        reader = ZepEntityReader()
+        reader = GraphServiceFactory.get_entity_reader()
         filtered = reader.filter_defined_entities(
             graph_id=graph_id,
             defined_entity_types=entity_types,

@@ -31,9 +31,25 @@ class Config:
     LLM_API_KEY = os.environ.get('LLM_API_KEY')
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    LLM_MAX_RETRIES = int(os.environ.get('LLM_MAX_RETRIES', '3'))  # LLM调用最大重试次数
     
-    # Zep配置
+    # 数据库配置
+    NEO4J_MAX_RETRIES = int(os.environ.get('NEO4J_MAX_RETRIES', '3'))  # Neo4j操作最大重试次数
+    NEO4J_RETRY_DELAY = int(os.environ.get('NEO4J_RETRY_DELAY', '1'))  # Neo4j重试间隔（秒）
+    ZEP_MAX_RETRIES = int(os.environ.get('ZEP_MAX_RETRIES', '3'))  # Zep API调用最大重试次数
+    
+    # ===== 图数据库配置 =====
+    # 选择使用的数据存储方式: "zep" 或 "neo4j"
+    GRAPH_STORAGE = os.environ.get('GRAPH_STORAGE', 'zep')
+    
+    # Zep配置（云服务）
     ZEP_API_KEY = os.environ.get('ZEP_API_KEY')
+    
+    # Neo4j配置（本地自建）
+    NEO4J_URI = os.environ.get('NEO4J_URI', 'bolt://localhost:7687')
+    NEO4J_USERNAME = os.environ.get('NEO4J_USERNAME', 'neo4j')
+    NEO4J_PASSWORD = os.environ.get('NEO4J_PASSWORD', '')
+    NEO4J_DATABASE = os.environ.get('NEO4J_DATABASE', 'neo4j')
     
     # 文件上传配置
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB
@@ -69,7 +85,26 @@ class Config:
         errors = []
         if not cls.LLM_API_KEY:
             errors.append("LLM_API_KEY 未配置")
-        if not cls.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY 未配置")
+        
+        # 根据图数据库选择验证
+        if cls.GRAPH_STORAGE == 'zep':
+            if not cls.ZEP_API_KEY:
+                errors.append("ZEP_API_KEY 未配置（当前使用 Zep Cloud）")
+        elif cls.GRAPH_STORAGE == 'neo4j':
+            if not cls.NEO4J_PASSWORD:
+                errors.append("NEO4J_PASSWORD 未配置（当前使用 Neo4j）")
+        else:
+            errors.append(f"GRAPH_STORAGE 配置错误: {cls.GRAPH_STORAGE}，应为 'zep' 或 'neo4j'")
+        
         return errors
+    
+    @classmethod
+    def use_neo4j(cls) -> bool:
+        """是否使用 Neo4j"""
+        return cls.GRAPH_STORAGE == 'neo4j'
+    
+    @classmethod
+    def use_zep(cls) -> bool:
+        """是否使用 Zep"""
+        return cls.GRAPH_STORAGE == 'zep'
 

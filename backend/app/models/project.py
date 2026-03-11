@@ -17,6 +17,7 @@ from ..config import Config
 class ProjectStatus(str, Enum):
     """项目状态"""
     CREATED = "created"              # 刚创建，文件已上传
+    ONTOLOGY_GENERATING = "ontology_generating"  # 本体生成中
     ONTOLOGY_GENERATED = "ontology_generated"  # 本体已生成
     GRAPH_BUILDING = "graph_building"    # 图谱构建中
     GRAPH_COMPLETED = "graph_completed"  # 图谱构建完成
@@ -39,6 +40,7 @@ class Project:
     # 本体信息（接口1生成后填充）
     ontology: Optional[Dict[str, Any]] = None
     analysis_summary: Optional[str] = None
+    ontology_generation_task_id: Optional[str] = None
     
     # 图谱信息（接口2完成后填充）
     graph_id: Optional[str] = None
@@ -64,6 +66,7 @@ class Project:
             "total_text_length": self.total_text_length,
             "ontology": self.ontology,
             "analysis_summary": self.analysis_summary,
+            "ontology_generation_task_id": self.ontology_generation_task_id,
             "graph_id": self.graph_id,
             "graph_build_task_id": self.graph_build_task_id,
             "simulation_requirement": self.simulation_requirement,
@@ -87,10 +90,11 @@ class Project:
             updated_at=data.get('updated_at', ''),
             files=data.get('files', []),
             total_text_length=data.get('total_text_length', 0),
-            ontology=data.get('ontology'),
-            analysis_summary=data.get('analysis_summary'),
-            graph_id=data.get('graph_id'),
-            graph_build_task_id=data.get('graph_build_task_id'),
+        ontology=data.get('ontology'),
+        analysis_summary=data.get('analysis_summary'),
+        ontology_generation_task_id=data.get('ontology_generation_task_id'),
+        graph_id=data.get('graph_id'),
+        graph_build_task_id=data.get('graph_build_task_id'),
             simulation_requirement=data.get('simulation_requirement'),
             chunk_size=data.get('chunk_size', 500),
             chunk_overlap=data.get('chunk_overlap', 50),
@@ -290,16 +294,17 @@ class ProjectManager:
             return f.read()
     
     @classmethod
-    def get_project_files(cls, project_id: str) -> List[str]:
-        """获取项目的所有文件路径"""
+    def get_project_files(cls, project_id: str) -> List[Dict[str, str]]:
+        """获取项目的所有文件信息"""
         files_dir = cls._get_project_files_dir(project_id)
         
         if not os.path.exists(files_dir):
             return []
-        
-        return [
-            os.path.join(files_dir, f) 
-            for f in os.listdir(files_dir) 
-            if os.path.isfile(os.path.join(files_dir, f))
-        ]
+            
+        # 先获取项目元数据中的文件信息
+        project = cls.get_project(project_id)
+        if not project:
+            return []
+            
+        return project.files
 

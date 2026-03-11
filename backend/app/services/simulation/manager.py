@@ -12,11 +12,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 
-from ..config import Config
-from ..utils.logger import get_logger
-from .zep_entity_reader import ZepEntityReader, FilteredEntities
-from .oasis_profile_generator import OasisProfileGenerator, OasisAgentProfile
-from .simulation_config_generator import SimulationConfigGenerator, SimulationParameters
+from ...config import Config
+from ...utils.logger import get_logger
+from ..graph.factory import GraphServiceFactory
+from ..generation.oasis_profile_generator import OasisProfileGenerator, OasisAgentProfile
+from ..generation.simulation_config_generator import SimulationConfigGenerator, SimulationParameters
 
 logger = get_logger('mirofish.simulation')
 
@@ -270,9 +270,9 @@ class SimulationManager:
             
             # ========== 阶段1: 读取并过滤实体 ==========
             if progress_callback:
-                progress_callback("reading", 0, "正在连接Zep图谱...")
+                progress_callback("reading", 0, "正在连接图数据库...")
             
-            reader = ZepEntityReader()
+            reader = GraphServiceFactory.get_entity_reader()
             
             if progress_callback:
                 progress_callback("reading", 30, "正在读取节点数据...")

@@ -18,9 +18,9 @@ from datetime import datetime
 
 from openai import OpenAI
 
-from ..config import Config
-from ..utils.logger import get_logger
-from .zep_entity_reader import EntityNode, ZepEntityReader
+from ...config import Config
+from ...utils.logger import get_logger
+from ..graph.subsystems.zep_entity_reader import EntityNode, ZepEntityReader
 
 logger = get_logger('mirofish.simulation_config')
 
