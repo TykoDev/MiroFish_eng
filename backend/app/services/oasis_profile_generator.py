@@ -15,10 +15,10 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from openai import OpenAI
 from zep_cloud.client import Zep
 
 from ..config import Config
+from ..utils.llm_client import LLMClient
 from ..utils.logger import get_logger
 from .zep_entity_reader import EntityNode, ZepEntityReader
 
@@ -179,23 +179,11 @@ class OasisProfileGenerator:
     
     def __init__(
         self, 
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        model_name: Optional[str] = None,
+        llm_client: Optional[LLMClient] = None,
         zep_api_key: Optional[str] = None,
         graph_id: Optional[str] = None
     ):
-        self.api_key = api_key or Config.LLM_API_KEY
-        self.base_url = base_url or Config.LLM_BASE_URL
-        self.model_name = model_name or Config.LLM_MODEL_NAME
-        
-        if not self.api_key:
-            raise ValueError("LLM_API_KEY 未配置")
-        
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url
-        )
+        self.llm = llm_client or LLMClient()
         
         # Zep客户端用于检索丰富上下文
         self.zep_api_key = zep_api_key or Config.ZEP_API_KEY
@@ -316,10 +304,10 @@ class OasisProfileGenerator:
         comprehensive_query = f"关于{entity_name}的所有信息、活动、事件、关系和背景"
         
         def search_edges():
-            """搜索边（事实/关系）- 带重试机制"""
-            max_retries = 3
+            """搜索边（事实/关系）- 带速率限制感知的重试机制"""
+            max_retries = 5
             last_exception = None
-            delay = 2.0
+            delay = 5.0
             
             for attempt in range(max_retries):
                 try:
@@ -332,19 +320,28 @@ class OasisProfileGenerator:
                     )
                 except Exception as e:
                     last_exception = e
+                    error_msg = str(e)
+                    is_rate_limit = "429" in error_msg or "rate limit" in error_msg.lower()
+                    
                     if attempt < max_retries - 1:
-                        logger.debug(f"Zep边搜索第 {attempt + 1} 次失败: {str(e)[:80]}, 重试中...")
-                        time.sleep(delay)
+                        current_delay = delay
+                        if is_rate_limit:
+                            current_delay = max(delay, 30.0 * (attempt + 1))
+                            logger.debug(f"Zep边搜索触发速率限制 (429), 等待 {current_delay:.1f}s 后重试...")
+                        else:
+                            logger.debug(f"Zep边搜索第 {attempt + 1} 次失败: {error_msg[:80]}, 重试中...")
+                        
+                        time.sleep(current_delay)
                         delay *= 2
                     else:
                         logger.debug(f"Zep边搜索在 {max_retries} 次尝试后仍失败: {e}")
             return None
         
         def search_nodes():
-            """搜索节点（实体摘要）- 带重试机制"""
-            max_retries = 3
+            """搜索节点（实体摘要）- 带速率限制感知的重试机制"""
+            max_retries = 5
             last_exception = None
-            delay = 2.0
+            delay = 5.0
             
             for attempt in range(max_retries):
                 try:
@@ -357,9 +354,18 @@ class OasisProfileGenerator:
                     )
                 except Exception as e:
                     last_exception = e
+                    error_msg = str(e)
+                    is_rate_limit = "429" in error_msg or "rate limit" in error_msg.lower()
+                    
                     if attempt < max_retries - 1:
-                        logger.debug(f"Zep节点搜索第 {attempt + 1} 次失败: {str(e)[:80]}, 重试中...")
-                        time.sleep(delay)
+                        current_delay = delay
+                        if is_rate_limit:
+                            current_delay = max(delay, 30.0 * (attempt + 1))
+                            logger.debug(f"Zep节点搜索触发速率限制 (429), 等待 {current_delay:.1f}s 后重试...")
+                        else:
+                            logger.debug(f"Zep节点搜索第 {attempt + 1} 次失败: {error_msg[:80]}, 重试中...")
+                        
+                        time.sleep(current_delay)
                         delay *= 2
                     else:
                         logger.debug(f"Zep节点搜索在 {max_retries} 次尝试后仍失败: {e}")
@@ -503,14 +509,14 @@ class OasisProfileGenerator:
     ) -> Dict[str, Any]:
         """
         使用LLM生成非常详细的人设
-        
+
         根据实体类型区分：
         - 个人实体：生成具体的人物设定
         - 群体/机构实体：生成代表性账号设定
         """
-        
+
         is_individual = self._is_individual_entity(entity_type)
-        
+
         if is_individual:
             prompt = self._build_individual_persona_prompt(
                 entity_name, entity_type, entity_summary, entity_attributes, context
@@ -520,65 +526,28 @@ class OasisProfileGenerator:
                 entity_name, entity_type, entity_summary, entity_attributes, context
             )
 
-        # 尝试多次生成，直到成功或达到最大重试次数
-        max_attempts = 3
-        last_error = None
-        
-        for attempt in range(max_attempts):
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=[
-                        {"role": "system", "content": self._get_system_prompt(is_individual)},
-                        {"role": "user", "content": prompt}
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.7 - (attempt * 0.1)  # 每次重试降低温度
-                    # 不设置max_tokens，让LLM自由发挥
-                )
-                
-                content = response.choices[0].message.content
-                
-                # 检查是否被截断（finish_reason不是'stop'）
-                finish_reason = response.choices[0].finish_reason
-                if finish_reason == 'length':
-                    logger.warning(f"LLM输出被截断 (attempt {attempt+1}), 尝试修复...")
-                    content = self._fix_truncated_json(content)
-                
-                # 尝试解析JSON
-                try:
-                    result = json.loads(content)
-                    
-                    # 验证必需字段
-                    if "bio" not in result or not result["bio"]:
-                        result["bio"] = entity_summary[:200] if entity_summary else f"{entity_type}: {entity_name}"
-                    if "persona" not in result or not result["persona"]:
-                        result["persona"] = entity_summary or f"{entity_name}是一个{entity_type}。"
-                    
-                    return result
-                    
-                except json.JSONDecodeError as je:
-                    logger.warning(f"JSON解析失败 (attempt {attempt+1}): {str(je)[:80]}")
-                    
-                    # 尝试修复JSON
-                    result = self._try_fix_json(content, entity_name, entity_type, entity_summary)
-                    if result.get("_fixed"):
-                        del result["_fixed"]
-                        return result
-                    
-                    last_error = je
-                    
-            except Exception as e:
-                logger.warning(f"LLM调用失败 (attempt {attempt+1}): {str(e)[:80]}")
-                last_error = e
-                import time
-                time.sleep(1 * (attempt + 1))  # 指数退避
-        
-        logger.warning(f"LLM生成人设失败（{max_attempts}次尝试）: {last_error}, 使用规则生成")
-        return self._generate_profile_rule_based(
-            entity_name, entity_type, entity_summary, entity_attributes
-        )
-    
+        try:
+            result = self.llm.chat_json(
+                messages=[
+                    {"role": "system", "content": self._get_system_prompt(is_individual)},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.5
+            )
+
+            # 验证必需字段
+            if "bio" not in result or not result["bio"]:
+                result["bio"] = entity_summary[:200] if entity_summary else f"{entity_type}: {entity_name}"
+            if "persona" not in result or not result["persona"]:
+                result["persona"] = entity_summary or f"{entity_name}是一个{entity_type}。"
+
+            return result
+
+        except Exception as e:
+            logger.warning(f"LLM生成人设失败: {str(e)}, 使用规则生成")
+            return self._generate_profile_rule_based(
+                entity_name, entity_type, entity_summary, entity_attributes
+            )
     def _fix_truncated_json(self, content: str) -> str:
         """修复被截断的JSON（输出被max_tokens限制截断）"""
         import re

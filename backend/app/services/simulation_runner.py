@@ -352,7 +352,7 @@ class SimulationRunner:
         total_rounds = int(total_hours * 60 / minutes_per_round)
         
         # 如果指定了最大轮数，则截断
-        if max_rounds is not None and max_rounds > 0:
+        if max_rounds is not None:
             original_rounds = total_rounds
             total_rounds = min(total_rounds, max_rounds)
             if total_rounds < original_rounds:
@@ -419,7 +419,7 @@ class SimulationRunner:
             ]
             
             # 如果指定了最大轮数，添加到命令行参数
-            if max_rounds is not None and max_rounds > 0:
+            if max_rounds is not None:
                 cmd.extend(["--max-rounds", str(max_rounds)])
             
             # 创建主日志文件，避免 stdout/stderr 管道缓冲区满导致进程阻塞

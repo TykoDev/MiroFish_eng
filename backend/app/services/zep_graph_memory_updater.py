@@ -225,8 +225,8 @@ class ZepGraphMemoryUpdater:
     SEND_INTERVAL = 0.5
     
     # 重试配置
-    MAX_RETRIES = 3
-    RETRY_DELAY = 2  # 秒
+    MAX_RETRIES = 5
+    RETRY_DELAY = 5.0  # 秒
     
     def __init__(self, graph_id: str, api_key: Optional[str] = None):
         """
@@ -402,7 +402,8 @@ class ZepGraphMemoryUpdater:
         episode_texts = [activity.to_episode_text() for activity in activities]
         combined_text = "\n".join(episode_texts)
         
-        # 带重试的发送
+        # 带速率限制感知重试的发送
+        delay = self.RETRY_DELAY
         for attempt in range(self.MAX_RETRIES):
             try:
                 self.client.graph.add(
@@ -419,11 +420,21 @@ class ZepGraphMemoryUpdater:
                 return
                 
             except Exception as e:
+                error_msg = str(e)
+                is_rate_limit = "429" in error_msg or "rate limit" in error_msg.lower()
+                
                 if attempt < self.MAX_RETRIES - 1:
-                    logger.warning(f"批量发送到Zep失败 (尝试 {attempt + 1}/{self.MAX_RETRIES}): {e}")
-                    time.sleep(self.RETRY_DELAY * (attempt + 1))
+                    current_delay = delay
+                    if is_rate_limit:
+                        current_delay = max(delay, 30.0 * (attempt + 1))
+                        logger.warning(f"批量发送到Zep触发速率限制 (429), 等待 {current_delay:.1f}s 后重试 (尝试 {attempt + 1}/{self.MAX_RETRIES})")
+                    else:
+                        logger.warning(f"批量发送到Zep失败 (尝试 {attempt + 1}/{self.MAX_RETRIES}): {error_msg[:100]}")
+                    
+                    time.sleep(current_delay)
+                    delay *= 2
                 else:
-                    logger.error(f"批量发送到Zep失败，已重试{self.MAX_RETRIES}次: {e}")
+                    logger.error(f"批量发送到Zep失败，已重试{self.MAX_RETRIES}次: {error_msg}")
                     self._failed_count += 1
     
     def _flush_remaining(self):

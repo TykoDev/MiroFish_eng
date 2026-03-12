@@ -9,6 +9,7 @@ from typing import Optional, Dict, Any, List
 from openai import OpenAI
 
 from ..config import Config
+from .retry import retry_with_backoff
 
 
 class LLMClient:
@@ -32,6 +33,13 @@ class LLMClient:
             base_url=self.base_url
         )
     
+    @retry_with_backoff(
+        max_retries=5,
+        initial_delay=2.0,
+        max_delay=70.0,
+        backoff_factor=2.0,
+        jitter=True
+    )
     def chat(
         self,
         messages: List[Dict[str, str]],
@@ -51,21 +59,34 @@ class LLMClient:
         Returns:
             模型响应文本
         """
+        from .logger import get_logger
+        logger = get_logger('mirofish.llm_client')
+        
         kwargs = {
             "model": self.model,
             "messages": messages,
             "temperature": temperature,
-            "max_tokens": max_tokens,
         }
+        
+        # 兼容新模型（如 o1, gpt-5.2 等）：它们使用 max_completion_tokens 代替 max_tokens
+        if self.model.startswith('o1-') or self.model == 'gpt-5.2':
+            kwargs["max_completion_tokens"] = max_tokens
+        else:
+            kwargs["max_tokens"] = max_tokens
         
         if response_format:
             kwargs["response_format"] = response_format
         
-        response = self.client.chat.completions.create(**kwargs)
-        content = response.choices[0].message.content
-        # 部分模型（如MiniMax M2.5）会在content中包含<think>思考内容，需要移除
-        content = re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
-        return content
+        try:
+            logger.debug(f"调用 LLM: model={self.model}, base_url={self.base_url}")
+            response = self.client.chat.completions.create(**kwargs)
+            content = response.choices[0].message.content
+            # 部分模型（如MiniMax M2.5）会在content中包含<think>思考内容，需要移除
+            content = re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
+            return content
+        except Exception as e:
+            logger.error(f"LLM 调用失败: {str(e)}")
+            raise e
     
     def chat_json(
         self,

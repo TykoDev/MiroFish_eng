@@ -539,11 +539,11 @@ class RedditSimulationRunner:
         total_rounds = (total_hours * 60) // minutes_per_round
         
         # 如果指定了最大轮数，则截断
-        if max_rounds is not None and max_rounds > 0:
+        if max_rounds is not None:
             original_rounds = total_rounds
             total_rounds = min(total_rounds, max_rounds)
             if total_rounds < original_rounds:
-                print(f"\n轮数已截断: {original_rounds} -> {total_rounds} (max_rounds={max_rounds})")
+                log_info(f"轮数已截断: {original_rounds} -> {total_rounds} (max_rounds={max_rounds})")
         
         print(f"\n模拟参数:")
         print(f"  - 总模拟时长: {total_hours}小时")

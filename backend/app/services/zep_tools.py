@@ -418,8 +418,8 @@ class ZepToolsService:
     """
     
     # 重试配置
-    MAX_RETRIES = 3
-    RETRY_DELAY = 2.0
+    MAX_RETRIES = 5
+    RETRY_DELAY = 5.0
     
     def __init__(self, api_key: Optional[str] = None, llm_client: Optional[LLMClient] = None):
         self.api_key = api_key or Config.ZEP_API_KEY
@@ -439,7 +439,7 @@ class ZepToolsService:
         return self._llm_client
     
     def _call_with_retry(self, func, operation_name: str, max_retries: int = None):
-        """带重试机制的API调用"""
+        """带重试机制的API调用，针对 429 速率限制有特别处理"""
         max_retries = max_retries or self.MAX_RETRIES
         last_exception = None
         delay = self.RETRY_DELAY
@@ -449,15 +449,30 @@ class ZepToolsService:
                 return func()
             except Exception as e:
                 last_exception = e
+                error_msg = str(e)
+                
+                # 检查是否为速率限制错误 (429)
+                is_rate_limit = "429" in error_msg or "rate limit" in error_msg.lower()
+                
                 if attempt < max_retries - 1:
-                    logger.warning(
-                        f"Zep {operation_name} 第 {attempt + 1} 次尝试失败: {str(e)[:100]}, "
-                        f"{delay:.1f}秒后重试..."
-                    )
-                    time.sleep(delay)
+                    current_delay = delay
+                    if is_rate_limit:
+                        # 对于 429 错误，至少等待 30 秒，并根据重试次数增加
+                        current_delay = max(delay, 30.0 * (attempt + 1))
+                        logger.warning(
+                            f"Zep {operation_name} 触发速率限制 (429): {error_msg[:100]}, "
+                            f"等待 {current_delay:.1f}s 后重试..."
+                        )
+                    else:
+                        logger.warning(
+                            f"Zep {operation_name} 第 {attempt + 1} 次尝试失败: {error_msg[:100]}, "
+                            f"{current_delay:.1f}秒后重试..."
+                        )
+                    
+                    time.sleep(current_delay)
                     delay *= 2
                 else:
-                    logger.error(f"Zep {operation_name} 在 {max_retries} 次尝试后仍失败: {str(e)}")
+                    logger.error(f"Zep {operation_name} 在 {max_retries} 次尝试后仍失败: {error_msg}")
         
         raise last_exception
     

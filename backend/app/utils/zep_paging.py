@@ -19,8 +19,8 @@ logger = get_logger('mirofish.zep_paging')
 
 _DEFAULT_PAGE_SIZE = 100
 _MAX_NODES = 2000
-_DEFAULT_MAX_RETRIES = 3
-_DEFAULT_RETRY_DELAY = 2.0  # seconds, doubles each retry
+_DEFAULT_MAX_RETRIES = 5
+_DEFAULT_RETRY_DELAY = 5.0  # seconds, doubles each retry
 
 
 def _fetch_page_with_retry(
@@ -31,7 +31,7 @@ def _fetch_page_with_retry(
     page_description: str = "page",
     **kwargs: Any,
 ) -> list[Any]:
-    """单页请求，失败时指数退避重试。仅重试网络/IO类瞬态错误。"""
+    """单页请求，失败时指数退避重试。针对 429 错误会增加等待时间。"""
     if max_retries < 1:
         raise ValueError("max_retries must be >= 1")
 
@@ -41,16 +41,32 @@ def _fetch_page_with_retry(
     for attempt in range(max_retries):
         try:
             return api_call(*args, **kwargs)
-        except (ConnectionError, TimeoutError, OSError, InternalServerError) as e:
+        except Exception as e:
             last_exception = e
+            error_msg = str(e)
+            
+            # 检查是否为速率限制错误 (429)
+            is_rate_limit = "429" in error_msg or "rate limit" in error_msg.lower()
+            
             if attempt < max_retries - 1:
-                logger.warning(
-                    f"Zep {page_description} attempt {attempt + 1} failed: {str(e)[:100]}, retrying in {delay:.1f}s..."
-                )
-                time.sleep(delay)
+                current_delay = delay
+                if is_rate_limit:
+                    # 对于 429 错误，至少等待 30 秒，并根据重试次数增加
+                    current_delay = max(delay, 30.0 * (attempt + 1))
+                    logger.warning(
+                        f"Zep {page_description} 触发速率限制 (429): {error_msg[:100]}, "
+                        f"等待 {current_delay:.1f}s 后重试..."
+                    )
+                else:
+                    logger.warning(
+                        f"Zep {page_description} attempt {attempt + 1} failed: {error_msg[:100]}, "
+                        f"retrying in {current_delay:.1f}s..."
+                    )
+                
+                time.sleep(current_delay)
                 delay *= 2
             else:
-                logger.error(f"Zep {page_description} failed after {max_retries} attempts: {str(e)}")
+                logger.error(f"Zep {page_description} failed after {max_retries} attempts: {error_msg}")
 
     assert last_exception is not None
     raise last_exception
