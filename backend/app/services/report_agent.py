@@ -567,6 +567,18 @@ PLAN_SYSTEM_PROMPT = """\
 - ❌ 不是对现实世界现状的分析
 - ❌ 不是泛泛而谈的舆情综述
 
+【风格与主题约束】（重要！必须遵守）
+
+报告是给人看的，必须通俗易懂！
+
+1. 报告标题必须是预测结果的直接表述，像新闻标题一样一目了然
+2. 章节标题要简洁明了，回答"预测到了什么"
+3. 禁止使用抽象、晦涩、诗意化的表达
+4. 禁止把"变量""注入""模拟""状态""演化"等抽象词汇放在标题中
+
+✅ 好的标题：「XX场景下用户行为预测」「XX产品发布后市场趋势预测」
+❌ 差的标题：「变量注入后社会状态预测」「智能时代的命运交响」
+
 【章节数量限制】
 - 最少2个章节，最多5个章节
 - 不需要子章节，每个章节直接撰写完整内容
@@ -721,8 +733,8 @@ SECTION_SYSTEM_PROMPT_TEMPLATE = """\
 
 选项A - 调用工具：
 输出你的思考，然后用以下格式调用一个工具：
-<tool_call>
-{{"name": "工具名称", "parameters": {{"参数名": "参数值"}}}}
+<tool_call name="工具名称">
+  <parameter name="参数名">参数值</parameter>
 </tool_call>
 系统会执行工具并把结果返回给你。你不需要也不能自己编写工具返回结果。
 
@@ -844,8 +856,8 @@ CHAT_SYSTEM_PROMPT_TEMPLATE = """\
 {tools_description}
 
 【工具调用格式】
-<tool_call>
-{{"name": "工具名称", "parameters": {{"参数名": "参数值"}}}}
+<tool_call name="工具名称">
+  <parameter name="参数名">参数值</parameter>
 </tool_call>
 
 【回答风格】
@@ -1068,25 +1080,52 @@ class ReportAgent:
         从LLM响应中解析工具调用
 
         支持的格式（按优先级）：
-        1. <tool_call>{"name": "tool_name", "parameters": {...}}</tool_call>
-        2. 裸 JSON（响应整体或单行就是一个工具调用 JSON）
+        1. XML格式（标准格式）: <tool_call name="tool_name"><parameter name="key">value</parameter></tool_call>
+        2. JSON格式（兜底）: <tool_call>{"name": "tool_name", "parameters": {...}}</tool_call>
+        3. 裸 JSON（兜底）: 响应整体或单行就是一个工具调用 JSON
         """
         tool_calls = []
 
-        # 格式1: XML风格（标准格式）
-        xml_pattern = r'<tool_call>\s*(\{.*?\})\s*</tool_call>'
+        # 格式1: XML格式（标准格式）- 优先匹配
+        # <tool_call name="工具名称">
+        #   <parameter name="参数名">参数值</parameter>
+        # </tool_call>
+        xml_pattern = r'<tool_call\s+name="([^"]+)"[^>]*>(.*?)</tool_call>'
         for match in re.finditer(xml_pattern, response, re.DOTALL):
+            tool_name = match.group(1)
+            params_content = match.group(2)
+
+            # 提取所有 <parameter name="xxx">value</parameter> 标签
+            param_pattern = r'<parameter\s+name="([^"]+)">([^<]*)</parameter>'
+            params = {}
+            for param_match in re.finditer(param_pattern, params_content):
+                param_name = param_match.group(1)
+                param_value = param_match.group(2)
+                params[param_name] = param_value
+
+            if tool_name:
+                tool_calls.append({
+                    "name": tool_name,
+                    "parameters": params
+                })
+
+        if tool_calls:
+            return tool_calls
+
+        # 格式2: JSON格式（旧格式兼容）- <tool_call>{"name": ...}</tool_call>
+        json_xml_pattern = r'<tool_call>\s*(\{.*?\})\s*</tool_call>'
+        for match in re.finditer(json_xml_pattern, response, re.DOTALL):
             try:
                 call_data = json.loads(match.group(1))
-                tool_calls.append(call_data)
+                if self._is_valid_tool_call(call_data):
+                    tool_calls.append(call_data)
             except json.JSONDecodeError:
                 pass
 
         if tool_calls:
             return tool_calls
 
-        # 格式2: 兜底 - LLM 直接输出裸 JSON（没包 <tool_call> 标签）
-        # 只在格式1未匹配时尝试，避免误匹配正文中的 JSON
+        # 格式3: 兜底 - LLM 直接输出裸 JSON（没包 <tool_call> 标签）
         stripped = response.strip()
         if stripped.startswith('{') and stripped.endswith('}'):
             try:
@@ -1114,14 +1153,37 @@ class ReportAgent:
         """校验解析出的 JSON 是否是合法的工具调用"""
         # 支持 {"name": ..., "parameters": ...} 和 {"tool": ..., "params": ...} 两种键名
         tool_name = data.get("name") or data.get("tool")
-        if tool_name and tool_name in self.VALID_TOOL_NAMES:
-            # 统一键名为 name / parameters
-            if "tool" in data:
-                data["name"] = data.pop("tool")
-            if "params" in data and "parameters" not in data:
-                data["parameters"] = data.pop("params")
+        if not tool_name:
+            return False
+
+        # 精确匹配
+        if tool_name in self.VALID_TOOL_NAMES:
+            self._normalize_tool_call(data)
             return True
+
+        # 容错匹配：处理常见格式错误
+        # interviewagents -> interview_agents
+        # quicksearch -> quick_search
+        # panoramasearch -> panorama_search
+        # insightforge -> insight_forge
+        normalized = tool_name.replace("search", "_search").replace("forge", "_forge")
+        normalized = normalized.replace("agents", "_agents")
+
+        # 尝试匹配
+        for valid_name in self.VALID_TOOL_NAMES:
+            if normalized == valid_name or tool_name == valid_name:
+                data["name"] = valid_name  # 修正为正确名称
+                self._normalize_tool_call(data)
+                return True
+
         return False
+
+    def _normalize_tool_call(self, data: dict):
+        """统一键名格式"""
+        if "tool" in data:
+            data["name"] = data.pop("tool")
+        if "params" in data and "parameters" not in data:
+            data["parameters"] = data.pop("params")
     
     def _get_tools_description(self) -> str:
         """生成工具描述文本"""
@@ -1834,7 +1896,7 @@ class ReportAgent:
             
             if not tool_calls:
                 # 没有工具调用，直接返回响应
-                clean_response = re.sub(r'<tool_call>.*?</tool_call>', '', response, flags=re.DOTALL)
+                clean_response = re.sub(r'<tool_call[^>]*>.*?</tool_call>', '', response, flags=re.DOTALL)
                 clean_response = re.sub(r'\[TOOL_CALL\].*?\)', '', clean_response)
                 
                 return {
@@ -1870,7 +1932,7 @@ class ReportAgent:
         )
         
         # 清理响应
-        clean_response = re.sub(r'<tool_call>.*?</tool_call>', '', final_response, flags=re.DOTALL)
+        clean_response = re.sub(r'<tool_call[^>]*>.*?</tool_call>', '', final_response, flags=re.DOTALL)
         clean_response = re.sub(r'\[TOOL_CALL\].*?\)', '', clean_response)
         
         return {

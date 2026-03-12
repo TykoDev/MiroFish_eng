@@ -127,14 +127,32 @@
             </div>
           </div>
 
-          <!-- Next Step Button - 在完成后显示 -->
-          <button v-if="isComplete" class="next-step-btn" @click="goToInteraction">
-            <span>进入深度互动</span>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
+          <!-- Next Step Buttons - 在完成后显示 -->
+          <div class="next-step-buttons">
+            <button v-if="isComplete" class="next-step-btn" @click="handleExport">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>导出报告</span>
+            </button>
+            <button v-if="isComplete" class="next-step-btn" @click="handleRegenerate">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6"></path>
+                <path d="M1 20v-6h6"></path>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>重新分析</span>
+            </button>
+            <button v-if="isComplete" class="next-step-btn" @click="goToInteraction">
+              <span>进入深度互动</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
 
           <div class="workflow-divider"></div>
         </div>
@@ -392,7 +410,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAgentLog, getConsoleLog } from '../api/report'
+import { getAgentLog, getConsoleLog, generateReport, getReport, downloadReport } from '../api/report'
 
 const router = useRouter()
 
@@ -408,6 +426,62 @@ const emit = defineEmits(['add-log', 'update-status'])
 const goToInteraction = () => {
   if (props.reportId) {
     router.push({ name: 'Interaction', params: { reportId: props.reportId } })
+  }
+}
+
+// 重新分析（生成报告）
+const handleRegenerate = async () => {
+  let simId = props.simulationId
+
+  // 如果没有 simulationId，直接从当前报告获取
+  if (!simId && props.reportId) {
+    try {
+      const res = await getReport(props.reportId)
+      if (res.success && res.data) {
+        simId = res.data.simulation_id
+      }
+    } catch (err) {
+      console.error('Failed to get simulation ID:', err)
+    }
+  }
+
+  if (!simId) {
+    console.error('No simulation ID available')
+    return
+  }
+
+  try {
+    const res = await generateReport({
+      simulation_id: simId,
+      force_regenerate: true
+    })
+
+    if (res.success && res.data && res.data.report_id) {
+      // 跳转到新生成的报告页面
+      router.push({ name: 'Report', params: { reportId: res.data.report_id } })
+    }
+  } catch (err) {
+    console.error('Regenerate report failed:', err)
+  }
+}
+
+// 导出报告
+const handleExport = async () => {
+  if (!props.reportId) return
+
+  try {
+    const blob = await downloadReport(props.reportId)
+    // 创建下载链接并触发下载
+    const url = window.URL.createObjectURL(new Blob([blob]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `${props.reportId}.md`)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  } catch (err) {
+    console.error('导出报告失败:', err)
   }
 }
 
@@ -3397,13 +3471,19 @@ watch(() => props.reportId, (newId) => {
   font-size: 14px;
 }
 
+.next-step-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 4px 20px 0 20px;
+  width: calc(100% - 40px);
+}
+
 .next-step-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: calc(100% - 40px);
-  margin: 4px 20px 0 20px;
   padding: 14px 20px;
   font-size: 14px;
   font-weight: 600;

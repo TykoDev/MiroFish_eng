@@ -49,3 +49,13 @@ export const getReport = (reportId) => {
 export const chatWithReport = (data) => {
   return requestWithRetry(() => service.post('/api/report/chat', data), 3, 1000)
 }
+
+/**
+ * 下载报告文件
+ * @param {string} reportId
+ */
+export const downloadReport = (reportId) => {
+  return service.get(`/api/report/${reportId}/download`, {
+    responseType: 'blob'
+  })
+}
