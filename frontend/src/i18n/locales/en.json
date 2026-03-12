@@ -1,0 +1,416 @@
+{
+  "nav": {
+    "github": "Visit our GitHub",
+    "brand": "MIROFISH"
+  },
+  "home": {
+    "tagline": "Simple & Universal Swarm Intelligence Engine",
+    "version": "v0.1-Preview",
+    "title": "Upload Any Report",
+    "subtitle": "Instantly Simulate the Future",
+    "description": "Even with just a piece of text, MiroFish can automatically generate a parallel world with up to millions of Agents based on the reality seeds within. Inject variables through a god's-eye view and find the 'local optimum' in dynamic environments through complex group interactions.",
+    "slogan": "Let the future be rehearsed in Agent clusters, let decisions prevail after a hundred battles",
+    "status": {
+      "title": "System Status",
+      "ready": "Ready",
+      "description": "Prediction engine on standby. Upload multiple unstructured data files to initialize the simulation sequence."
+    },
+    "metrics": {
+      "lowCost": "Low Cost",
+      "lowCostDesc": "Average $5 per simulation",
+      "highAvailability": "High Availability",
+      "highAvailabilityDesc": "Up to millions of Agent simulation"
+    },
+    "workflow": {
+      "title": "Workflow Sequence",
+      "steps": {
+        "1": {
+          "title": "Graph Construction",
+          "desc": "Reality seed extraction & Individual and group memory injection & GraphRAG construction"
+        },
+        "2": {
+          "title": "Environment Setup",
+          "desc": "Entity relationship extraction & Profile generation & Environment config Agent injection"
+        },
+        "3": {
+          "title": "Start Simulation",
+          "desc": "Dual-platform parallel simulation & Auto-parse prediction requirements & Dynamic temporal memory update"
+        },
+        "4": {
+          "title": "Report Generation",
+          "desc": "ReportAgent with rich toolset for deep interaction with post-simulation environment"
+        },
+        "5": {
+          "title": "Deep Interaction",
+          "desc": "Chat with any individual in the simulated world & Chat with ReportAgent"
+        }
+      }
+    },
+    "upload": {
+      "title": "01 / Reality Seeds",
+      "formats": "Supported: PDF, MD, TXT",
+      "dragTitle": "Drag files to upload",
+      "dragHint": "Or click to browse",
+      "inputParams": "Input Parameters",
+      "simulationPrompt": ">_ 02 / Simulation Prompt",
+      "placeholder": "// Enter simulation or prediction requirements in natural language (e.g., What public sentiment trend will occur if Wuhan University announces disciplinary revocation?)",
+      "engine": "Engine: MiroFish-V1.0",
+      "start": "Start Engine",
+      "initializing": "Initializing..."
+    }
+  },
+  "views": {
+    "graph": "Graph",
+    "split": "Split",
+    "workbench": "Workbench"
+  },
+  "steps": {
+    "step": "Step",
+    "of": "of",
+    "graphBuild": {
+      "title": "Graph Construction",
+      "ontology": {
+        "title": "Ontology Generation",
+        "completed": "Completed",
+        "processing": "Generating",
+        "pending": "Pending",
+        "inProgress": "In Progress",
+        "description": "LLM analyzes document content and simulation requirements, extracts reality seeds, and automatically generates appropriate ontology structure",
+        "entityTypes": "GENERATED ENTITY TYPES",
+        "relationTypes": "GENERATED RELATION TYPES",
+        "attributes": "ATTRIBUTES",
+        "examples": "EXAMPLES",
+        "connections": "CONNECTIONS"
+      },
+      "graphRag": {
+        "title": "GraphRAG Construction",
+        "description": "Based on generated ontology, documents are automatically chunked and Zep is called to build knowledge graph, extracting entities and relationships, and forming temporal memory and community summaries",
+        "nodes": "Entity Nodes",
+        "edges": "Relation Edges",
+        "types": "Schema Types"
+      },
+      "complete": {
+        "title": "Construction Complete",
+        "description": "Graph construction completed, please proceed to next step for simulation environment setup",
+        "enterEnvSetup": "Enter Environment Setup →"
+      }
+    },
+    "envSetup": {
+      "title": "Environment Setup",
+      "simulationInit": {
+        "title": "Simulation Instance Initialization",
+        "completed": "Completed",
+        "processing": "Initializing",
+        "description": "Create simulation instance and load simulation world parameter template",
+        "projectId": "Project ID",
+        "graphId": "Graph ID",
+        "simulationId": "Simulation ID",
+        "taskId": "Task ID",
+        "taskCompleted": "Async task completed"
+      },
+      "agentProfiles": {
+        "title": "Generate Agent Profiles",
+        "currentAgents": "Current Agents",
+        "expectedAgents": "Expected Total",
+        "topicCount": "Associated Topics",
+        "description": "Combining context, automatically call tools to sort out entities and relationships from knowledge graph, initialize simulation individuals, and assign unique behaviors and memories based on reality seeds",
+        "generatedProfiles": "Generated Agent Profiles",
+        "profileBio": "Profile Bio"
+      },
+      "platformConfig": {
+        "title": "Generate Dual-Platform Simulation Config",
+        "description": "LLM intelligently sets world time flow rate, recommendation algorithm, individual active time periods, speech frequency, event triggers, etc. based on simulation requirements and reality seeds",
+        "simulationDuration": "Simulation Duration",
+        "hours": "hours",
+        "roundDuration": "Round Duration",
+        "minutes": "minutes",
+        "totalRounds": "Total Rounds",
+        "agentsPerHour": "Agents/Hour",
+        "peakHours": "Peak Hours",
+        "workHours": "Work Hours",
+        "morningHours": "Morning Hours",
+        "offPeakHours": "Off-Peak Hours",
+        "agentConfig": "Agent Config",
+        "platform1": "Platform 1: Plaza / Feed",
+        "platform2": "Platform 2: Topic / Community",
+        "recencyWeight": "Recency Weight",
+        "popularityWeight": "Popularity Weight",
+        "relevanceWeight": "Relevance Weight",
+        "viralThreshold": "Viral Threshold",
+        "echoChamberStrength": "Echo Chamber Strength",
+        "activeHours": "Active Hours",
+        "postsPerHour": "Posts/Hour",
+        "commentsPerHour": "Comments/Hour",
+        "responseDelay": "Response Delay",
+        "activityLevel": "Activity Level",
+        "sentimentBias": "Sentiment Bias",
+        "influence": "Influence",
+        "recommendationConfig": "Recommendation Algorithm Config",
+        "llmReasoning": "LLM Configuration Reasoning",
+        "orchestrating": "Orchestrating"
+      },
+      "orchestration": {
+        "title": "Initial Activation Orchestration",
+        "description": "Based on narrative direction, automatically generate initial activation events and hot topics to guide the initial state of the simulated world",
+        "narrativeDirection": "Narrative Direction",
+        "hotTopics": "Initial Hot Topics",
+        "initialPosts": "Initial Activation Sequence"
+      },
+      "ready": {
+        "title": "Ready to Start",
+        "description": "Simulation environment preparation complete, ready to start simulation",
+        "customRounds": "Customize",
+        "autoRounds": "Auto Rounds",
+        "roundsConfig": "Simulation Rounds Configuration",
+        "estimatedTime": "With 100 Agents: ~{minutes} min",
+        "recommendation": "For first-time runs, strongly recommend switching to 'Custom Mode' to reduce simulation rounds for quick preview",
+        "startSimulation": "Start Dual-World Parallel Simulation →",
+        "backToGraph": "← Back to Graph Construction",
+        "agentScale": "If Agent scale is 100: estimated time {minutes} min"
+      }
+    },
+    "simulation": {
+      "title": "Start Simulation",
+      "platform1": "Info Plaza",
+      "platform2": "Topic Community",
+      "round": "ROUND",
+      "elapsedTime": "Elapsed Time",
+      "acts": "ACTS",
+      "availableActions": "Available Actions",
+      "generateReport": "Generate Results Report",
+      "starting": "Starting...",
+      "totalEvents": "TOTAL EVENTS",
+      "waiting": "Waiting for agent actions...",
+      "monitor": "SIMULATION MONITOR",
+      "actions": {
+        "post": "POST",
+        "comment": "COMMENT",
+        "like": "LIKE",
+        "dislike": "DISLIKE",
+        "repost": "REPOST",
+        "quote": "QUOTE",
+        "follow": "FOLLOW",
+        "search": "SEARCH",
+        "trend": "TREND",
+        "mute": "MUTE",
+        "refresh": "REFRESH",
+        "idle": "IDLE",
+        "repostedFrom": "Reposted from @",
+        "likedPost": "Liked @",
+        "postOf": "'s post",
+        "replyTo": "Reply to post #",
+        "searchQuery": "Search Query:",
+        "followed": "Followed @",
+        "actionSkipped": "Action Skipped"
+      }
+    },
+    "report": {
+      "title": "Report Generation",
+      "tag": "Prediction Report",
+      "waiting": "Waiting for Report Agent...",
+      "sections": "Sections",
+      "elapsed": "Elapsed",
+      "toolsLabel": "Tools",
+      "generating": "Generating",
+      "enterInteraction": "Enter Deep Interaction",
+      "scenario": "Prediction Scenario",
+      "consoleOutput": "CONSOLE OUTPUT",
+      "simulation": "Simulation",
+      "requirement": "Requirement",
+      "iteration": "Iteration",
+      "contentGenerated": "content generated",
+      "complete": "Report Generation Complete",
+      "waitingActivity": "Waiting for agent activity...",
+      "tabs": {
+        "currentMemory": "Current Key Memory",
+        "coreEntities": "Core Entities",
+        "relationChain": "Relation Chain",
+        "subQuestions": "Sub Questions"
+      },
+      "panels": {
+        "latestFacts": "Latest key facts from temporal memory",
+        "collapse": "Collapse",
+        "expandAll": "Expand all",
+        "items": "items",
+        "noCurrentMemory": "No current key memory",
+        "noCoreEntities": "No core entities",
+        "noRelationChain": "No relation chain"
+      },
+      "panorama": {
+        "tabs": {
+          "activeMemory": "Active Memory",
+          "historyMemory": "History Memory",
+          "involvedEntities": "Involved Entities"
+        },
+        "panels": {
+          "currentActiveFacts": "Currently active facts",
+          "noActiveFacts": "No active facts",
+          "noHistory": "No historical memory",
+          "noEntities": "No entities involved"
+        }
+      },
+      "worlds": {
+        "world1": "World 1",
+        "world2": "World 2",
+        "selectionReason": "Selection Reason"
+      },
+      "quickSearch": {
+        "searchLabel": "Search:",
+        "fact": "Fact",
+        "relation": "Relation",
+        "node": "Node",
+        "results": "Search Results",
+        "noResults": "No results found",
+        "relatedRelations": "Related Relations",
+        "relatedNodes": "Related Nodes"
+      },
+      "tools": {
+        "insightForge": "InsightForge Deep Attribution",
+        "insightForgeDesc": "Align real-world seed data with simulation environment state, combining Global/Local Memory mechanisms for cross-temporal deep attribution analysis",
+        "panoramaSearch": "PanoramaSearch Full Tracking",
+        "panoramaSearchDesc": "Breadth-first traversal algorithm based on graph structure to reconstruct event propagation paths and capture full information flow topology",
+        "quickSearch": "QuickSearch Fast Retrieval",
+        "quickSearchDesc": "GraphRAG-based instant query interface optimized for index efficiency, used for quickly extracting specific node attributes and discrete facts",
+        "agentSurvey": "AgentSurvey Opinion Poll",
+        "agentSurveyDesc": "Structured questionnaire tool, autonomously determines survey objects and sends questionnaires to multiple Agents in simulation environment for parallel collection"
+      }
+    },
+    "interaction": {
+      "title": "Deep Interaction",
+      "chatWithReportAgent": "Chat with Report Agent",
+      "chatWithAgent": "Chat with any individual in the world",
+      "sendSurvey": "Send survey to the world",
+      "agentsAvailable": "agents available",
+      "selectAgent": "Select conversation target",
+      "unknownProfession": "Unknown Profession",
+      "noBio": "No bio available",
+      "interestedTopics": "Reality seed associated topics",
+      "interactiveTools": "Interactive Tools",
+      "reportAgentChat": "Report Agent - Chat",
+      "reportAgentDesc": "Quick chat version of report generation agent, can call 4 professional tools, has complete MiroFish memory",
+      "selectSurveyTargets": "Select Survey Targets",
+      "selectedCount": "Selected {count} / {total}",
+      "selectAll": "Select All",
+      "clearSelection": "Clear",
+      "surveyQuestion": "Survey Question",
+      "sendSurveyBtn": "Send Survey",
+      "surveyResults": "Survey Results",
+      "profileBio": "Profile Bio",
+      "eventApparentAge": "Event Apparent Age",
+      "eventApparentGender": "Event Apparent Gender",
+      "countryRegion": "Country/Region",
+      "eventApparentMbti": "Event Apparent MBTI",
+      "realitySeedTopics": "Reality Seed Related Topics",
+      "detailedProfile": "Detailed Profile Background",
+      "persona": {
+        "eventExperience": "Event Panorama Experience",
+        "eventExperienceDesc": "Complete behavior trajectory in this event",
+        "behaviorProfile": "Behavior Pattern Profiling",
+        "behaviorProfileDesc": "Experience summary and behavioral style preferences",
+        "memoryMark": "Unique Memory Mark",
+        "memoryMarkDesc": "Memories formed based on reality seeds",
+        "socialNetwork": "Social Relationship Network",
+        "socialNetworkDesc": "Individual links and interaction graph"
+      }
+    }
+  },
+  "graphPanel": {
+    "title": "Graph Relationship Visualization",
+    "refreshGraph": "Refresh Graph",
+    "maximizeRestore": "Maximize/Restore",
+    "graphRagMemoryUpdating": "GraphRAG short/long-term memory updating in real-time",
+    "realtimeUpdating": "Updating in real-time...",
+    "processingHint": "Some content is still being processed, manual refresh recommended later",
+    "closeHint": "Close hint",
+    "nodeDetails": "Node Details",
+    "edgeDetails": "Edge Details",
+    "relationship": "Relationship",
+    "name": "Name",
+    "nameLabel": "Name:",
+    "uuidLabel": "UUID:",
+    "createdLabel": "Created:",
+    "uuid": "UUID",
+    "created": "Created",
+    "properties": "Properties",
+    "propertiesLabel": "Properties:",
+    "summary": "Summary",
+    "summaryLabel": "Summary:",
+    "labels": "Labels",
+    "labelsLabel": "Labels:",
+    "selfRelations": "Self Relations",
+    "items": "items",
+    "fact": "Fact",
+    "factLabel": "Fact:",
+    "type": "Type",
+    "typeLabel": "Type:",
+    "label": "Label",
+    "labelLabel": "Label:",
+    "episodes": "Episodes",
+    "episodesLabel": "Episodes:",
+    "validFrom": "Valid From",
+    "validFromLabel": "Valid From:",
+    "invalidAt": "Invalid At",
+    "invalidAtLabel": "Invalid At:",
+    "expiredAt": "Expired At",
+    "expiredAtLabel": "Expired At:",
+    "createdTime": "Created",
+    "createdTimeLabel": "Created:",
+    "loadingGraphData": "Loading graph data...",
+    "waitingOntology": "Waiting for ontology generation...",
+    "entityTypes": "Entity Types",
+    "showEdgeLabels": "Show Edge Labels"
+  },
+  "history": {
+    "title": "Simulation Records",
+    "noFiles": "No files",
+    "files": "files",
+    "simulationDetails": "Simulation Details",
+    "associatedFiles": "Associated Files",
+    "playback": "Playback",
+    "steps": {
+      "graphBuild": "Graph Construction",
+      "envSetup": "Environment Setup",
+      "report": "Analysis Report"
+    },
+    "playbackHint": "Step 3 'Start Simulation' and Step 5 'Deep Interaction' need to be launched during runtime and do not support historical playback",
+    "notStarted": "Not Started",
+    "rounds": "rounds",
+    "unknown": "Unknown",
+    "simulationRequirement": "Simulation Requirement",
+    "unnamedSimulation": "Unnamed Simulation",
+    "unknownFile": "Unknown File"
+  },
+  "viewSwitcher": {
+    "graph": "Graph",
+    "split": "Split",
+    "workbench": "Workbench"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "close": "Close",
+    "open": "Open",
+    "refresh": "Refresh",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "all": "All",
+    "none": "None",
+    "or": "or",
+    "and": "and",
+    "more": "more",
+    "less": "less",
+    "type": "Type",
+    "unknown": "Unknown"
+  }
+}

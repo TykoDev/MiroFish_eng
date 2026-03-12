@@ -2,11 +2,10 @@ import axios from 'axios'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
   timeout: 300000, // 5分钟超时（本体生成可能需要较长时间）
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  // 不设置默认 Content-Type，让每个请求自行设置
+  // 以支持 multipart/form-data 上传
 })
 
 // 请求拦截器

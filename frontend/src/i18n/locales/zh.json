@@ -1,0 +1,416 @@
+{
+  "nav": {
+    "github": "访问我们的Github主页",
+    "brand": "MIROFISH"
+  },
+  "home": {
+    "tagline": "简洁通用的群体智能引擎",
+    "version": "v0.1-预览版",
+    "title": "上传任意报告",
+    "subtitle": "即刻推演未来",
+    "description": "即使只有一段文字，MiroFish 也能基于其中的现实种子，全自动生成与之对应的至多百万级Agent构成的平行世界。通过上帝视角注入变量，在复杂的群体交互中寻找动态环境下的'局部最优解'。",
+    "slogan": "让未来在 Agent 群中预演，让决策在百战后胜出",
+    "status": {
+      "title": "系统状态",
+      "ready": "准备就绪",
+      "description": "预测引擎待命中，可上传多份非结构化数据以初始化模拟序列"
+    },
+    "metrics": {
+      "lowCost": "低成本",
+      "lowCostDesc": "常规模拟平均5$/次",
+      "highAvailability": "高可用",
+      "highAvailabilityDesc": "最多百万级Agent模拟"
+    },
+    "workflow": {
+      "title": "工作流序列",
+      "steps": {
+        "1": {
+          "title": "图谱构建",
+          "desc": "现实种子提取 & 个体与群体记忆注入 & GraphRAG构建"
+        },
+        "2": {
+          "title": "环境搭建",
+          "desc": "实体关系抽取 & 人设生成 & 环境配置Agent注入仿真参数"
+        },
+        "3": {
+          "title": "开始模拟",
+          "desc": "双平台并行模拟 & 自动解析预测需求 & 动态更新时序记忆"
+        },
+        "4": {
+          "title": "报告生成",
+          "desc": "ReportAgent拥有丰富的工具集与模拟后环境进行深度交互"
+        },
+        "5": {
+          "title": "深度互动",
+          "desc": "与模拟世界中的任意一位进行对话 & 与ReportAgent进行对话"
+        }
+      }
+    },
+    "upload": {
+      "title": "01 / 现实种子",
+      "formats": "支持格式: PDF, MD, TXT",
+      "dragTitle": "拖拽文件上传",
+      "dragHint": "或点击浏览文件系统",
+      "inputParams": "输入参数",
+      "simulationPrompt": ">_ 02 / 模拟提示词",
+      "placeholder": "// 用自然语言输入模拟或预测需求（例.武大若发布撤销肖某处分的公告，会引发什么舆情走向）",
+      "engine": "引擎: MiroFish-V1.0",
+      "start": "启动引擎",
+      "initializing": "初始化中..."
+    }
+  },
+  "views": {
+    "graph": "图谱",
+    "split": "双栏",
+    "workbench": "工作台"
+  },
+  "steps": {
+    "step": "步骤",
+    "of": "/",
+      "graphBuild": {
+        "title": "图谱构建",
+        "ontology": {
+          "title": "本体生成",
+          "completed": "已完成",
+          "processing": "生成中",
+          "pending": "等待",
+          "inProgress": "进行中",
+          "description": "LLM分析文档内容与模拟需求，提取出现实种子，自动生成合适的本体结构",
+          "entityTypes": "GENERATED ENTITY TYPES",
+          "relationTypes": "GENERATED RELATION TYPES",
+          "attributes": "属性",
+          "examples": "示例",
+          "connections": "连接"
+        },
+        "graphRag": {
+          "title": "GraphRAG构建",
+          "description": "基于生成的本体，将文档自动分块后调用 Zep 构建知识图谱，提取实体和关系，并形成时序记忆与社区摘要",
+          "nodes": "实体节点",
+          "edges": "关系边",
+          "types": "Schema类型"
+        },
+        "complete": {
+          "title": "构建完成",
+          "description": "图谱构建已完成，请进入下一步进行模拟环境搭建",
+          "enterEnvSetup": "进入环境搭建 →"
+        }
+      },
+    "envSetup": {
+      "title": "环境搭建",
+      "simulationInit": {
+        "title": "模拟实例初始化",
+        "completed": "已完成",
+        "processing": "初始化",
+        "description": "新建simulation实例，拉取模拟世界参数模版",
+        "projectId": "项目ID",
+        "graphId": "图谱ID",
+        "simulationId": "模拟ID",
+        "taskId": "任务ID",
+        "taskCompleted": "异步任务已完成"
+      },
+      "agentProfiles": {
+        "title": "生成 Agent 人设",
+        "currentAgents": "当前Agent数",
+        "expectedAgents": "预期Agent总数",
+        "topicCount": "现实种子当前关联话题数",
+        "description": "结合上下文，自动调用工具从知识图谱梳理实体与关系，初始化模拟个体，并基于现实种子赋予他们独特的行为与记忆",
+        "generatedProfiles": "生成的Agent人设",
+        "profileBio": "个人简介"
+      },
+      "platformConfig": {
+        "title": "生成双平台模拟配置",
+        "description": "LLM 根据模拟需求与现实种子，智能设置世界时间流速、推荐算法、每个个体的活跃时间段、发言频率、事件触发等参数",
+        "simulationDuration": "模拟时长",
+        "hours": "小时",
+        "roundDuration": "每轮时长",
+        "minutes": "分钟",
+        "totalRounds": "总轮次",
+        "agentsPerHour": "每小时活跃",
+        "peakHours": "高峰时段",
+        "workHours": "工作时段",
+        "morningHours": "早间时段",
+        "offPeakHours": "低谷时段",
+        "agentConfig": "Agent 配置",
+        "platform1": "平台 1：广场 / 信息流",
+        "platform2": "平台 2：话题 / 社区",
+        "recencyWeight": "时效权重",
+        "popularityWeight": "热度权重",
+        "relevanceWeight": "相关性权重",
+        "viralThreshold": "病毒阈值",
+        "echoChamberStrength": "回音室强度",
+        "activeHours": "活跃时段",
+        "postsPerHour": "每小时发帖",
+        "commentsPerHour": "每小时评论",
+        "responseDelay": "响应延迟",
+        "activityLevel": "活跃度",
+        "sentimentBias": "情感偏向",
+        "influence": "影响力",
+        "recommendationConfig": "推荐算法配置",
+        "llmReasoning": "LLM配置推理",
+        "orchestrating": "编排中"
+      },
+      "orchestration": {
+        "title": "初始激活编排",
+        "description": "基于叙事方向，自动生成初始激活事件与热点话题，引导模拟世界的初始状态",
+        "narrativeDirection": "叙事引导方向",
+        "hotTopics": "初始热点话题",
+        "initialPosts": "初始激活序列"
+      },
+      "ready": {
+        "title": "准备完成",
+        "description": "模拟环境已准备完成，可以开始运行模拟",
+        "customRounds": "自定义",
+        "autoRounds": "自动轮次",
+        "roundsConfig": "模拟轮数设定",
+        "estimatedTime": "若Agent规模为100：预计耗时约 {minutes} 分钟",
+        "recommendation": "若首次运行，强烈建议切换至'自定义模式'减少模拟轮数，以便快速预览效果",
+        "startSimulation": "开始双世界并行模拟 →",
+        "backToGraph": "← 返回图谱构建",
+        "agentScale": "若Agent规模为100：预计耗时约 {minutes} 分钟"
+      }
+    },
+    "simulation": {
+      "title": "开始模拟",
+      "platform1": "广场 / 信息流",
+      "platform2": "话题 / 社区",
+      "round": "轮次",
+      "elapsedTime": "已用时间",
+      "acts": "行为",
+      "availableActions": "可用动作",
+      "generateReport": "开始生成结果报告",
+      "starting": "启动中...",
+      "totalEvents": "总事件数",
+      "waiting": "等待Agent行为中...",
+      "monitor": "模拟监控",
+      "actions": {
+        "post": "发帖",
+        "comment": "评论",
+        "like": "点赞",
+        "dislike": "点踩",
+        "repost": "转发",
+        "quote": "引用",
+        "follow": "关注",
+        "search": "搜索",
+        "trend": "趋势",
+        "mute": "屏蔽",
+        "refresh": "刷新",
+        "idle": "空闲",
+        "repostedFrom": "转帖自 @",
+        "likedPost": "点赞了 @",
+        "postOf": " 的帖子",
+        "replyTo": "回复帖子 #",
+        "searchQuery": "搜索查询：",
+        "followed": "关注了 @",
+        "actionSkipped": "跳过行为"
+      }
+    },
+    "report": {
+      "title": "报告生成",
+      "tag": "预测报告",
+      "waiting": "等待 Report Agent 生成中...",
+      "sections": "章节",
+      "elapsed": "已用时间",
+      "toolsLabel": "工具",
+      "generating": "正在生成",
+      "enterInteraction": "进入深度互动",
+      "scenario": "预测场景",
+      "consoleOutput": "控制台输出",
+      "simulation": "模拟",
+      "requirement": "需求",
+      "iteration": "迭代",
+      "contentGenerated": "内容已生成",
+      "complete": "报告生成完成",
+      "waitingActivity": "等待Agent行为中...",
+      "tabs": {
+        "currentMemory": "当前关键记忆",
+        "coreEntities": "核心实体",
+        "relationChain": "关系链",
+        "subQuestions": "子问题"
+      },
+      "panels": {
+        "latestFacts": "时序记忆中所关联的最新关键事实",
+        "collapse": "收起",
+        "expandAll": "展开全部",
+        "items": "条",
+        "noCurrentMemory": "暂无当前关键记忆",
+        "noCoreEntities": "暂无核心实体",
+        "noRelationChain": "暂无关系链"
+      },
+      "panorama": {
+        "tabs": {
+          "activeMemory": "当前有效记忆",
+          "historyMemory": "历史记忆",
+          "involvedEntities": "涉及实体"
+        },
+        "panels": {
+          "currentActiveFacts": "当前激活的有效事实",
+          "noActiveFacts": "暂无有效事实",
+          "noHistory": "暂无历史记忆",
+          "noEntities": "暂无涉及实体"
+        }
+      },
+      "worlds": {
+        "world1": "世界1",
+        "world2": "世界2",
+        "selectionReason": "选择理由"
+      },
+      "quickSearch": {
+        "searchLabel": "搜索:",
+        "fact": "事实",
+        "relation": "关系",
+        "node": "节点",
+        "results": "搜索结果",
+        "noResults": "未找到相关结果",
+        "relatedRelations": "相关关系",
+        "relatedNodes": "相关节点"
+      },
+      "tools": {
+        "insightForge": "InsightForge 深度归因",
+        "insightForgeDesc": "对齐现实世界种子数据与模拟环境状态，结合Global/Local Memory机制，提供跨时空的深度归因分析",
+        "panoramaSearch": "PanoramaSearch 全景追踪",
+        "panoramaSearchDesc": "基于图结构的广度遍历算法，重构事件传播路径，捕获全量信息流动的拓扑结构",
+        "quickSearch": "QuickSearch 快速检索",
+        "quickSearchDesc": "基于 GraphRAG 的即时查询接口，优化索引效率，用于快速提取具体的节点属性与离散事实",
+        "agentSurvey": "AgentSurvey 意见征询",
+        "agentSurveyDesc": "结构化问卷工具，自主确定调研对象并向模拟环境中的多个Agent并行发送问卷收集"
+      }
+    },
+    "interaction": {
+      "title": "深度互动",
+      "chatWithReportAgent": "与Report Agent对话",
+      "chatWithAgent": "与世界中任意个体对话",
+      "sendSurvey": "发送问卷调查到世界中",
+      "agentsAvailable": "个agents可用",
+      "selectAgent": "选择对话对象",
+      "unknownProfession": "未知职业",
+      "noBio": "暂无简介",
+      "interestedTopics": "现实种子关联话题",
+      "interactiveTools": "交互工具",
+      "reportAgentChat": "Report Agent - 对话",
+      "reportAgentDesc": "快速聊天版本的报告生成Agent，可调用4个专业工具，拥有完整的MiroFish记忆",
+      "selectSurveyTargets": "选择调查目标",
+      "selectedCount": "已选择 {count} / {total}",
+      "selectAll": "全选",
+      "clearSelection": "清除",
+      "surveyQuestion": "调查问题",
+      "sendSurveyBtn": "发送调查",
+      "surveyResults": "调查结果",
+      "profileBio": "个人简介",
+      "eventApparentAge": "事件中年龄",
+      "eventApparentGender": "事件中性别",
+      "countryRegion": "国家/地区",
+      "eventApparentMbti": "事件中MBTI",
+      "realitySeedTopics": "现实种子关联话题",
+      "detailedProfile": "详细背景资料",
+      "persona": {
+        "eventExperience": "事件全景经历",
+        "eventExperienceDesc": "在此事件中的完整行为轨迹",
+        "behaviorProfile": "行为模式侧写",
+        "behaviorProfileDesc": "经验总结与行事风格偏好",
+        "memoryMark": "独特记忆印记",
+        "memoryMarkDesc": "基于现实种子形成的记忆",
+        "socialNetwork": "社会关系网络",
+        "socialNetworkDesc": "个体链接与交互图谱"
+      }
+    }
+  },
+  "graphPanel": {
+    "title": "图谱关系可视化",
+    "refreshGraph": "刷新图谱",
+    "maximizeRestore": "最大化/还原",
+    "graphRagMemoryUpdating": "GraphRAG长短期记忆实时更新中",
+    "realtimeUpdating": "实时更新中...",
+    "processingHint": "还有少量内容处理中，建议稍后手动刷新图谱",
+    "closeHint": "关闭提示",
+    "nodeDetails": "节点详情",
+    "edgeDetails": "边详情",
+    "relationship": "关系",
+    "name": "名称",
+    "nameLabel": "名称：",
+    "uuidLabel": "UUID：",
+    "createdLabel": "创建时间：",
+    "uuid": "UUID",
+    "created": "创建时间",
+    "properties": "属性",
+    "propertiesLabel": "属性：",
+    "summary": "摘要",
+    "summaryLabel": "摘要：",
+    "labels": "标签",
+    "labelsLabel": "标签：",
+    "selfRelations": "自关联",
+    "items": "项",
+    "fact": "事实",
+    "factLabel": "事实：",
+    "type": "类型",
+    "typeLabel": "类型：",
+    "label": "标签",
+    "labelLabel": "标签：",
+    "episodes": "关联片段",
+    "episodesLabel": "关联片段：",
+    "validFrom": "生效时间",
+    "validFromLabel": "生效时间：",
+    "invalidAt": "失效时间",
+    "invalidAtLabel": "失效时间：",
+    "expiredAt": "过期时间",
+    "expiredAtLabel": "过期时间：",
+    "createdTime": "创建时间",
+    "createdTimeLabel": "创建时间：",
+    "loadingGraphData": "图谱数据加载中...",
+    "waitingOntology": "等待本体生成...",
+    "entityTypes": "实体类型",
+    "showEdgeLabels": "显示边标签"
+  },
+  "history": {
+    "title": "推演记录",
+    "noFiles": "暂无文件",
+    "files": "个文件",
+    "simulationDetails": "模拟详情",
+    "associatedFiles": "关联文件",
+    "playback": "推演回放",
+    "steps": {
+      "graphBuild": "图谱构建",
+      "envSetup": "环境搭建",
+      "report": "分析报告"
+    },
+    "playbackHint": "Step3「开始模拟」与 Step5「深度互动」需在运行中启动，不支持历史回放",
+    "notStarted": "未开始",
+    "rounds": "轮",
+    "unknown": "未知",
+    "simulationRequirement": "模拟需求",
+    "unnamedSimulation": "未命名模拟",
+    "unknownFile": "未知文件"
+  },
+  "viewSwitcher": {
+    "graph": "图谱",
+    "split": "双栏",
+    "workbench": "工作台"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "back": "返回",
+    "next": "下一步",
+    "done": "完成",
+    "close": "关闭",
+    "open": "打开",
+    "refresh": "刷新",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "all": "全部",
+    "none": "无",
+    "or": "或",
+    "and": "和",
+    "more": "更多",
+    "less": "更少",
+    "type": "类型",
+    "unknown": "未知"
+  }
+}
