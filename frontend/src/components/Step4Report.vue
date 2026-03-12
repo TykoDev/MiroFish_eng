@@ -10,6 +10,22 @@
             <div class="report-meta">
               <span class="report-tag">Prediction Report</span>
               <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
+              <button v-if="isComplete" class="export-pdf-btn no-print" @click="printReport">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Export PDF</span>
+              </button>
+              <button v-if="isComplete" class="export-md-btn no-print" @click="exportMarkdown">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Export MD</span>
+              </button>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
             <p class="sub-title">{{ reportOutline.summary }}</p>
@@ -392,7 +408,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAgentLog, getConsoleLog } from '../api/report'
+import { getAgentLog, getConsoleLog, downloadReport } from '../api/report'
 
 const router = useRouter()
 
@@ -408,6 +424,16 @@ const emit = defineEmits(['add-log', 'update-status'])
 const goToInteraction = () => {
   if (props.reportId) {
     router.push({ name: 'Interaction', params: { reportId: props.reportId } })
+  }
+}
+
+const printReport = () => {
+  window.print()
+}
+
+const exportMarkdown = () => {
+  if (props.reportId) {
+    downloadReport(props.reportId)
   }
 }
 
@@ -5147,4 +5173,122 @@ watch(() => props.reportId, (newId) => {
 .log-msg.error { color: #EF5350; }
 .log-msg.warning { color: #FFA726; }
 .log-msg.success { color: #66BB6A; }
+
+/* Export PDF Button Styles */
+.export-pdf-btn, .export-md-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-pdf-btn {
+  margin-left: auto;
+}
+
+.export-md-btn {
+  margin-left: 8px;
+}
+
+.export-pdf-btn:hover, .export-md-btn:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.export-pdf-btn svg {
+  color: #6B7280;
+}
+</style>
+
+<style>
+/* GLOBAL PRINT STYLES - NOT SCOPED */
+@media print {
+  /* 1. Hide everything by default, then show only what we need */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* Hide parent view chrome */
+  .app-header, 
+  .panel-wrapper.left,
+  .panel-header,
+  .right-panel,
+  .console-logs,
+  .no-print,
+  .next-step-btn,
+  .workflow-metrics,
+  .workflow-overview,
+  .waiting-placeholder,
+  .collapse-icon {
+    display: none !important;
+  }
+
+  /* 2. Force the report containers to start at the top */
+  #app, 
+  .main-view, 
+  .content-area, 
+  .panel-wrapper.right,
+  .report-panel,
+  .main-split-layout,
+  .left-panel.report-style,
+  .report-content-wrapper {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    transform: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 3. Formatting tweaks */
+  .report-content-wrapper {
+    padding: 0 !important; /* Margins are handled by @page */
+  }
+
+  .report-header-block {
+    margin-bottom: 20pt !important;
+  }
+
+  .main-title {
+    font-size: 28pt !important;
+    margin-top: 0 !important;
+    color: #000 !important;
+  }
+
+  .report-section-item {
+    page-break-inside: auto !important;
+    margin-bottom: 30pt !important;
+  }
+
+  .generated-content {
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+    color: #000 !important;
+  }
+
+  /* 4. A4 Setup */
+  @page {
+    size: A4;
+    margin: 2cm;
+  }
+}
 </style>

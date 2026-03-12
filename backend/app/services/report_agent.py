@@ -2275,8 +2275,20 @@ class ReportManager:
         """
         folder = cls._get_report_folder(report_id)
         
-        # 构建报告头部
+        # 获取报告元信息
+        meta_path = cls._get_report_path(report_id)
+        meta = {}
+        if os.path.exists(meta_path):
+            with open(meta_path, 'r', encoding='utf-8') as f:
+                meta = json.load(f)
+        
+        # 构建报告头部（PDF风格）
         md_content = f"# {outline.title}\n\n"
+        md_content += f"**ID:** `{report_id}`  \n"
+        md_content += f"**模拟场景:** {meta.get('simulation_requirement', 'N/A')}  \n"
+        md_content += f"**生成时间:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  \n\n"
+        
+        md_content += f"## 报告摘要\n\n"
         md_content += f"> {outline.summary}\n\n"
         md_content += f"---\n\n"
         
@@ -2284,6 +2296,7 @@ class ReportManager:
         sections = cls.get_generated_sections(report_id)
         for section_info in sections:
             md_content += section_info["content"]
+            md_content += "\n\n---\n\n"
         
         # 后处理：清理整个报告的标题问题
         md_content = cls._post_process_report(md_content, outline)

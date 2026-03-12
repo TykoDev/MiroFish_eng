@@ -49,3 +49,11 @@ export const getReport = (reportId) => {
 export const chatWithReport = (data) => {
   return requestWithRetry(() => service.post('/api/report/chat', data), 3, 1000)
 }
+/**
+ * 下载报告 (Markdown)
+ * @param {string} reportId
+ */
+export const downloadReport = (reportId) => {
+  const url = `${service.defaults.baseURL}/api/report/${reportId}/download`
+  window.open(url, '_blank')
+}
