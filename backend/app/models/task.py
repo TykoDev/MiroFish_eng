@@ -1,14 +1,13 @@
-"""
-任务状态管理
-用于跟踪长时间运行的任务（如图谱构建）
-"""
-
+import os
+import json
 import uuid
 import threading
 from datetime import datetime
 from enum import Enum
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
+
+from ..config import Config
 
 
 class TaskStatus(str, Enum):
@@ -54,7 +53,7 @@ class Task:
 class TaskManager:
     """
     任务管理器
-    线程安全的任务状态管理
+    线程安全的任务状态管理，支持文件持久化
     """
     
     _instance = None
@@ -68,8 +67,67 @@ class TaskManager:
                     cls._instance = super().__new__(cls)
                     cls._instance._tasks: Dict[str, Task] = {}
                     cls._instance._task_lock = threading.Lock()
+                    cls._instance._persistence_file = os.path.join(Config.UPLOAD_FOLDER, 'tasks.json')
+                    cls._instance._load_from_disk()
         return cls._instance
     
+    def _save_to_disk(self):
+        """保存任务到磁盘 (原子写入)"""
+        try:
+            with self._task_lock:
+                data = {tid: task.to_dict() for tid, task in self._tasks.items()}
+            
+            # 确保目录存在
+            os.makedirs(os.path.dirname(self._persistence_file), exist_ok=True)
+            
+            # 使用临时文件进行原子写入，防止进程崩溃导致文件损坏
+            temp_file = self._persistence_file + '.tmp'
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            
+            # 原子替换
+            os.replace(temp_file, self._persistence_file)
+            
+        except Exception as e:
+            # 延迟导入以避免循环依赖
+            from ..utils.logger import get_logger
+            logger = get_logger('mirofish.task')
+            logger.error(f"保存任务持久化文件失败: {str(e)}")
+
+    def _load_from_disk(self):
+        """从磁盘加载任务"""
+        if not os.path.exists(self._persistence_file):
+            return
+            
+        try:
+            with open(self._persistence_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            with self._task_lock:
+                for tid, t_dict in data.items():
+                    try:
+                        self._tasks[tid] = Task(
+                            task_id=t_dict['task_id'],
+                            task_type=t_dict['task_type'],
+                            status=TaskStatus(t_dict['status']),
+                            created_at=datetime.fromisoformat(t_dict['created_at']),
+                            updated_at=datetime.fromisoformat(t_dict['updated_at']),
+                            progress=t_dict.get('progress', 0),
+                            message=t_dict.get('message', ''),
+                            result=t_dict.get('result'),
+                            error=t_dict.get('error'),
+                            metadata=t_dict.get('metadata', {}),
+                            progress_detail=t_dict.get('progress_detail', {})
+                        )
+                    except Exception as te:
+                        # 记录单条记录加载失败
+                        import traceback
+                        print(f"加载任务记录 {tid} 失败: {str(te)}")
+        except Exception as e:
+            from ..utils.logger import get_logger
+            logger = get_logger('mirofish.task')
+            logger.error(f"加载任务持久化文件失败: {str(e)}")
+
     def create_task(self, task_type: str, metadata: Optional[Dict] = None) -> str:
         """
         创建新任务
@@ -96,6 +154,7 @@ class TaskManager:
         with self._task_lock:
             self._tasks[task_id] = task
         
+        self._save_to_disk()
         return task_id
     
     def get_task(self, task_id: str) -> Optional[Task]:
@@ -141,6 +200,8 @@ class TaskManager:
                     task.error = error
                 if progress_detail is not None:
                     task.progress_detail = progress_detail
+        
+        self._save_to_disk()
     
     def complete_task(self, task_id: str, result: Dict):
         """标记任务完成"""
@@ -181,4 +242,7 @@ class TaskManager:
             ]
             for tid in old_ids:
                 del self._tasks[tid]
+        
+        if old_ids:
+            self._save_to_disk()
 
