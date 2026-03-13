@@ -6,25 +6,25 @@
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">01</span>
-            <span class="step-title">XXXX</span>
+<span class="step-title">Body generation</span>
           </div>
           <div class="step-status">
-            <span v-if="currentPhase > 0" class="badge success">XXX</span>
-            <span v-else-if="currentPhase === 0" class="badge processing">XXX</span>
-            <span v-else class="badge pending">XX</span>
+<span v-if="currentPhase > 0" class="badge success">Completed</span>
+<span v-else-if="currentPhase === 0" class="badge processing">Generating</span>
+<span v-else class="badge pending">Waiting</span>
           </div>
         </div>
         
         <div class="card-content">
           <p class="api-note">POST /api/graph/ontology/generate</p>
           <p class="description">
-            LLMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+LLM analyzes document content and simulation requirements, extracts reality seeds, and automatically generates appropriate ontology structures.
           </p>
 
           <!-- Loading / Progress -->
           <div v-if="currentPhase === 0 && ontologyProgress" class="progress-section">
             <div class="spinner-sm"></div>
-            <span>{{ ontologyProgress.message || 'XXXXXX...' }}</span>
+<span>{{ ontologyProgress.message || 'Analyzing document...' }}</span>
           </div>
 
           <!-- Detail Overlay -->
@@ -34,7 +34,7 @@
                   <span class="detail-type-badge">{{ selectedOntologyItem.itemType === 'entity' ? 'ENTITY' : 'RELATION' }}</span>
                   <span class="detail-name">{{ selectedOntologyItem.name }}</span>
                </div>
-               <button class="close-btn" @click="selectedOntologyItem = null">X</button>
+               <button class="close-btn" @click="selectedOntologyItem = null">×</button>
             </div>
             <div class="detail-body">
                <div class="detail-desc">{{ selectedOntologyItem.description }}</div>
@@ -65,7 +65,7 @@
                   <div class="conn-list">
                      <div v-for="(conn, idx) in selectedOntologyItem.source_targets" :key="idx" class="conn-item">
                         <span class="conn-node">{{ conn.source }}</span>
-                        <span class="conn-arrow">X</span>
+                        <span class="conn-arrow">→</span>
                         <span class="conn-node">{{ conn.target }}</span>
                      </div>
                   </div>
@@ -110,34 +110,34 @@
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">02</span>
-            <span class="step-title">GraphRAGXX</span>
+<span class="step-title">GraphRAG construction</span>
           </div>
           <div class="step-status">
-            <span v-if="currentPhase > 1" class="badge success">XXX</span>
+<span v-if="currentPhase > 1" class="badge success">Completed</span>
             <span v-else-if="currentPhase === 1" class="badge processing">{{ buildProgress?.progress || 0 }}%</span>
-            <span v-else class="badge pending">XX</span>
+<span v-else class="badge pending">Waiting</span>
           </div>
         </div>
 
         <div class="card-content">
           <p class="api-note">POST /api/graph/build</p>
           <p class="description">
-            XXXXXXXXXXXXXXXXXX Zep XXXXXXXXXXXXXXXXXXXXXXXXXXX
+Based on the generated ontology, the document is automatically divided into blocks and then Zep is called to build a knowledge graph, extract entities and relationships, and form sequential memory and community summaries.
           </p>
           
           <!-- Stats Cards -->
           <div class="stats-grid">
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.nodes }}</span>
-              <span class="stat-label">XXXX</span>
+<span class="stat-label">Entity node</span>
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.edges }}</span>
-              <span class="stat-label">XXX</span>
+<span class="stat-label">Relationship edge</span>
             </div>
             <div class="stat-card">
               <span class="stat-value">{{ graphStats.types }}</span>
-              <span class="stat-label">SCHEMAXX</span>
+<span class="stat-label">SCHEMA type</span>
             </div>
           </div>
         </div>
@@ -148,23 +148,23 @@
         <div class="card-header">
           <div class="step-info">
             <span class="step-num">03</span>
-            <span class="step-title">XXXX</span>
+<span class="step-title">Building completed</span>
           </div>
           <div class="step-status">
-            <span v-if="currentPhase >= 2" class="badge accent">XXX</span>
+<span v-if="currentPhase >= 2" class="badge accent">In Progress</span>
           </div>
         </div>
         
         <div class="card-content">
           <p class="api-note">POST /api/simulation/create</p>
-          <p class="description">XXXXXXXXXXXXXXXXXXXXXX</p>
+<p class="description">The graph construction has been completed, please proceed to the next step to build the simulation environment</p>
           <button 
             class="action-btn" 
             :disabled="currentPhase < 2 || creatingSimulation"
             @click="handleEnterEnvSetup"
           >
             <span v-if="creatingSimulation" class="spinner-sm"></span>
-            {{ creatingSimulation ? 'XXX...' : 'XXXXXX X' }}
+{{ creatingSimulation ? 'Creating...' : 'Enter environment construction ➝' }}
           </button>
         </div>
       </div>
@@ -208,10 +208,10 @@ const selectedOntologyItem = ref(null)
 const logContent = ref(null)
 const creatingSimulation = ref(false)
 
-// EN_Comment
+// Enter environment construction - create simulation and jump
 const handleEnterEnvSetup = async () => {
   if (!props.projectData?.project_id || !props.projectData?.graph_id) {
-    console.error('XXXXXXXXX')
+console.error('Missing project or map information')
     return
   }
   
@@ -226,18 +226,18 @@ const handleEnterEnvSetup = async () => {
     })
     
     if (res.success && res.data?.simulation_id) {
-      // EN_Comment
+//Jump to simulation page
       router.push({
         name: 'Simulation',
         params: { simulationId: res.data.simulation_id }
       })
     } else {
-      console.error('XXXXXX:', res.error)
-      alert('XXXXXX: ' + (res.error || 'Unknown error'))
+console.error('Failed to create simulation:', res.error)
+alert('Failed to create simulation: ' + (res.error || 'Unknown error'))
     }
   } catch (err) {
-    console.error('XXXXXX:', err)
-    alert('XXXXXX: ' + err.message)
+console.error('Create simulated exception:', err)
+alert('Create simulated exception: ' + err.message)
   } finally {
     creatingSimulation.value = false
   }

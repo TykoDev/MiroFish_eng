@@ -3,11 +3,11 @@
 </template>
 
 <script setup>
-// EN_Comment
+// Use Vue Router to manage pages
 </script>
 
 <style>
-/* XXXXXX */
+/* Global style reset */
 * {
   margin: 0;
   padding: 0;
@@ -22,7 +22,7 @@
   background-color: #ffffff;
 }
 
-/* XXXXX */
+/* Scroll bar style */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -40,7 +40,7 @@
   background: #333333;
 }
 
-/* XXXXXX */
+/* Global button style */
 button {
   font-family: inherit;
 }

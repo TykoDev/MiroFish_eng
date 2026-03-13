@@ -1,7 +1,7 @@
 import service, { requestWithRetry } from './index'
 
 /**
- * XXXXXX
+* Start report generation
  * @param {Object} data - { simulation_id, force_regenerate? }
  */
 export const generateReport = (data) => {
@@ -9,7 +9,7 @@ export const generateReport = (data) => {
 }
 
 /**
- * XXXXXXXX
+* Get report generation status
  * @param {string} reportId
  */
 export const getReportStatus = (reportId) => {
@@ -17,25 +17,25 @@ export const getReportStatus = (reportId) => {
 }
 
 /**
- * XX Agent XXXXXX
+* Get Agent log (incremental)
  * @param {string} reportId
- * @param {number} fromLine - XXXXXXXX
+* @param {number} fromLine - From which line to get
  */
 export const getAgentLog = (reportId, fromLine = 0) => {
   return service.get(`/api/report/${reportId}/agent-log`, { params: { from_line: fromLine } })
 }
 
 /**
- * XXXXXXXXXXX
+* Get console log (incremental)
  * @param {string} reportId
- * @param {number} fromLine - XXXXXXXX
+* @param {number} fromLine - From which line to get
  */
 export const getConsoleLog = (reportId, fromLine = 0) => {
   return service.get(`/api/report/${reportId}/console-log`, { params: { from_line: fromLine } })
 }
 
 /**
- * XXXXXX
+* Get report details
  * @param {string} reportId
  */
 export const getReport = (reportId) => {
@@ -43,7 +43,7 @@ export const getReport = (reportId) => {
 }
 
 /**
- * X Report Agent XX
+* Talk to Report Agent
  * @param {Object} data - { simulation_id, message, chat_history? }
  */
 export const chatWithReport = (data) => {

@@ -144,7 +144,7 @@
   "\"\"\"获取从开始到现在的耗时（秒）\"\"\"": "\"\"\"Get the elapsed time from start to now (seconds)\"\"\"",
   "\"报告生成任务开始\"": "\"Report generation task starts\"",
   "\"请先安装: pip install oasis-ai camel-ai\"": "\"Please install first: pip install oasis-ai camel-ai\"",
-  "# Strategy 2 (Supplementary): Correctly matched Chinese quotation marks "" within long text": "# Strategy 2 (Supplementary): Correctly matched Chinese quotation marks \"\" within long text",
+  "# Strategy 2 (Supplementary): Correctly matched Chinese quotation marks \"\" within long text": "# Strategy 2 (Supplementary): Correctly matched Chinese quotation marks \"\" within long text",
   "#Default simulation is 72 hours (3 days)": "#Default simulation is 72 hours (3 days)",
   "\"正在清理所有模拟进程...\"": "\"Cleaning up all simulation processes...\"",
   "\"\"\"\n    带指数退避的重试装饰器\n    \n    Args:\n        max_retries: 最大重试次数\n        initial_delay: 初始延迟（秒）\n        max_delay: 最大延迟（秒）\n        backoff_factor: 退避因子\n        jitter: 是否添加随机抖动\n        exceptions: 需要重试的异常类型\n        on_retry: 重试时的回调函数 (exception, retry_count)\n    \n    Usage:\n        @retry_with_backoff(max_retries=3)\n        def call_llm_api():\n            ...\n    \"\"\"": "\"\"\"\nRetry decorator with exponential backoff\n\nArgs:\nmax_retries: Maximum number of retries\ninitial_delay: initial delay (seconds)\nmax_delay: maximum delay (seconds)\nbackoff_factor: backoff factor\njitter: whether to add random jitter\nexceptions: Exception types that need to be retried\non_retry: callback function when retrying (exception, retry_count)\n\nUsage:\n@retry_with_backoff(max_retries=3)\ndef call_llm_api():\n...\n\"\"\"",

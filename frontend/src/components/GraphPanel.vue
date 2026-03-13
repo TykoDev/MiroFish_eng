@@ -2,24 +2,24 @@
   <div class="graph-panel">
     <div class="panel-header">
       <span class="panel-title">Graph Relationship Visualization</span>
-      <!-- EN_Comment -->
+<!-- Top Toolbar (Internal Top Right) -->
       <div class="header-tools">
-        <button class="tool-btn" @click="$emit('refresh')" :disabled="loading" title="XXXX">
-          <span class="icon-refresh" :class="{ 'spinning': loading }">X</span>
+<button class="tool-btn" @click="$emit('refresh')" :disabled="loading" title="Refresh Map">
+          <span class="icon-refresh" :class="{ 'spinning': loading }">↻</span>
           <span class="btn-text">Refresh</span>
         </button>
-        <button class="tool-btn" @click="$emit('toggle-maximize')" title="XXX/XX">
-          <span class="icon-maximize">X</span>
+<button class="tool-btn" @click="$emit('toggle-maximize')" title="Maximize/Restore">
+          <span class="icon-maximize">⛶</span>
         </button>
       </div>
     </div>
     
     <div class="graph-container" ref="graphContainer">
-      <!-- EN_Comment -->
+<!-- Map visualization -->
       <div v-if="graphData" class="graph-view">
         <svg ref="graphSvg" class="graph-svg"></svg>
         
-        <!-- EN_Comment -->
+<!-- Prompt under construction/simulation -->
         <div v-if="currentPhase === 1 || isSimulating" class="graph-building-hint">
           <div class="memory-icon-wrapper">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="memory-icon">
@@ -27,10 +27,10 @@
               <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-4.04z" />
             </svg>
           </div>
-          {{ isSimulating ? 'GraphRAGXXXXXXXXXX' : 'XXXXX...' }}
+{{ isSimulating ? 'GraphRAG long and short-term memory is updating in real time' : 'Updating in real time...' }}
         </div>
         
-        <!-- EN_Comment -->
+<!-- Prompt after the simulation ends -->
         <div v-if="showSimulationFinishedHint" class="graph-building-hint finished-hint">
           <div class="hint-icon-wrapper">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hint-icon">
@@ -39,8 +39,8 @@
               <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
           </div>
-          <span class="hint-text">XXXXXXXXXXXXXXXXXXXX</span>
-          <button class="hint-close-btn" @click="dismissFinishedHint" title="XXXX">
+<span class="hint-text">There is still a small amount of content being processed, it is recommended to refresh the map manually later</span>
+<button class="hint-close-btn" @click="dismissFinishedHint" title="Close prompt">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -48,17 +48,17 @@
           </button>
         </div>
         
-        <!-- EN_Comment -->
+<!-- Node/edge details panel -->
         <div v-if="selectedItem" class="detail-panel">
           <div class="detail-panel-header">
             <span class="detail-title">{{ selectedItem.type === 'node' ? 'Node Details' : 'Relationship' }}</span>
             <span v-if="selectedItem.type === 'node'" class="detail-type-badge" :style="{ background: selectedItem.color, color: '#fff' }">
               {{ selectedItem.entityType }}
             </span>
-            <button class="detail-close" @click="closeDetailPanel">X</button>
+            <button class="detail-close" @click="closeDetailPanel">×</button>
           </div>
           
-          <!-- EN_Comment -->
+<!-- Node details -->
           <div v-if="selectedItem.type === 'node'" class="detail-content">
             <div class="detail-row">
               <span class="detail-label">Name:</span>
@@ -101,9 +101,9 @@
             </div>
           </div>
           
-          <!-- EN_Comment -->
+<!-- Side details -->
           <div v-else class="detail-content">
-            <!-- EN_Comment -->
+<!-- Self-loop group details -->
             <template v-if="selectedItem.data.isSelfLoopGroup">
               <div class="edge-relation-header self-loop-header">
                 {{ selectedItem.data.source_name }} - Self Relations
@@ -123,7 +123,7 @@
                   >
                     <span class="self-loop-index">#{{ idx + 1 }}</span>
                     <span class="self-loop-name">{{ loop.name || loop.fact_type || 'RELATED' }}</span>
-                    <span class="self-loop-toggle">{{ expandedSelfLoops.has(loop.uuid || idx) ? 'X' : '+' }}</span>
+                    <span class="self-loop-toggle">{{ expandedSelfLoops.has(loop.uuid || idx) ? '−' : '+' }}</span>
                   </div>
                   
                   <div class="self-loop-item-content" v-show="expandedSelfLoops.has(loop.uuid || idx)">
@@ -154,10 +154,10 @@
               </div>
             </template>
             
-            <!-- EN_Comment -->
+<!-- Common side details -->
             <template v-else>
               <div class="edge-relation-header">
-                {{ selectedItem.data.source_name }} X {{ selectedItem.data.name || 'RELATED_TO' }} X {{ selectedItem.data.target_name }}
+                {{ selectedItem.data.source_name }} → {{ selectedItem.data.name || 'RELATED_TO' }} → {{ selectedItem.data.target_name }}
               </div>
               
               <div class="detail-row">
@@ -200,20 +200,20 @@
         </div>
       </div>
       
-      <!-- EN_Comment -->
+<!-- Loading status -->
       <div v-else-if="loading" class="graph-state">
         <div class="loading-spinner"></div>
-        <p>XXXXXXX...</p>
+<p>Chart data loading...</p>
       </div>
       
-      <!-- EN_Comment -->
+<!-- Waiting/empty state -->
       <div v-else class="graph-state">
-        <div class="empty-icon">X</div>
-        <p class="empty-text">XXXXXX...</p>
+        <div class="empty-icon">❖</div>
+<p class="empty-text">Waiting for the ontology to be generated...</p>
       </div>
     </div>
 
-    <!-- EN_Comment -->
+<!-- Bottom Left (Bottom Left) -->
     <div v-if="graphData && entityTypes.length" class="graph-legend">
       <span class="legend-title">Entity Types</span>
       <div class="legend-items">
@@ -224,7 +224,7 @@
       </div>
     </div>
     
-    <!-- EN_Comment -->
+<!-- Show edge label switch -->
     <div v-if="graphData" class="edge-labels-toggle">
       <label class="toggle-switch">
         <input type="checkbox" v-model="showEdgeLabels" />
@@ -251,26 +251,26 @@ const emit = defineEmits(['refresh', 'toggle-maximize'])
 const graphContainer = ref(null)
 const graphSvg = ref(null)
 const selectedItem = ref(null)
-const showEdgeLabels = ref(true) // EN_Comment
-const expandedSelfLoops = ref(new Set()) // EN_Comment
-const showSimulationFinishedHint = ref(false) // EN_Comment
-const wasSimulating = ref(false) // EN_Comment
+const showEdgeLabels = ref(true) // Display edge labels by default
+const expandedSelfLoops = ref(new Set()) // expanded self-loop items
+const showSimulationFinishedHint = ref(false) //Hint after simulation ends
+const wasSimulating = ref(false) // Track whether it was in simulation before
 
-// EN_Comment
+// Close the simulation end prompt
 const dismissFinishedHint = () => {
   showSimulationFinishedHint.value = false
 }
 
-// EN_Comment
+// Monitor isSimulating changes and detect the end of simulation
 watch(() => props.isSimulating, (newValue, oldValue) => {
   if (wasSimulating.value && !newValue) {
-    // EN_Comment
+// Change from simulation to non-simulation state and display end prompt
     showSimulationFinishedHint.value = true
   }
   wasSimulating.value = newValue
 }, { immediate: true })
 
-// EN_Comment
+// Switch the expanded/collapsed state of the self-loop item
 const toggleSelfLoop = (id) => {
   const newSet = new Set(expandedSelfLoops.value)
   if (newSet.has(id)) {
@@ -281,11 +281,11 @@ const toggleSelfLoop = (id) => {
   expandedSelfLoops.value = newSet
 }
 
-// EN_Comment
+// Calculate entity type for legend
 const entityTypes = computed(() => {
   if (!props.graphData?.nodes) return []
   const typeMap = {}
-  // EN_Comment
+// Beautiful color palette
   const colors = ['#FF6B35', '#004E89', '#7B2D8E', '#1A936F', '#C5283D', '#E9724C', '#3498db', '#9b59b6', '#27ae60', '#f39c12']
   
   props.graphData.nodes.forEach(node => {
@@ -298,7 +298,7 @@ const entityTypes = computed(() => {
   return Object.values(typeMap)
 })
 
-// EN_Comment
+//Format time
 const formatDateTime = (dateStr) => {
   if (!dateStr) return ''
   try {
@@ -318,7 +318,7 @@ const formatDateTime = (dateStr) => {
 
 const closeDetailPanel = () => {
   selectedItem.value = null
-  expandedSelfLoops.value = new Set() // EN_Comment
+expandedSelfLoops.value = new Set() //Reset expanded state
 }
 
 let currentSimulation = null
@@ -328,7 +328,7 @@ let linkLabelBgRef = null
 const renderGraph = () => {
   if (!graphSvg.value || !props.graphData) return
   
-  // EN_Comment
+// Stop previous simulation
   if (currentSimulation) {
     currentSimulation.stop()
   }
@@ -362,16 +362,16 @@ const renderGraph = () => {
   
   const nodeIds = new Set(nodes.map(n => n.id))
   
-  // EN_Comment
+// Process edge data and calculate the number and index of edges between the same pair of nodes
   const edgePairCount = {}
-  const selfLoopEdges = {} // EN_Comment
+const selfLoopEdges = {} // Self-loop edges grouped by nodes
   const tempEdges = edgesData
     .filter(e => nodeIds.has(e.source_node_uuid) && nodeIds.has(e.target_node_uuid))
   
-  // EN_Comment
+// Count the number of edges between each pair of nodes, collected from loop edges
   tempEdges.forEach(e => {
     if (e.source_node_uuid === e.target_node_uuid) {
-      // EN_Comment
+// Self-loop - collected into array
       if (!selfLoopEdges[e.source_node_uuid]) {
         selfLoopEdges[e.source_node_uuid] = []
       }
@@ -386,9 +386,9 @@ const renderGraph = () => {
     }
   })
   
-  // EN_Comment
+//Record which edge of each pair of nodes is currently processed
   const edgePairIndex = {}
-  const processedSelfLoopNodes = new Set() // EN_Comment
+const processedSelfLoopNodes = new Set() // Processed self-loop nodes
   
   const edges = []
   
@@ -396,9 +396,9 @@ const renderGraph = () => {
     const isSelfLoop = e.source_node_uuid === e.target_node_uuid
     
     if (isSelfLoop) {
-      // EN_Comment
+// Self-loop edge - only one merged self-loop is added to each node
       if (processedSelfLoopNodes.has(e.source_node_uuid)) {
-        return // EN_Comment
+return // Processed, skip
       }
       processedSelfLoopNodes.add(e.source_node_uuid)
       
@@ -417,7 +417,7 @@ const renderGraph = () => {
           source_name: nodeName,
           target_name: nodeName,
           selfLoopCount: allSelfLoops.length,
-          selfLoopEdges: allSelfLoops // EN_Comment
+selfLoopEdges: allSelfLoops // Store detailed information of all self-loop edges
         }
       })
       return
@@ -428,19 +428,19 @@ const renderGraph = () => {
     const currentIndex = edgePairIndex[pairKey] || 0
     edgePairIndex[pairKey] = currentIndex + 1
     
-    // EN_Comment
+// Determine whether the direction of the edge is consistent with the standardized direction (source UUID < target UUID)
     const isReversed = e.source_node_uuid > e.target_node_uuid
     
-    // EN_Comment
+// Calculate curvature: when multiple edges are scattered, a single edge is a straight line
     let curvature = 0
     if (totalCount > 1) {
-      // EN_Comment
-      // EN_Comment
+// Distribute curvature evenly to ensure clear distinction
+// The curvature range increases according to the number of edges. The more edges, the greater the curvature range.
       const curvatureRange = Math.min(1.2, 0.6 + totalCount * 0.15)
       curvature = ((currentIndex / (totalCount - 1)) - 0.5) * curvatureRange * 2
       
-      // EN_Comment
-      // EN_Comment
+// If the direction of the edge is opposite to the normalized direction, flip the curvature
+// This ensures that all edges are distributed in the same reference system and will not overlap due to different directions.
       if (isReversed) {
         curvature = -curvature
       }
@@ -468,11 +468,11 @@ const renderGraph = () => {
   entityTypes.value.forEach(t => colorMap[t.name] = t.color)
   const getColor = (type) => colorMap[type] || '#999'
 
-  // EN_Comment
+// Simulation - dynamically adjust node spacing based on number of edges
   const simulation = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(edges).id(d => d.id).distance(d => {
-      // EN_Comment
-      // EN_Comment
+// Dynamically adjust the distance based on the number of edges between the pair of nodes
+//Basic distance 150, increase by 40 for each additional side
       const baseDistance = 150
       const edgeCount = d.pairTotal || 1
       return baseDistance + (edgeCount - 1) * 50
@@ -480,7 +480,7 @@ const renderGraph = () => {
     .force('charge', d3.forceManyBody().strength(-400))
     .force('center', d3.forceCenter(width / 2, height / 2))
     .force('collide', d3.forceCollide(50))
-    // EN_Comment
+// Add gravity to the center to allow independent node groups to gather in the central area
     .force('x', d3.forceX(width / 2).strength(0.04))
     .force('y', d3.forceY(height / 2).strength(0.04))
   
@@ -493,39 +493,39 @@ const renderGraph = () => {
     g.attr('transform', event.transform)
   }))
 
-  // EN_Comment
+// Links - use path to support curves
   const linkGroup = g.append('g').attr('class', 'links')
   
-  // EN_Comment
+// Calculate curve path
   const getLinkPath = (d) => {
     const sx = d.source.x, sy = d.source.y
     const tx = d.target.x, ty = d.target.y
     
-    // EN_Comment
+// Detect self-loop
     if (d.isSelfLoop) {
-      // EN_Comment
+// Self-loop: draw an arc starting from the node and returning
       const loopRadius = 30
-      // EN_Comment
-      const x1 = sx + 8  // EN_Comment
+//Start from the right side of the node and go back in a circle
+const x1 = sx + 8 // starting point offset
       const y1 = sy - 4
-      const x2 = sx + 8  // EN_Comment
+const x2 = sx + 8 // end point offset
       const y2 = sy + 4
-      // EN_Comment
+// Use arc to draw self-loop (sweep-flag=1 clockwise)
       return `M${x1},${y1} A${loopRadius},${loopRadius} 0 1,1 ${x2},${y2}`
     }
     
     if (d.curvature === 0) {
-      // EN_Comment
+// straight line
       return `M${sx},${sy} L${tx},${ty}`
     }
     
-    // EN_Comment
+// Calculate curve control points - dynamically adjust based on edge count and distance
     const dx = tx - sx, dy = ty - sy
     const dist = Math.sqrt(dx * dx + dy * dy)
-    // EN_Comment
-    // EN_Comment
+// The offset perpendicular to the direction of the connection is calculated based on the distance ratio to ensure that the curve is clearly visible
+// The more edges there are, the greater the offset is as a proportion of the distance.
     const pairTotal = d.pairTotal || 1
-    const offsetRatio = 0.25 + pairTotal * 0.05 // EN_Comment
+const offsetRatio = 0.25 + pairTotal * 0.05 //Basic 25%, increase by 5% for each additional edge
     const baseOffset = Math.max(35, dist * offsetRatio)
     const offsetX = -dy / dist * d.curvature * baseOffset
     const offsetY = dx / dist * d.curvature * baseOffset
@@ -535,14 +535,14 @@ const renderGraph = () => {
     return `M${sx},${sy} Q${cx},${cy} ${tx},${ty}`
   }
   
-  // EN_Comment
+// Calculate the midpoint of the curve (used for label positioning)
   const getLinkMidpoint = (d) => {
     const sx = d.source.x, sy = d.source.y
     const tx = d.target.x, ty = d.target.y
     
-    // EN_Comment
+// Detect self-loop
     if (d.isSelfLoop) {
-      // EN_Comment
+//Self-loop label position: right side of node
       return { x: sx + 70, y: sy }
     }
     
@@ -550,7 +550,7 @@ const renderGraph = () => {
       return { x: (sx + tx) / 2, y: (sy + ty) / 2 }
     }
     
-    // EN_Comment
+//The midpoint of the quadratic Bezier curve t=0.5
     const dx = tx - sx, dy = ty - sy
     const dist = Math.sqrt(dx * dx + dy * dy)
     const pairTotal = d.pairTotal || 1
@@ -561,7 +561,7 @@ const renderGraph = () => {
     const cx = (sx + tx) / 2 + offsetX
     const cy = (sy + ty) / 2 + offsetY
     
-    // EN_Comment
+// Quadratic Bezier curve formula B(t) = (1-t)²P0 + 2(1-t)tP1 + t²P2, t=0.5
     const midX = 0.25 * sx + 0.5 * cx + 0.25 * tx
     const midY = 0.25 * sy + 0.5 * cy + 0.25 * ty
     
@@ -577,11 +577,11 @@ const renderGraph = () => {
     .style('cursor', 'pointer')
     .on('click', (event, d) => {
       event.stopPropagation()
-      // EN_Comment
+//Reset the style of the previously selected edge
       linkGroup.selectAll('path').attr('stroke', '#C0C0C0').attr('stroke-width', 1.5)
       linkLabelBg.attr('fill', 'rgba(255,255,255,0.95)')
       linkLabels.attr('fill', '#666')
-      // EN_Comment
+// Highlight the currently selected edge
       d3.select(event.target).attr('stroke', '#3498db').attr('stroke-width', 3)
       
       selectedItem.value = {
@@ -590,7 +590,7 @@ const renderGraph = () => {
       }
     })
 
-  // EN_Comment
+// Link labels background (white background makes text clearer)
   const linkLabelBg = linkGroup.selectAll('rect')
     .data(edges)
     .enter().append('rect')
@@ -605,7 +605,7 @@ const renderGraph = () => {
       linkGroup.selectAll('path').attr('stroke', '#C0C0C0').attr('stroke-width', 1.5)
       linkLabelBg.attr('fill', 'rgba(255,255,255,0.95)')
       linkLabels.attr('fill', '#666')
-      // EN_Comment
+// Highlight the corresponding edge
       link.filter(l => l === d).attr('stroke', '#3498db').attr('stroke-width', 3)
       d3.select(event.target).attr('fill', 'rgba(52, 152, 219, 0.1)')
       
@@ -633,7 +633,7 @@ const renderGraph = () => {
       linkGroup.selectAll('path').attr('stroke', '#C0C0C0').attr('stroke-width', 1.5)
       linkLabelBg.attr('fill', 'rgba(255,255,255,0.95)')
       linkLabels.attr('fill', '#666')
-      // EN_Comment
+// Highlight the corresponding edge
       link.filter(l => l === d).attr('stroke', '#3498db').attr('stroke-width', 3)
       d3.select(event.target).attr('fill', '#3498db')
       
@@ -643,7 +643,7 @@ const renderGraph = () => {
       }
     })
   
-  // EN_Comment
+// Save the reference for external control to display and hide
   linkLabelsRef = linkLabels
   linkLabelBgRef = linkLabelBg
 
@@ -661,7 +661,7 @@ const renderGraph = () => {
     .style('cursor', 'pointer')
     .call(d3.drag()
       .on('start', (event, d) => {
-        // EN_Comment
+//Only record the position, do not restart the simulation (distinguish between click and drag)
         d.fx = d.x
         d.fy = d.y
         d._dragStartX = event.x
@@ -669,13 +669,13 @@ const renderGraph = () => {
         d._isDragging = false
       })
       .on('drag', (event, d) => {
-        // EN_Comment
+//Detect whether dragging actually starts (movement exceeds threshold)
         const dx = event.x - d._dragStartX
         const dy = event.y - d._dragStartY
         const distance = Math.sqrt(dx * dx + dy * dy)
         
         if (!d._isDragging && distance > 3) {
-          // EN_Comment
+//Restart the simulation only after real drag is detected for the first time
           d._isDragging = true
           simulation.alphaTarget(0.3).restart()
         }
@@ -686,7 +686,7 @@ const renderGraph = () => {
         }
       })
       .on('end', (event, d) => {
-        // EN_Comment
+// Only after actual dragging will the simulation gradually stop.
         if (d._isDragging) {
           simulation.alphaTarget(0)
         }
@@ -697,12 +697,12 @@ const renderGraph = () => {
     )
     .on('click', (event, d) => {
       event.stopPropagation()
-      // EN_Comment
+//Reset all node styles
       node.attr('stroke', '#fff').attr('stroke-width', 2.5)
       linkGroup.selectAll('path').attr('stroke', '#C0C0C0').attr('stroke-width', 1.5)
-      // EN_Comment
+// Highlight the selected node
       d3.select(event.target).attr('stroke', '#E91E63').attr('stroke-width', 4)
-      // EN_Comment
+// Highlight the edges connected to this node
       link.filter(l => l.source.id === d.id || l.target.id === d.id)
         .attr('stroke', '#E91E63')
         .attr('stroke-width', 2.5)
@@ -729,7 +729,7 @@ const renderGraph = () => {
   const nodeLabels = nodeGroup.selectAll('text')
     .data(nodes)
     .enter().append('text')
-    .text(d => d.name.length > 8 ? d.name.substring(0, 8) + 'X' : d.name)
+    .text(d => d.name.length > 8 ? d.name.substring(0, 8) + '…' : d.name)
     .attr('font-size', '11px')
     .attr('fill', '#333')
     .attr('font-weight', '500')
@@ -739,19 +739,19 @@ const renderGraph = () => {
     .style('font-family', 'system-ui, sans-serif')
 
   simulation.on('tick', () => {
-    // EN_Comment
+//Update curve path
     link.attr('d', d => getLinkPath(d))
     
-    // EN_Comment
+// Update edge label position (no rotation, horizontal display is clearer)
     linkLabels.each(function(d) {
       const mid = getLinkMidpoint(d)
       d3.select(this)
         .attr('x', mid.x)
         .attr('y', mid.y)
-        .attr('transform', '') // EN_Comment
+.attr('transform', '') // Remove rotation, keep horizontal
     })
     
-    // EN_Comment
+// Update edge label background
     linkLabelBg.each(function(d, i) {
       const mid = getLinkMidpoint(d)
       const textEl = linkLabels.nodes()[i]
@@ -761,7 +761,7 @@ const renderGraph = () => {
         .attr('y', mid.y - bbox.height / 2 - 2)
         .attr('width', bbox.width + 8)
         .attr('height', bbox.height + 4)
-        .attr('transform', '') // EN_Comment
+.attr('transform', '') // Remove rotation
     })
 
     node
@@ -773,7 +773,7 @@ const renderGraph = () => {
       .attr('y', d => d.y)
   })
   
-  // EN_Comment
+// Click on an empty space to close the details panel
   svg.on('click', () => {
     selectedItem.value = null
     node.attr('stroke', '#fff').attr('stroke-width', 2.5)
@@ -787,7 +787,7 @@ watch(() => props.graphData, () => {
   nextTick(renderGraph)
 }, { deep: true })
 
-// EN_Comment
+// Monitor edge label display switch
 watch(showEdgeLabels, (newVal) => {
   if (linkLabelsRef) {
     linkLabelsRef.style('display', newVal ? 'block' : 'none')
@@ -1250,7 +1250,7 @@ input:checked + .slider:before {
   50% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.6)); }
 }
 
-/* XXXXXXXXXX */
+/* Prompt style after simulation ends */
 .graph-building-hint.finished-hint {
   background: rgba(0, 0, 0, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.1);

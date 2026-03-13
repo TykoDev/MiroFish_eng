@@ -1,35 +1,35 @@
 <template>
   <div class="home-container">
-    <!-- EN_Comment -->
+    <!-- Top Navbar -->
     <nav class="navbar">
       <div class="nav-brand">MIROFISH</div>
       <div class="nav-links">
         <a href="https://github.com/666ghj/MiroFish" target="_blank" class="github-link">
-          XXXXXGithubXX <span class="arrow">X</span>
+          Visit our Github <span class="arrow">↗</span>
         </a>
       </div>
     </nav>
 
     <div class="main-content">
-      <!-- EN_Comment -->
+      <!-- Top Half: Hero Area -->
       <section class="hero-section">
         <div class="hero-left">
           <div class="tag-row">
-            <span class="orange-tag">XXXXXXXXXXX</span>
-            <span class="version-text">/ v0.1-XXX</span>
+            <span class="orange-tag">Simple and General Swarm Intelligence Engine</span>
+            <span class="version-text">/ v0.1-Preview Version</span>
           </div>
           
           <h1 class="main-title">
-            XXXXXX<br>
-            <span class="gradient-text">XXXXXX</span>
+            Upload any report<br>
+            <span class="gradient-text">Deduce the future instantly</span>
           </h1>
           
           <div class="hero-desc">
             <p>
-              XXXXXXXXX<span class="highlight-bold">MiroFish</span> XXXXXXXXXXXXXXXXXXXXXXXX<span class="highlight-orange">XXXAgent</span>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX<span class="highlight-code">XXXXXXX</span>
+Even with just a piece of text, <span class="highlight-bold">MiroFish</span> can automatically generate a corresponding parallel world composed of up to <span class="highlight-orange">Million-level Agents</span> based on the real seeds in it. By injecting variables from a God's perspective, look for <span class="highlight-code">"local optimal solutions"</span>
             </p>
             <p class="slogan-text">
-              XXXX Agent XXXXXXXXXXXXXX<span class="blinking-cursor">_</span>
+              Rehearse the future among Agents, and let decisions win after a hundred battles<span class="blinking-cursor">_</span>
             </p>
           </div>
            
@@ -37,95 +37,95 @@
         </div>
         
         <div class="hero-right">
-          <!-- EN_Comment -->
+          <!-- Logo Area -->
           <div class="logo-container">
             <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MiroFish Logo" class="hero-logo" />
           </div>
           
           <button class="scroll-down-btn" @click="scrollToBottom">
-            X
+            ↓
           </button>
         </div>
       </section>
 
-      <!-- EN_Comment -->
+<!-- Lower part: double column layout -->
       <section class="dashboard-section">
-        <!-- EN_Comment -->
+<!-- Left column: status and steps -->
         <div class="left-panel">
           <div class="panel-header">
-            <span class="status-dot">X</span> XXXX
+<span class="status-dot">■</span> System status
           </div>
           
-          <h2 class="section-title">XXXX</h2>
+<h2 class="section-title">Ready</h2>
           <p class="section-desc">
-            XXXXXXXXXXXXXXXXXXXXXXXXXXX
+The prediction engine is on standby and can upload multiple copies of unstructured data to initialize the simulation sequence.
           </p>
           
-          <!-- EN_Comment -->
+<!-- Data indicator card -->
           <div class="metrics-row">
             <div class="metric-card">
-              <div class="metric-value">XXX</div>
-              <div class="metric-label">XXXXXX5$/X</div>
+<div class="metric-value">Low cost</div>
+<div class="metric-label">General simulation averages 5$/time</div>
             </div>
             <div class="metric-card">
-              <div class="metric-value">XXX</div>
-              <div class="metric-label">XXXXXAgentXX</div>
+<div class="metric-value">High availability</div>
+<div class="metric-label">Up to one million levels of Agent simulation</div>
             </div>
           </div>
 
-          <!-- EN_Comment -->
+<!-- Introduction to project simulation steps (new area) -->
           <div class="steps-container">
             <div class="steps-header">
-               <span class="diamond-icon">X</span> XXXXX
+<span class="diamond-icon">◇</span> Workflow sequence
             </div>
             <div class="workflow-list">
               <div class="workflow-item">
                 <span class="step-num">01</span>
                 <div class="step-info">
-                  <div class="step-title">XXXX</div>
-                  <div class="step-desc">XXXXXX & XXXXXXXXX & GraphRAGXX</div>
+<div class="step-title">Graph construction</div>
+<div class="step-desc">Reality seed extraction & individual and group memory injection & GraphRAG construction</div>
                 </div>
               </div>
               <div class="workflow-item">
                 <span class="step-num">02</span>
                 <div class="step-info">
-                  <div class="step-title">XXXX</div>
-                  <div class="step-desc">XXXXXX & XXXX & XXXXAgentXXXXXX</div>
+<div class="step-title">Environment construction</div>
+<div class="step-desc">Entity relationship extraction & character generation & environment configuration Agent injection simulation parameters</div>
                 </div>
               </div>
               <div class="workflow-item">
                 <span class="step-num">03</span>
                 <div class="step-info">
-                  <div class="step-title">XXXX</div>
-                  <div class="step-desc">XXXXXXX & XXXXXXXX & XXXXXXXX</div>
+<div class="step-title">Start simulation</div>
+<div class="step-desc">Dual-platform parallel simulation & automatic analysis of forecast requirements & dynamic update of timing memory</div>
                 </div>
               </div>
               <div class="workflow-item">
                 <span class="step-num">04</span>
                 <div class="step-info">
-                  <div class="step-title">XXXX</div>
-                  <div class="step-desc">ReportAgentXXXXXXXXXXXXXXXXXXXX</div>
+<div class="step-title">Report generation</div>
+<div class="step-desc">ReportAgent has a rich set of tools for in-depth interaction with the post-simulation environment</div>
                 </div>
               </div>
               <div class="workflow-item">
                 <span class="step-num">05</span>
                 <div class="step-info">
-                  <div class="step-title">XXXX</div>
-                  <div class="step-desc">XXXXXXXXXXXXXXX & XReportAgentXXXX</div>
+<div class="step-title">In-depth interaction</div>
+<div class="step-desc">Converse with anyone in the simulation world & Converse with ReportAgent</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- EN_Comment -->
+<!-- Right column: Interactive console -->
         <div class="right-panel">
           <div class="console-box">
-            <!-- EN_Comment -->
+<!-- Upload area -->
             <div class="console-section">
               <div class="console-header">
-                <span class="console-label">01 / XXXX</span>
-                <span class="console-meta">XXXX: PDF, MD, TXT</span>
+<span class="console-label">01 / Reality Seed</span>
+<span class="console-meta">Supported formats: PDF, MD, TXT</span>
               </div>
               
               <div 
@@ -147,60 +147,60 @@
                 />
                 
                 <div v-if="files.length === 0" class="upload-placeholder">
-                  <div class="upload-icon">X</div>
-                  <div class="upload-title">XXXXXX</div>
-                  <div class="upload-hint">XXXXXXXXX</div>
+                  <div class="upload-icon">↑</div>
+<div class="upload-title">Drag and drop files to upload</div>
+<div class="upload-hint">Or click to browse the file system</div>
                 </div>
                 
                 <div v-else class="file-list">
                   <div v-for="(file, index) in files" :key="index" class="file-item">
-                    <span class="file-icon">X</span>
+                    <span class="file-icon">📄</span>
                     <span class="file-name">{{ file.name }}</span>
-                    <button @click.stop="removeFile(index)" class="remove-btn">X</button>
+                    <button @click.stop="removeFile(index)" class="remove-btn">×</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- EN_Comment -->
+<!-- dividing line -->
             <div class="console-divider">
-              <span>XXXX</span>
+<span>Input parameters</span>
             </div>
 
-            <!-- EN_Comment -->
+<!-- Input area -->
             <div class="console-section">
               <div class="console-header">
-                <span class="console-label">>_ 02 / XXXXX</span>
+<span class="console-label">>_ 02 / Simulation prompt word</span>
               </div>
               <div class="input-wrapper">
                 <textarea
                   v-model="formData.simulationRequirement"
                   class="code-input"
-                  placeholder="EN_Comment"
+placeholder="//Use natural language to input simulated or predicted demand (for example, if Wuhan University issues an announcement to revoke Xiao's points, what public opinion trend will it trigger)"
                   rows="6"
                   :disabled="loading"
                 ></textarea>
-                <div class="model-badge">XX: MiroFish-V1.0</div>
+<div class="model-badge">Engine: MiroFish-V1.0</div>
               </div>
             </div>
 
-            <!-- EN_Comment -->
+<!-- Start button -->
             <div class="console-section btn-section">
               <button 
                 class="start-engine-btn"
                 @click="startSimulation"
                 :disabled="!canSubmit || loading"
               >
-                <span v-if="!loading">XXXX</span>
-                <span v-else>XXXX...</span>
-                <span class="btn-arrow">X</span>
+<span v-if="!loading">Start engine</span>
+<span v-else>Initializing...</span>
+                <span class="btn-arrow">→</span>
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- EN_Comment -->
+<!-- Historical project database -->
       <HistoryDatabase />
     </div>
   </div>
@@ -213,41 +213,41 @@ import HistoryDatabase from '../components/HistoryDatabase.vue'
 
 const router = useRouter()
 
-// EN_Comment
+// form data
 const formData = ref({
   simulationRequirement: ''
 })
 
-// EN_Comment
+// file list
 const files = ref([])
 
-// EN_Comment
+// state
 const loading = ref(false)
 const error = ref('')
 const isDragOver = ref(false)
 
-// EN_Comment
+//File input reference
 const fileInput = ref(null)
 
-// EN_Comment
+// Computed property: whether it can be submitted
 const canSubmit = computed(() => {
   return formData.value.simulationRequirement.trim() !== '' && files.value.length > 0
 })
 
-// EN_Comment
+// Trigger file selection
 const triggerFileInput = () => {
   if (!loading.value) {
     fileInput.value?.click()
   }
 }
 
-// EN_Comment
+// Handle file selection
 const handleFileSelect = (event) => {
   const selectedFiles = Array.from(event.target.files)
   addFiles(selectedFiles)
 }
 
-// EN_Comment
+//Handle drag-and-drop related
 const handleDragOver = (e) => {
   if (!loading.value) {
     isDragOver.value = true
@@ -266,7 +266,7 @@ const handleDrop = (e) => {
   addFiles(droppedFiles)
 }
 
-// EN_Comment
+//Add file
 const addFiles = (newFiles) => {
   const validFiles = newFiles.filter(file => {
     const ext = file.name.split('.').pop().toLowerCase()
@@ -275,12 +275,12 @@ const addFiles = (newFiles) => {
   files.value.push(...validFiles)
 }
 
-// EN_Comment
+//remove file
 const removeFile = (index) => {
   files.value.splice(index, 1)
 }
 
-// EN_Comment
+//Scroll to bottom
 const scrollToBottom = () => {
   window.scrollTo({
     top: document.body.scrollHeight,
@@ -288,15 +288,15 @@ const scrollToBottom = () => {
   })
 }
 
-// EN_Comment
+// Start simulation - jump immediately, API call is made on the Process page
 const startSimulation = () => {
   if (!canSubmit.value || loading.value) return
   
-  // EN_Comment
+//Storage data to be uploaded
   import('../store/pendingUpload.js').then(({ setPendingUpload }) => {
     setPendingUpload(files.value, formData.value.simulationRequirement)
     
-    // EN_Comment
+// Jump to the Process page immediately (use a special identifier to indicate a new project)
     router.push({
       name: 'Process',
       params: { projectId: 'new' }
@@ -306,7 +306,7 @@ const startSimulation = () => {
 </script>
 
 <style scoped>
-/* XXXXXXX */
+/* Global variables and reset */
 :root {
   --black: #000000;
   --white: #FFFFFF;
@@ -315,8 +315,8 @@ const startSimulation = () => {
   --gray-text: #666666;
   --border: #E5E5E5;
   /* 
-    XX Space Grotesk XXXXXXXXXJetBrains Mono XXXX/XXXX
-    XXXX index.html XXXX Google Fonts
+Use Space Grotesk as the main heading font and JetBrains Mono as the code/label font
+Make sure you include these Google Fonts in index.html
   */
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
@@ -330,7 +330,7 @@ const startSimulation = () => {
   color: var(--black);
 }
 
-/* XXXX */
+/* Top navigation */
 .navbar {
   height: 60px;
   background: var(--black);
@@ -373,14 +373,14 @@ const startSimulation = () => {
   font-family: sans-serif;
 }
 
-/* XXXXX */
+/* Main content area */
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 60px 40px;
 }
 
-/* Hero XX */
+/* Hero area */
 .hero-section {
   display: flex;
   justify-content: space-between;
@@ -511,7 +511,7 @@ const startSimulation = () => {
 }
 
 .hero-logo {
-  max-width: 500px; /* XXlogoXX */
+max-width: 500px; /* Adjust logo size */
   width: 100%;
 }
 
@@ -533,7 +533,7 @@ const startSimulation = () => {
   border-color: var(--orange);
 }
 
-/* Dashboard XXXX */
+/* Dashboard double column layout */
 .dashboard-section {
   display: flex;
   gap: 60px;
@@ -548,7 +548,7 @@ const startSimulation = () => {
   flex-direction: column;
 }
 
-/* XXXX */
+/* Left panel */
 .left-panel {
   flex: 0.8;
 }
@@ -604,7 +604,7 @@ const startSimulation = () => {
   color: #999;
 }
 
-/* XXXXXXXX */
+/* Introduction to project simulation steps */
 .steps-container {
   border: 1px solid var(--border);
   padding: 30px;
@@ -660,14 +660,14 @@ const startSimulation = () => {
   color: var(--gray-text);
 }
 
-/* XXXXXXX */
+/* Right interactive console */
 .right-panel {
   flex: 1.2;
 }
 
 .console-box {
-  border: 1px solid #CCC; /* XXXX */
-  padding: 8px; /* XXXXXXXXXX */
+border: 1px solid #CCC; /* External solid line */
+padding: 8px; /* Padding creates a double border feel */
 }
 
 .console-section {
@@ -835,7 +835,7 @@ const startSimulation = () => {
   overflow: hidden;
 }
 
-/* XXXXXXXXXX */
+/* Clickable state (not disabled) */
 .start-engine-btn:not(:disabled) {
   background: var(--black);
   border: 1px solid var(--black);
@@ -860,14 +860,14 @@ const startSimulation = () => {
   border: 1px solid #E5E5E5;
 }
 
-/* XXXXXXXXXXXX */
+/* Boot animation: subtle border pulse */
 @keyframes pulse-border {
   0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
   70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
   100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 }
 
-/* XXXXX */
+/* Responsive adaptation */
 @media (max-width: 1024px) {
   .dashboard-section {
     flex-direction: column;

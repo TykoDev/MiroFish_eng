@@ -63,7 +63,7 @@ Do not add simulation-related prefixes to avoid misleading map updates
     def _describe_create_post(self) -> str:
         content = self.action_args.get("content", "")
         if content:
-            return f"Published a post: "{content}""
+            return f"Published a post: \"{content}\""
         return "Published a post"
     
     def _describe_like_post(self) -> str:
@@ -72,9 +72,9 @@ Do not add simulation-related prefixes to avoid misleading map updates
         post_author = self.action_args.get("post_author_name", "")
         
         if post_content and post_author:
-            return f"Liked {post_author}'s post: "{post_content}""
+            return f"Liked {post_author}'s post: \"{post_content}\""
         elif post_content:
-            return f"Liked a post: "{post_content}""
+            return f"Liked a post: \"{post_content}\""
         elif post_author:
             return f"Liked a post by {post_author}"
         return "Liked a post"
@@ -85,9 +85,9 @@ Do not add simulation-related prefixes to avoid misleading map updates
         post_author = self.action_args.get("post_author_name", "")
         
         if post_content and post_author:
-            return f"Disliked {post_author}'s post: "{post_content}""
+            return f"Disliked {post_author}'s post: \"{post_content}\""
         elif post_content:
-            return f"Disliked a post: "{post_content}""
+            return f"Disliked a post: \"{post_content}\""
         elif post_author:
             return f"Disliked a post by {post_author}"
         return "disliked a post"
@@ -98,9 +98,9 @@ Do not add simulation-related prefixes to avoid misleading map updates
         original_author = self.action_args.get("original_author_name", "")
         
         if original_content and original_author:
-            return f"Retweeted {original_author}'s post: "{original_content}""
+            return f"Retweeted {original_author}'s post: \"{original_content}\""
         elif original_content:
-            return f"Retweeted a post: "{original_content}""
+            return f"Retweeted a post: \"{original_content}\""
         elif original_author:
             return f"Retweeted a post by {original_author}"
         return "Retweeted a post"
@@ -113,16 +113,16 @@ Do not add simulation-related prefixes to avoid misleading map updates
         
         base = ""
         if original_content and original_author:
-            base = f"Quotes {original_author}'s post "{original_content}""
+            base = f"Quotes {original_author}'s post \"{original_content}\""
         elif original_content:
-            base = f"references a post "{original_content}""
+            base = f"references a post \"{original_content}\""
         elif original_author:
             base = f"references a post of {original_author}"
         else:
             base = "Quoted a post"
         
         if quote_content:
-            base += f" and commented: "{quote_content}""
+            base += f" and commented: \"{quote_content}\""
         return base
     
     def _describe_follow(self) -> str:
@@ -130,7 +130,7 @@ Do not add simulation-related prefixes to avoid misleading map updates
         target_user_name = self.action_args.get("target_user_name", "")
         
         if target_user_name:
-            return f"Followed user "{target_user_name}""
+            return f"Followed user \"{target_user_name}\""
         return "Follow a user"
     
     def _describe_create_comment(self) -> str:
@@ -141,12 +141,12 @@ Do not add simulation-related prefixes to avoid misleading map updates
         
         if content:
             if post_content and post_author:
-                return f"Commented under {post_author}'s post "{post_content}": "{content}""
+                return f"Commented under {post_author}'s post \"{post_content}\": \"{content}\""
             elif post_content:
-                return f"Commented under the post "{post_content}": "{content}""
+                return f"Commented under the post \"{post_content}\": \"{content}\""
             elif post_author:
-                return f"Commented under {post_author}'s post: "{content}""
-            return f" commented: "{content}""
+                return f"Commented under {post_author}'s post: \"{content}\""
+            return f" commented: \"{content}\""
         return "Leaved a comment"
     
     def _describe_like_comment(self) -> str:
@@ -155,9 +155,9 @@ Do not add simulation-related prefixes to avoid misleading map updates
         comment_author = self.action_args.get("comment_author_name", "")
         
         if comment_content and comment_author:
-            return f"Liked {comment_author}'s comment: "{comment_content}""
+            return f"Liked {comment_author}'s comment: \"{comment_content}\""
         elif comment_content:
-            return f"Liked a comment: "{comment_content}""
+            return f"Liked a comment: \"{comment_content}\""
         elif comment_author:
             return f"Liked a comment by {comment_author}"
         return "Liked a comment"
@@ -168,9 +168,9 @@ Do not add simulation-related prefixes to avoid misleading map updates
         comment_author = self.action_args.get("comment_author_name", "")
         
         if comment_content and comment_author:
-            return f"Disliked {comment_author}'s comment: "{comment_content}""
+            return f"Disliked {comment_author}'s comment: \"{comment_content}\""
         elif comment_content:
-            return f"Disliked a comment: "{comment_content}""
+            return f"Disliked a comment: \"{comment_content}\""
         elif comment_author:
             return f"Disliked a comment by {comment_author}"
         return "disliked a comment"
@@ -178,19 +178,19 @@ Do not add simulation-related prefixes to avoid misleading map updates
     def _describe_search(self) -> str:
         """Search posts - containing search keywords"""
         query = self.action_args.get("query", "") or self.action_args.get("keyword", "")
-        return f"Search "{query}"" if query else "Search performed"
+        return f"Search \"{query}\"" if query else "Search performed"
     
     def _describe_search_user(self) -> str:
         """Search users - including search keywords"""
         query = self.action_args.get("query", "") or self.action_args.get("username", "")
-        return f"Searched for user "{query}"" if query else "Searched for user"
+        return f"Searched for user \"{query}\"" if query else "Searched for user"
     
     def _describe_mute(self) -> str:
         """Block user - contains the name of the blocked user"""
         target_user_name = self.action_args.get("target_user_name", "")
         
         if target_user_name:
-            return f"Blocked user "{target_user_name}""
+            return f"Blocked user \"{target_user_name}\""
         return "Blocked a user"
     
     def _describe_generic(self) -> str:

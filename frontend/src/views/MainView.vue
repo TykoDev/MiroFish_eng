@@ -15,7 +15,7 @@
             :class="{ active: viewMode === mode }"
             @click="viewMode = mode"
           >
-            {{ { graph: 'XX', split: 'XX', workbench: 'XXX' }[mode] }}
+{{ { graph: 'graph', split: 'double column', workbench: 'workbench' }[mode] }}
           </button>
         </div>
       </div>
@@ -48,7 +48,7 @@
 
       <!-- Right Panel: Step Components -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
-        <!-- EN_Comment -->
+<!-- Step 1: Map construction -->
         <Step1GraphBuild 
           v-if="currentStep === 1"
           :currentPhase="currentPhase"
@@ -59,7 +59,7 @@
           :systemLogs="systemLogs"
           @next-step="handleNextStep"
         />
-        <!-- EN_Comment -->
+<!-- Step 2: Environment setup -->
         <Step2EnvSetup
           v-else-if="currentStep === 2"
           :projectData="projectData"
@@ -90,8 +90,8 @@ const router = useRouter()
 const viewMode = ref('split') // graph | split | workbench
 
 // Step State
-const currentStep = ref(1) // EN_Comment
-const stepNames = ['XXXX', 'XXXX', 'XXXX', 'XXXX', 'XXXX']
+const currentStep = ref(1) // 1: Graph construction, 2: Environment setup, 3: Start simulation, 4: Report generation, 5: In-depth interaction
+const stepNames = ['Graph construction', 'Environment construction', 'Start simulation', 'Report generation', 'In-depth interaction']
 
 // Data State
 const currentProjectId = ref(route.params.projectId)
@@ -159,11 +159,11 @@ const toggleMaximize = (target) => {
 const handleNextStep = (params = {}) => {
   if (currentStep.value < 5) {
     currentStep.value++
-    addLog(`XX Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
+addLog(`Entering Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
     
-    // EN_Comment
+// If entering Step 3 from Step 2, record the simulation round configuration
     if (currentStep.value === 3 && params.maxRounds) {
-      addLog(`XXXXXXX: ${params.maxRounds} X`)
+addLog(`Customized number of simulation rounds: ${params.maxRounds} rounds`)
     }
   }
 }
@@ -171,7 +171,7 @@ const handleNextStep = (params = {}) => {
 const handleGoBack = () => {
   if (currentStep.value > 1) {
     currentStep.value--
-    addLog(`XX Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
+addLog(`Return to Step ${currentStep.value}: ${stepNames[currentStep.value - 1]}`)
   }
 }
 

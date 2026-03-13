@@ -1,6 +1,6 @@
 /**
- * XXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXProcessXXXXXAPIXX
+* Temporarily store files and requirements to be uploaded
+* Used to jump immediately after clicking on the home page to start the engine, and then make API calls on the Process page
  */
 import { reactive } from 'vue'
 

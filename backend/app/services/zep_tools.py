@@ -125,7 +125,7 @@ class EdgeInfo:
     
     @property
     def is_expired(self) -> bool:
-        """Has it expired?""
+        """Has it expired?"""
         return self.expired_at is not None
     
     @property
@@ -385,7 +385,7 @@ Contains interview answers from multiple simulated agents
 
         if self.interviews:
             for i, interview in enumerate(self.interviews, 1):
-                text_parts.append(f"\n# Removed Chinese comment
+                text_parts.append(f"\n# Removed Chinese comment")
                 text_parts.append(interview.to_text())
                 text_parts.append("\n---")
         else:
@@ -469,20 +469,20 @@ XBasic toolsX
         scope: str = "edges"
     ) -> SearchResult:
         """
-Graph semantic search
+        Graph semantic search
 
-Search the graph for relevant information using hybrid search (semantic + BM25).
-If Zep Cloud's search API is unavailable, it is downgraded to local keyword matching.
+        Search the graph for relevant information using hybrid search (semantic + BM25).
+        If Zep Cloud search API is unavailable, it is downgraded to local keyword matching.
 
-Args:
-graph_id: Graph ID (Standalone Graph)
-query: search query
-limit: the number of results returned
-scope: search scope, "edges" or "nodes"
+        Args:
+        graph_id: Graph ID (Standalone Graph)
+        query: search query
+        limit: the number of results returned
+        scope: search scope, "edges" or "nodes"
 
-Returns:
-SearchResult: search results
-"""
+        Returns:
+        SearchResult: search results
+        """
         logger.info(f"Graph search: graph_id={graph_id}, query={query[:50]}...")
         
         # Try using Zep Cloud Search API
@@ -1350,13 +1350,13 @@ InterviewResult: interview result
         
         # Add optimization prefix to constrain Agent reply format
         INTERVIEW_PROMPT_PREFIX = (
-            "You are being interviewed. Please incorporate your persona, all past memories and actions,"
+            "You are being interviewed. Please incorporate your persona, all past memories and actions, "
             "Answer the following questions directly in plain text.\n"
             "Reply request:\n"
             "1. Answer directly in natural language, do not use any tools\n"
             "2. Do not return JSON format or tool call format\n"
             "3. Do not use Markdown titles (such as #, ##, ###)\n"
-            "4. Answer one by one according to the question number. Each answer starts with "Question X:" (X is the question number)\n"
+            "4. Answer one by one according to the question number. Each answer starts with 'Question X:' (X is the question number)\n"
             "5. Separate the answers to each question with a blank line\n"
             "6. Answers must be substantive and answer at least 2-3 sentences for each question\n\n"
         )
@@ -1556,14 +1556,14 @@ InterviewResult: interview result
         max_agents: int
     ) -> tuple:
         """
-Use LLM to select agents to interview
+        Use LLM to select agents to interview
 
-Returns:
-tuple: (selected_agents, selected_indices, reasoning)
-- selected_agents: Complete information list of selected Agents
-- selected_indices: Index list of selected Agent (used for API calls)
-- reasoning: Reason for choice
-"""
+        Returns:
+        tuple: (selected_agents, selected_indices, reasoning)
+        - selected_agents: Complete information list of selected Agents
+        - selected_indices: Index list of selected Agent (used for API calls)
+        - reasoning: Reason for choice
+        """
         
         # Build Agent summary list
         agent_summaries = []
@@ -1577,30 +1577,22 @@ tuple: (selected_agents, selected_indices, reasoning)
             }
             agent_summaries.append(summary)
         
-        system_prompt = """You are a professional interview planning expert. Your task is to select the most suitable interview object from the simulated Agent list based on the interview needs.
+        system_prompt = (
+            "You are a professional interview planning expert. Your task is to select the most suitable interview object from the simulated Agent list based on the interview needs.\n\n"
+            "Selection criteria:\n"
+            "1. The Agent's identity/occupation is related to the interview topic\n"
+            "2. Agent may hold unique or valuable viewpoints\n"
+            "3. Choose diverse perspectives (such as supporters, opponents, neutral parties, professionals, etc.)\n"
+            "4. Prioritize roles directly related to the incident\n\n"
+            "Return JSON format:\n"
+            "{\n"
+            "\"selected_indices\": [index list of selected Agent],\n"
+            "\"reasoning\": \"Explanation of reasons for selection\"\n"
+            "}"
+        )
 
-Selection criteria:
-1. The AgentXs identity/occupation is related to the interview topic
-2. Agent may hold unique or valuable viewpoints
-3. Choose diverse perspectives (such as supporters, opponents, neutral parties, professionals, etc.)
-4. Prioritize roles directly related to the incident
-
-Return JSON format:
-{
-"selected_indices": [index list of selected Agent],
-"reasoning": "Explanation of reasons for selection"
-}"""
-
-        user_prompt = f"""Interview requirements:
-{interview_requirement}
-
-Simulation background:
-{simulation_requirement if simulation_requirement else "Not provided"}
-
-Selectable Agent list ({len(agent_summaries)} in total):
-{json.dumps(agent_summaries, ensure_ascii=False, indent=2)}
-
-Please select up to {max_agents} agents that are most suitable for interviews and explain the reasons for your selection. """
+        agents_str = json.dumps(agent_summaries, ensure_ascii=False, indent=2)
+        user_prompt = f"Interview requirements:\n{interview_requirement}\n\nSimulation background:\n{simulation_requirement if simulation_requirement else 'Not provided'}\n\nSelectable Agent list ({len(agent_summaries)} in total):\n{agents_str}\n\nPlease select up to {max_agents} agents that are most suitable for interviews and explain the reasons for your selection."
 
         try:
             response = self.llm.chat_json(
@@ -1637,29 +1629,23 @@ Please select up to {max_agents} agents that are most suitable for interviews an
         simulation_requirement: str,
         selected_agents: List[Dict[str, Any]]
     ) -> List[str]:
-        """Use LLM to generate interview questions"""
+        # Use LLM to generate interview questions
         
         agent_roles = [a.get("profession", "unknown") for a in selected_agents]
         
-        system_prompt = """You are a professional reporter/interviewer. Generate 3-5 in-depth interview questions based on interview needs.
+        system_prompt = (
+            'You are a professional reporter/interviewer. Generate 3-5 in-depth interview questions based on interview needs.\n\n'
+            'Question requirements:\n'
+            '1. Open questions, detailed answers are encouraged\n'
+            '2. There may be different answers for different roles.\n'
+            '3. Cover multiple dimensions such as facts, opinions, and feelings\n'
+            '4. The language is natural, like a real interview\n'
+            '5. Each question should be limited to 50 words, concise and clear.\n'
+            '6. Ask questions directly without including background information or prefixes\n\n'
+            'Return JSON format: {"questions": ["Question1", "Question2", ...]}'
+        )
 
-Question requirements:
-1. Open questions, detailed answers are encouraged
-2. There may be different answers for different roles.
-3. Cover multiple dimensions such as facts, opinions, and feelings
-4. The language is natural, like a real interview
-5. Each question should be limited to 50 words, concise and clear.
-6. Ask questions directly without including background information or prefixes
-
-Return JSON format: {"questions": ["Question1", "Question2", ...]}"""
-
-        user_prompt = f"""Interview requirement: {interview_requirement}
-
-EnTextX{simulation_requirement if simulation_requirement else "Not provided"}
-
-Interview object roles: {', '.join(agent_roles)}
-
-Please generate 3-5 interview questions. """
+        user_prompt = f"Interview requirement: {interview_requirement}\n\nEnTextX{simulation_requirement if simulation_requirement else 'Not provided'}\n\nInterview object roles: {', '.join(agent_roles)}\n\nPlease generate 3-5 interview questions."
 
         try:
             response = self.llm.chat_json(
@@ -1685,7 +1671,7 @@ Please generate 3-5 interview questions. """
         interviews: List[AgentInterview],
         interview_requirement: str
     ) -> str:
-        """Generate interview summary"""
+        # Generate interview summary
         
         if not interviews:
             return "No interviews completed"
@@ -1693,30 +1679,26 @@ Please generate 3-5 interview questions. """
         # Collect all interviews
         interview_texts = []
         for interview in interviews:
-            interview_texts.append(f"X{interview.agent_name}X{interview.agent_role}XX\n{interview.response[:500]}")
+            interview_texts.append(f"Agent: {interview.agent_name}, Role: {interview.agent_role}\n{interview.response[:500]}")
         
-        system_prompt = """You are a professional news editor. Please generate an interview summary based on responses from multiple interviewees.
+        system_prompt = (
+            "You are a professional news editor. Please generate an interview summary based on responses from multiple interviewees.\n\n"
+            "Abstract requirements:\n"
+            "1. Extract the main points of view of all parties\n"
+            "2. Point out the consensus and differences of views\n"
+            "3. Highlight valuable quotes\n"
+            "4. Be objective and neutral, not taking sides\n"
+            "5. Control within 1,000 words\n\n"
+            "Format constraints (must be adhered to):\n"
+            "- Use plain text paragraphs with blank lines separating different sections\n"
+            "- Do not use Markdown titles (such as #, ##, ###)\n"
+            "- Do not use dividing lines (such as ---, ***)\n"
+            "- Use Chinese quotation marks when quoting the interviewee original words\n"
+            "- You can use **bold** to mark keywords, but do not use other Markdown syntax\n"
+        )
 
-Abstract requirements:
-1. Extract the main points of view of all parties
-2. Point out the consensus and differences of views
-3. Highlight valuable quotes
-4. Be objective and neutral, not taking sides
-5. Control within 1,000 words
-
-Format constraints (must be adhered to):
-- Use plain text paragraphs with blank lines separating different sections
-- Do not use Markdown titles (such as #, ##, ###)
-- Do not use dividing lines (such as ---, ***)
-- Use Chinese quotation marks "" when quoting the interviewee's original words
-- You can use **bold** to mark keywords, but do not use other Markdown syntax """
-
-        user_prompt = f"""Interview topic: {interview_requirement}
-
-Interview content:
-{"".join(interview_texts)}
-
-Please generate an interview summary. """
+        content_joined = "\n".join(interview_texts)
+        user_prompt = f"Interview topic: {interview_requirement}\n\nInterview content:\n{content_joined}\n\nPlease generate an interview summary."
 
         try:
             summary = self.llm.chat(

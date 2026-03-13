@@ -1,7 +1,7 @@
 import service, { requestWithRetry } from './index'
 
 /**
- * XXXX
+* Create simulation
  * @param {Object} data - { project_id, graph_id?, enable_twitter?, enable_reddit? }
  */
 export const createSimulation = (data) => {
@@ -9,7 +9,7 @@ export const createSimulation = (data) => {
 }
 
 /**
- * XXXXXXXXXXXX
+* Prepare simulation environment (asynchronous task)
  * @param {Object} data - { simulation_id, entity_types?, use_llm_for_profiles?, parallel_profile_count?, force_regenerate? }
  */
 export const prepareSimulation = (data) => {
@@ -17,7 +17,7 @@ export const prepareSimulation = (data) => {
 }
 
 /**
- * XXXXXXXX
+* Query preparation task progress
  * @param {Object} data - { task_id?, simulation_id? }
  */
 export const getPrepareStatus = (data) => {
@@ -25,7 +25,7 @@ export const getPrepareStatus = (data) => {
 }
 
 /**
- * XXXXXX
+* Get simulation status
  * @param {string} simulationId
  */
 export const getSimulation = (simulationId) => {
@@ -33,7 +33,7 @@ export const getSimulation = (simulationId) => {
 }
 
 /**
- * XXXXX Agent Profiles
+* Get simulated Agent Profiles
  * @param {string} simulationId
  * @param {string} platform - 'reddit' | 'twitter'
  */
@@ -42,7 +42,7 @@ export const getSimulationProfiles = (simulationId, platform = 'reddit') => {
 }
 
 /**
- * XXXXXXXX Agent Profiles
+* Get generated Agent Profiles in real time
  * @param {string} simulationId
  * @param {string} platform - 'reddit' | 'twitter'
  */
@@ -51,7 +51,7 @@ export const getSimulationProfilesRealtime = (simulationId, platform = 'reddit')
 }
 
 /**
- * XXXXXX
+* Get simulation configuration
  * @param {string} simulationId
  */
 export const getSimulationConfig = (simulationId) => {
@@ -59,17 +59,17 @@ export const getSimulationConfig = (simulationId) => {
 }
 
 /**
- * XXXXXXXXXXXX
+* Get the simulation configuration being generated in real time
  * @param {string} simulationId
- * @returns {Promise} XXXXXXXXXXXXXXXXX
+* @returns {Promise} returns configuration information, including metadata and configuration content
  */
 export const getSimulationConfigRealtime = (simulationId) => {
   return service.get(`/api/simulation/${simulationId}/config/realtime`)
 }
 
 /**
- * XXXXXX
- * @param {string} projectId - XXXXXXIDXX
+* List all simulations
+* @param {string} projectId - optional, filter by project ID
  */
 export const listSimulations = (projectId) => {
   const params = projectId ? { project_id: projectId } : {}
@@ -77,7 +77,7 @@ export const listSimulations = (projectId) => {
 }
 
 /**
- * XXXX
+* Start simulation
  * @param {Object} data - { simulation_id, platform?, max_rounds?, enable_graph_memory_update? }
  */
 export const startSimulation = (data) => {
@@ -85,7 +85,7 @@ export const startSimulation = (data) => {
 }
 
 /**
- * XXXX
+* Stop simulation
  * @param {Object} data - { simulation_id }
  */
 export const stopSimulation = (data) => {
@@ -93,7 +93,7 @@ export const stopSimulation = (data) => {
 }
 
 /**
- * XXXXXXXXXX
+* Get the real-time status of simulation running
  * @param {string} simulationId
  */
 export const getRunStatus = (simulationId) => {
@@ -101,7 +101,7 @@ export const getRunStatus = (simulationId) => {
 }
 
 /**
- * XXXXXXXXXXXXXXXXXX
+* Get the detailed status of the simulation run (including recent actions)
  * @param {string} simulationId
  */
 export const getRunStatusDetail = (simulationId) => {
@@ -109,11 +109,11 @@ export const getRunStatusDetail = (simulationId) => {
 }
 
 /**
- * XXXXXXXX
+* Get posts in simulation
  * @param {string} simulationId
  * @param {string} platform - 'reddit' | 'twitter'
- * @param {number} limit - XXXX
- * @param {number} offset - XXX
+* @param {number} limit - return quantity
+* @param {number} offset - offset
  */
 export const getSimulationPosts = (simulationId, platform = 'reddit', limit = 50, offset = 0) => {
   return service.get(`/api/simulation/${simulationId}/posts`, {
@@ -122,10 +122,10 @@ export const getSimulationPosts = (simulationId, platform = 'reddit', limit = 50
 }
 
 /**
- * XXXXXXXXXXXXXX
+* Get simulation timeline (summarized by rounds)
  * @param {string} simulationId
- * @param {number} startRound - XXXX
- * @param {number} endRound - XXXX
+* @param {number} startRound - starting round
+* @param {number} endRound - end the round
  */
 export const getSimulationTimeline = (simulationId, startRound = 0, endRound = null) => {
   const params = { start_round: startRound }
@@ -136,7 +136,7 @@ export const getSimulationTimeline = (simulationId, startRound = 0, endRound = n
 }
 
 /**
- * XXAgentXXXX
+* Get Agent statistics
  * @param {string} simulationId
  */
 export const getAgentStats = (simulationId) => {
@@ -144,7 +144,7 @@ export const getAgentStats = (simulationId) => {
 }
 
 /**
- * XXXXXXXX
+* Get simulation action history
  * @param {string} simulationId
  * @param {Object} params - { limit, offset, platform, agent_id, round_num }
  */
@@ -153,7 +153,7 @@ export const getSimulationActions = (simulationId, params = {}) => {
 }
 
 /**
- * XXXXXXXXXXXX
+* Close the simulation environment (graceful exit)
  * @param {Object} data - { simulation_id, timeout? }
  */
 export const closeSimulationEnv = (data) => {
@@ -161,7 +161,7 @@ export const closeSimulationEnv = (data) => {
 }
 
 /**
- * XXXXXXXX
+* Get simulation environment status
  * @param {Object} data - { simulation_id }
  */
 export const getEnvStatus = (data) => {
@@ -169,7 +169,7 @@ export const getEnvStatus = (data) => {
 }
 
 /**
- * XXXX Agent
+* Batch interview Agent
  * @param {Object} data - { simulation_id, interviews: [{ agent_id, prompt }] }
  */
 export const interviewAgents = (data) => {
@@ -177,9 +177,9 @@ export const interviewAgents = (data) => {
 }
 
 /**
- * XXXXXXXXXXXXXXX
- * XXXXXXXXXX
- * @param {number} limit - XXXXXX
+* Get historical simulation list (with project details)
+* Used to display historical items on the homepage
+* @param {number} limit - Return the number limit
  */
 export const getSimulationHistory = (limit = 20) => {
   return service.get('/api/simulation/history', { params: { limit } })

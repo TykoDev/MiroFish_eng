@@ -15,7 +15,7 @@
             :class="{ active: viewMode === mode }"
             @click="viewMode = mode"
           >
-            {{ { graph: 'XX', split: 'XX', workbench: 'XXX' }[mode] }}
+{{ { graph: 'graph', split: 'double column', workbench: 'workbench' }[mode] }}
           </button>
         </div>
       </div>
@@ -23,7 +23,7 @@
       <div class="header-right">
         <div class="workflow-step">
           <span class="step-num">Step 5/5</span>
-          <span class="step-name">XXXX</span>
+<span class="step-name">In-depth interaction</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <!-- EN_Comment -->
+<!-- Right Panel: Step5 In-depth interaction -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step5Interaction
           :reportId="currentReportId"
@@ -78,7 +78,7 @@ const props = defineProps({
   reportId: String
 })
 
-// EN_Comment
+// Layout State - switches to the workbench perspective by default
 const viewMode = ref('workbench')
 
 // Data State
@@ -140,28 +140,28 @@ const toggleMaximize = (target) => {
 // --- Data Logic ---
 const loadReportData = async () => {
   try {
-    addLog(`XXXXXX: ${currentReportId.value}`)
+addLog(`Load report data: ${currentReportId.value}`)
     
-    // EN_Comment
+// Get report information to get simulation_id
     const reportRes = await getReport(currentReportId.value)
     if (reportRes.success && reportRes.data) {
       const reportData = reportRes.data
       simulationId.value = reportData.simulation_id
       
       if (simulationId.value) {
-        // EN_Comment
+// Get simulation information
         const simRes = await getSimulation(simulationId.value)
         if (simRes.success && simRes.data) {
           const simData = simRes.data
           
-          // EN_Comment
+// Get project information
           if (simData.project_id) {
             const projRes = await getProject(simData.project_id)
             if (projRes.success && projRes.data) {
               projectData.value = projRes.data
-              addLog(`XXXXXX: ${projRes.data.project_id}`)
+addLog(`Project loaded successfully: ${projRes.data.project_id}`)
               
-              // EN_Comment
+// Get graph data
               if (projRes.data.graph_id) {
                 await loadGraph(projRes.data.graph_id)
               }
@@ -170,10 +170,10 @@ const loadReportData = async () => {
         }
       }
     } else {
-      addLog(`XXXXXXXX: ${reportRes.error || 'Unknown error'}`)
+addLog(`Failed to obtain report information: ${reportRes.error || 'Unknown error'}`)
     }
   } catch (err) {
-    addLog(`XXXX: ${err.message}`)
+addLog(`Loading exception: ${err.message}`)
   }
 }
 
@@ -184,10 +184,10 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('XXXXXXXX')
+addLog('Chart data loaded successfully')
     }
   } catch (err) {
-    addLog(`XXXXXX: ${err.message}`)
+addLog(`Chart loading failed: ${err.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -208,7 +208,7 @@ watch(() => route.params.reportId, (newId) => {
 }, { immediate: true })
 
 onMounted(() => {
-  addLog('InteractionView XXX')
+addLog('InteractionView initialization')
   loadReportData()
 })
 </script>

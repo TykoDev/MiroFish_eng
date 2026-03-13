@@ -418,7 +418,7 @@ SimulationParameters: Complete simulation parameters
             by_type[t].append(e)
         
         for entity_type, type_entities in by_type.items():
-            lines.append(f"\n# Removed Chinese comment
+            lines.append(f"\n# Removed Chinese comment")
             # Use the configured display quantity and summary length
             display_count = self.ENTITIES_PER_TYPE_DISPLAY
             summary_len = self.ENTITY_SUMMARY_LENGTH
@@ -582,7 +582,8 @@ Field description:
 - off_peak_hours (int array): low hours, usually late at night and early morning
 - morning_hours (int array): morning time period
 - work_hours (int array): working hours
-- reasoning (string): A brief explanation of why """ is configured this way
+- reasoning (string): A brief explanation of why this is configured this way
+"""
 
         system_prompt = "You are a social media simulation expert. Return pure JSON format, and the time configuration must conform to Chinese people's work and rest habits."
         

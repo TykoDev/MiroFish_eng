@@ -1,15 +1,15 @@
 import axios from 'axios'
 
-// EN_Comment
+//Create axios instance
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001',
-  timeout: 300000, // EN_Comment
+timeout: 300000, // 5 minutes timeout (ontology generation may take a long time)
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
-// EN_Comment
+//Request interceptor
 service.interceptors.request.use(
   config => {
     return config
@@ -20,12 +20,12 @@ service.interceptors.request.use(
   }
 )
 
-// EN_Comment
+//Response interceptor (fault-tolerant retry mechanism)
 service.interceptors.response.use(
   response => {
     const res = response.data
     
-    // EN_Comment
+// If the returned status code is not success, throw an error
     if (!res.success && res.success !== undefined) {
       console.error('API Error:', res.error || res.message || 'Unknown error')
       return Promise.reject(new Error(res.error || res.message || 'Error'))
@@ -36,12 +36,12 @@ service.interceptors.response.use(
   error => {
     console.error('Response error:', error)
     
-    // EN_Comment
+// Processing timeout
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
       console.error('Request timeout')
     }
     
-    // EN_Comment
+// Handle network errors
     if (error.message === 'Network Error') {
       console.error('Network error - please check your connection')
     }
@@ -50,7 +50,7 @@ service.interceptors.response.use(
   }
 )
 
-// EN_Comment
+//Request function with retry
 export const requestWithRetry = async (requestFn, maxRetries = 3, delay = 1000) => {
   for (let i = 0; i < maxRetries; i++) {
     try {

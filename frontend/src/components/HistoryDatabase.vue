@@ -4,20 +4,20 @@
     :class="{ 'no-projects': projects.length === 0 && !loading }"
     ref="historyContainer"
   >
-    <!-- EN_Comment -->
+<!-- Background decoration: Technical grid lines (only displayed when there are projects) -->
     <div v-if="projects.length > 0 || loading" class="tech-grid-bg">
       <div class="grid-pattern"></div>
       <div class="gradient-overlay"></div>
     </div>
 
-    <!-- EN_Comment -->
+<!-- Title area -->
     <div class="section-header">
       <div class="section-line"></div>
-      <span class="section-title">XXXX</span>
+<span class="section-title">Deduction record</span>
       <div class="section-line"></div>
     </div>
 
-    <!-- EN_Comment -->
+<!-- Card container (only displayed when there are items) -->
     <div v-if="projects.length > 0" class="cards-container" :class="{ expanded: isExpanded }" :style="containerStyle">
       <div 
         v-for="(project, index) in projects" 
@@ -29,33 +29,33 @@
         @mouseleave="hoveringCard = null"
         @click="navigateToProject(project)"
       >
-        <!-- EN_Comment -->
+<!-- Card header: simulation_id and function availability status -->
         <div class="card-header">
           <span class="card-id">{{ formatSimulationId(project.simulation_id) }}</span>
           <div class="card-status-icons">
             <span 
               class="status-icon" 
               :class="{ available: project.project_id, unavailable: !project.project_id }"
-              title="XXXX"
-            >X</span>
+title="Graph construction"
+            >◇</span>
             <span 
               class="status-icon available" 
-              title="XXXX"
-            >X</span>
+title="Environment setup"
+            >◈</span>
             <span 
               class="status-icon" 
               :class="{ available: project.report_id, unavailable: !project.report_id }"
-              title="XXXX"
-            >X</span>
+title="Analytical Report"
+            >◆</span>
           </div>
         </div>
 
-        <!-- EN_Comment -->
+<!-- File list area -->
         <div class="card-files-wrapper">
-          <!-- EN_Comment -->
+<!-- Corner decoration - viewfinder style -->
           <div class="corner-mark top-left-only"></div>
           
-          <!-- EN_Comment -->
+<!-- File list -->
           <div class="files-list" v-if="project.files && project.files.length > 0">
             <div 
               v-for="(file, fileIndex) in project.files.slice(0, 3)" 
@@ -65,92 +65,92 @@
               <span class="file-tag" :class="getFileType(file.filename)">{{ getFileTypeLabel(file.filename) }}</span>
               <span class="file-name">{{ truncateFilename(file.filename, 20) }}</span>
             </div>
-            <!-- EN_Comment -->
+<!-- If there are more files, display a prompt -->
             <div v-if="project.files.length > 3" class="files-more">
-              +{{ project.files.length - 3 }} XXX
++{{ project.files.length - 3 }} files
             </div>
           </div>
-          <!-- EN_Comment -->
+<!-- Placeholder when there is no file -->
           <div class="files-empty" v-else>
-            <span class="empty-file-icon">X</span>
-            <span class="empty-file-text">XXXX</span>
+            <span class="empty-file-icon">◇</span>
+<span class="empty-file-text">No file</span>
           </div>
         </div>
 
-        <!-- EN_Comment -->
+<!-- Card title (use the first 20 words of the simulation requirements as the title) -->
         <h3 class="card-title">{{ getSimulationTitle(project.simulation_requirement) }}</h3>
 
-        <!-- EN_Comment -->
+<!-- Card description (complete display of simulation requirements) -->
         <p class="card-desc">{{ truncateText(project.simulation_requirement, 55) }}</p>
 
-        <!-- EN_Comment -->
+<!-- Bottom of card -->
         <div class="card-footer">
           <div class="card-datetime">
             <span class="card-date">{{ formatDate(project.created_at) }}</span>
             <span class="card-time">{{ formatTime(project.created_at) }}</span>
           </div>
           <span class="card-progress" :class="getProgressClass(project)">
-            <span class="status-dot">X</span> {{ formatRounds(project) }}
+            <span class="status-dot">●</span> {{ formatRounds(project) }}
           </span>
         </div>
         
-        <!-- EN_Comment -->
+<!-- Bottom decorative line (expanded when hovering) -->
         <div class="card-bottom-line"></div>
       </div>
     </div>
 
-    <!-- EN_Comment -->
+<!-- Loading status -->
     <div v-if="loading" class="loading-state">
       <span class="loading-spinner"></span>
-      <span class="loading-text">XXX...</span>
+<span class="loading-text">Loading...</span>
     </div>
 
-    <!-- EN_Comment -->
+<!-- Historical replay details pop-up window -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="selectedProject" class="modal-overlay" @click.self="closeModal">
           <div class="modal-content">
-            <!-- EN_Comment -->
+<!-- Pop-up window header -->
             <div class="modal-header">
               <div class="modal-title-section">
                 <span class="modal-id">{{ formatSimulationId(selectedProject.simulation_id) }}</span>
                 <span class="modal-progress" :class="getProgressClass(selectedProject)">
-                  <span class="status-dot">X</span> {{ formatRounds(selectedProject) }}
+                  <span class="status-dot">●</span> {{ formatRounds(selectedProject) }}
                 </span>
                 <span class="modal-create-time">{{ formatDate(selectedProject.created_at) }} {{ formatTime(selectedProject.created_at) }}</span>
               </div>
-              <button class="modal-close" @click="closeModal">X</button>
+              <button class="modal-close" @click="closeModal">×</button>
             </div>
 
-            <!-- EN_Comment -->
+<!-- Pop-up window content -->
             <div class="modal-body">
-              <!-- EN_Comment -->
+<!-- Simulation requirements -->
               <div class="modal-section">
-                <div class="modal-label">XXXX</div>
-                <div class="modal-requirement">{{ selectedProject.simulation_requirement || 'none' }}</div>
+<div class="modal-label">Simulation requirements</div>
+<div class="modal-requirement">{{ selectedProject.simulation_requirement || 'None' }}</div>
               </div>
 
-              <!-- EN_Comment -->
+<!-- File list -->
               <div class="modal-section">
-                <div class="modal-label">XXXX</div>
+<div class="modal-label">Associated files</div>
                 <div class="modal-files" v-if="selectedProject.files && selectedProject.files.length > 0">
                   <div v-for="(file, index) in selectedProject.files" :key="index" class="modal-file-item">
                     <span class="file-tag" :class="getFileType(file.filename)">{{ getFileTypeLabel(file.filename) }}</span>
                     <span class="modal-file-name">{{ file.filename }}</span>
                   </div>
                 </div>
-                <div class="modal-empty" v-else>XXXXXX</div>
+<div class="modal-empty" v-else>No associated files yet</div>
               </div>
             </div>
 
-            <!-- EN_Comment -->
+<!-- Deduction playback dividing line -->
             <div class="modal-divider">
               <span class="divider-line"></span>
-              <span class="divider-text">XXXX</span>
+<span class="divider-text">Deduction replay</span>
               <span class="divider-line"></span>
             </div>
 
-            <!-- EN_Comment -->
+<!-- Navigation button -->
             <div class="modal-actions">
               <button 
                 class="modal-btn btn-project" 
@@ -158,16 +158,16 @@
                 :disabled="!selectedProject.project_id"
               >
                 <span class="btn-step">Step1</span>
-                <span class="btn-icon">X</span>
-                <span class="btn-text">XXXX</span>
+                <span class="btn-icon">◇</span>
+<span class="btn-text">Graph construction</span>
               </button>
               <button 
                 class="modal-btn btn-simulation" 
                 @click="goToSimulation"
               >
                 <span class="btn-step">Step2</span>
-                <span class="btn-icon">X</span>
-                <span class="btn-text">XXXX</span>
+                <span class="btn-icon">◈</span>
+<span class="btn-text">Environment setup</span>
               </button>
               <button 
                 class="modal-btn btn-report" 
@@ -175,13 +175,13 @@
                 :disabled="!selectedProject.report_id"
               >
                 <span class="btn-step">Step4</span>
-                <span class="btn-icon">X</span>
-                <span class="btn-text">XXXX</span>
+                <span class="btn-icon">◆</span>
+<span class="btn-text">Analytical Report</span>
               </button>
             </div>
-            <!-- EN_Comment -->
+<!-- Prompt that playback is not possible -->
             <div class="modal-playback-hint">
-              <span class="hint-text">Step3XXXXXXX Step5XXXXXXXXXXXXXXXXXXXXX</span>
+<span class="hint-text">Step 3 "Start Simulation" and Step 5 "Deep Interaction" need to be started during operation, and historical playback is not supported</span>
             </div>
           </div>
         </div>
@@ -198,56 +198,56 @@ import { getSimulationHistory } from '../api/simulation'
 const router = useRouter()
 const route = useRoute()
 
-// EN_Comment
+// state
 const projects = ref([])
 const loading = ref(true)
 const isExpanded = ref(false)
 const hoveringCard = ref(null)
 const historyContainer = ref(null)
-const selectedProject = ref(null)  // EN_Comment
+const selectedProject = ref(null) // Currently selected project (for pop-up windows)
 let observer = null
-let isAnimating = false  // EN_Comment
-let expandDebounceTimer = null  // EN_Comment
-let pendingState = null  // EN_Comment
+let isAnimating = false //Animation lock to prevent flickering
+let expandDebounceTimer = null // Anti-shake timer
+let pendingState = null // Record the target state to be executed
 
-// EN_Comment
+// Card layout configuration - adjust to wider ratio
 const CARDS_PER_ROW = 4
 const CARD_WIDTH = 280  
 const CARD_HEIGHT = 280 
 const CARD_GAP = 24
 
-// EN_Comment
+//Dynamic calculation of container height style
 const containerStyle = computed(() => {
   if (!isExpanded.value) {
-    // EN_Comment
+// Folded state: fixed height
     return { minHeight: '420px' }
   }
   
-  // EN_Comment
+// Expanded state: dynamically calculate the height based on the number of cards
   const total = projects.value.length
   if (total === 0) {
     return { minHeight: '280px' }
   }
   
   const rows = Math.ceil(total / CARDS_PER_ROW)
-  // EN_Comment
+// Calculate the actual required height: number of rows * card height + (number of rows - 1) * spacing + a small amount of bottom spacing
   const expandedHeight = rows * CARD_HEIGHT + (rows - 1) * CARD_GAP + 10
   
   return { minHeight: `${expandedHeight}px` }
 })
 
-// EN_Comment
+// Get card style
 const getCardStyle = (index) => {
   const total = projects.value.length
   
   if (isExpanded.value) {
-    // EN_Comment
+// Expanded state: grid layout
     const transition = 'transform 700ms cubic-bezier(0.23, 1, 0.32, 1), opacity 700ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease'
 
     const col = index % CARDS_PER_ROW
     const row = Math.floor(index / CARDS_PER_ROW)
     
-    // EN_Comment
+// Count the number of cards in the current row and make sure each row is centered
     const currentRowStart = row * CARDS_PER_ROW
     const currentRowCards = Math.min(CARDS_PER_ROW, total - currentRowStart)
     
@@ -257,7 +257,7 @@ const getCardStyle = (index) => {
     const colInRow = index % CARDS_PER_ROW
     const x = startX + colInRow * (CARD_WIDTH + CARD_GAP)
     
-    // EN_Comment
+// Expand downward to increase the distance from the title
     const y = 20 + row * (CARD_HEIGHT + CARD_GAP)
 
     return {
@@ -267,14 +267,14 @@ const getCardStyle = (index) => {
       transition: transition
     }
   } else {
-    // EN_Comment
+// Folded state: fan stack
     const transition = 'transform 700ms cubic-bezier(0.23, 1, 0.32, 1), opacity 700ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease'
 
     const centerIndex = (total - 1) / 2
     const offset = index - centerIndex
     
     const x = offset * 35
-    // EN_Comment
+//Adjust the starting position to be close to the title but maintain appropriate spacing
     const y = 25 + Math.abs(offset) * 8
     const r = offset * 3
     const s = 0.95 - Math.abs(offset) * 0.05
@@ -288,24 +288,24 @@ const getCardStyle = (index) => {
   }
 }
 
-// EN_Comment
+// Get the style class based on the round progress
 const getProgressClass = (simulation) => {
   const current = simulation.current_round || 0
   const total = simulation.total_rounds || 0
   
   if (total === 0 || current === 0) {
-    // EN_Comment
+// not started
     return 'not-started'
   } else if (current >= total) {
-    // EN_Comment
+// Completed
     return 'completed'
   } else {
-    // EN_Comment
+// in progress
     return 'in-progress'
   }
 }
 
-// EN_Comment
+//Format date (only display the date part)
 const formatDate = (dateStr) => {
   if (!dateStr) return ''
   try {
@@ -316,7 +316,7 @@ const formatDate = (dateStr) => {
   }
 }
 
-// EN_Comment
+//Format time (display hours:minutes)
 const formatTime = (dateStr) => {
   if (!dateStr) return ''
   try {
@@ -329,35 +329,35 @@ const formatTime = (dateStr) => {
   }
 }
 
-// EN_Comment
+//Truncate text
 const truncateText = (text, maxLength) => {
   if (!text) return ''
   return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
 
-// EN_Comment
+// Generate a title from the simulation requirements (take the first 20 characters)
 const getSimulationTitle = (requirement) => {
-  if (!requirement) return 'XXXXX'
+if (!requirement) return 'Unnamed simulation'
   const title = requirement.slice(0, 20)
   return requirement.length > 20 ? title + '...' : title
 }
 
-// EN_Comment
+//Format simulation_id display (truncate the first 6 digits)
 const formatSimulationId = (simulationId) => {
   if (!simulationId) return 'SIM_UNKNOWN'
   const prefix = simulationId.replace('sim_', '').slice(0, 6)
   return `SIM_${prefix.toUpperCase()}`
 }
 
-// EN_Comment
+//Format the number of rounds to display (current round/total number of rounds)
 const formatRounds = (simulation) => {
   const current = simulation.current_round || 0
   const total = simulation.total_rounds || 0
-  if (total === 0) return 'XXX'
-  return `${current}/${total} X`
+if (total === 0) return 'Not started'
+return `${current}/${total} Rounds`
 }
 
-// EN_Comment
+// Get the file type (for styles)
 const getFileType = (filename) => {
   if (!filename) return 'other'
   const ext = filename.split('.').pop()?.toLowerCase()
@@ -373,16 +373,16 @@ const getFileType = (filename) => {
   return typeMap[ext] || 'other'
 }
 
-// EN_Comment
+// Get the file type label text
 const getFileTypeLabel = (filename) => {
   if (!filename) return 'FILE'
   const ext = filename.split('.').pop()?.toUpperCase()
   return ext || 'FILE'
 }
 
-// EN_Comment
+// Truncate filename (keep extension)
 const truncateFilename = (filename, maxLength) => {
-  if (!filename) return 'XXXX'
+if (!filename) return 'Unknown file'
   if (filename.length <= maxLength) return filename
   
   const ext = filename.includes('.') ? '.' + filename.split('.').pop() : ''
@@ -391,17 +391,17 @@ const truncateFilename = (filename, maxLength) => {
   return truncatedName + ext
 }
 
-// EN_Comment
+//Open the project details pop-up window
 const navigateToProject = (simulation) => {
   selectedProject.value = simulation
 }
 
-// EN_Comment
+//Close pop-up window
 const closeModal = () => {
   selectedProject.value = null
 }
 
-// EN_Comment
+// Navigate to the graph construction page (Project)
 const goToProject = () => {
   if (selectedProject.value?.project_id) {
     router.push({
@@ -412,7 +412,7 @@ const goToProject = () => {
   }
 }
 
-// EN_Comment
+// Navigate to the environment configuration page (Simulation)
 const goToSimulation = () => {
   if (selectedProject.value?.simulation_id) {
     router.push({
@@ -423,7 +423,7 @@ const goToSimulation = () => {
   }
 }
 
-// EN_Comment
+// Navigate to the analysis report page (Report)
 const goToReport = () => {
   if (selectedProject.value?.report_id) {
     router.push({
@@ -434,7 +434,7 @@ const goToReport = () => {
   }
 }
 
-// EN_Comment
+//Load historical items
 const loadHistory = async () => {
   try {
     loading.value = true
@@ -443,14 +443,14 @@ const loadHistory = async () => {
       projects.value = response.data || []
     }
   } catch (error) {
-    console.error('XXXXXXXX:', error)
+console.error('Failed to load historical items:', error)
     projects.value = []
   } finally {
     loading.value = false
   }
 }
 
-// EN_Comment
+//Initialize IntersectionObserver
 const initObserver = () => {
   if (observer) {
     observer.disconnect()
@@ -461,47 +461,47 @@ const initObserver = () => {
       entries.forEach((entry) => {
         const shouldExpand = entry.isIntersecting
         
-        // EN_Comment
+//Update the target state to be executed (the latest target state must be recorded regardless of whether it is in animation)
         pendingState = shouldExpand
         
-        // EN_Comment
+//Clear the previous anti-shake timer (new scrolling intent will overwrite the old one)
         if (expandDebounceTimer) {
           clearTimeout(expandDebounceTimer)
           expandDebounceTimer = null
         }
         
-        // EN_Comment
+// If animation is in progress, only record the status and wait for processing after the animation ends.
         if (isAnimating) return
         
-        // EN_Comment
+// If the target state is the same as the current state, no processing is required
         if (shouldExpand === isExpanded.value) {
           pendingState = null
           return
         }
         
-        // EN_Comment
-        // EN_Comment
+// Use anti-shake delay state switching to prevent rapid flickering
+//Shorter delay (50ms) when expanding, longer delay (200ms) when collapsing to increase stability
         const delay = shouldExpand ? 50 : 200
         
         expandDebounceTimer = setTimeout(() => {
-          // EN_Comment
+// Check if animation is happening
           if (isAnimating) return
           
-          // EN_Comment
+// Check whether the pending execution state still needs to be executed (may have been overwritten by subsequent scrolling)
           if (pendingState === null || pendingState === isExpanded.value) return
           
-          // EN_Comment
+//Set animation lock
           isAnimating = true
           isExpanded.value = pendingState
           pendingState = null
           
-          // EN_Comment
+// Unlock when the animation is complete and check if there are any pending state changes
           setTimeout(() => {
             isAnimating = false
             
-            // EN_Comment
+//After the animation ends, check whether there is a new state to be executed
             if (pendingState !== null && pendingState !== isExpanded.value) {
-              // EN_Comment
+//Delay for a short period of time before executing to avoid switching too quickly
               expandDebounceTimer = setTimeout(() => {
                 if (pendingState !== null && pendingState !== isExpanded.value) {
                   isAnimating = true
@@ -518,20 +518,20 @@ const initObserver = () => {
       })
     },
     {
-      // EN_Comment
+// Use multiple thresholds to make detection smoother
       threshold: [0.4, 0.6, 0.8],
-      // EN_Comment
+//Adjust rootMargin, the bottom of the viewport shrinks upward, and more scrolling is required to trigger expansion
       rootMargin: '0px 0px -150px 0px'
     }
   )
   
-  // EN_Comment
+// Start observing
   if (historyContainer.value) {
     observer.observe(historyContainer.value)
   }
 }
 
-// EN_Comment
+// Monitor routing changes and reload the data when returning to the homepage
 watch(() => route.path, (newPath) => {
   if (newPath === '/') {
     loadHistory()
@@ -539,28 +539,28 @@ watch(() => route.path, (newPath) => {
 })
 
 onMounted(async () => {
-  // EN_Comment
+// Make sure the DOM rendering is complete before loading data
   await nextTick()
   await loadHistory()
   
-  // EN_Comment
+// Wait for the DOM to render before initializing the observer
   setTimeout(() => {
     initObserver()
   }, 100)
 })
 
-// EN_Comment
+// If keep-alive is used, reload data when the component is activated
 onActivated(() => {
   loadHistory()
 })
 
 onUnmounted(() => {
-  // EN_Comment
+// Clean up Intersection Observer
   if (observer) {
     observer.disconnect()
     observer = null
   }
-  // EN_Comment
+// Clear the anti-shake timer
   if (expandDebounceTimer) {
     clearTimeout(expandDebounceTimer)
     expandDebounceTimer = null
@@ -569,7 +569,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* XX */
+/* Container */
 .history-database {
   position: relative;
   width: 100%;
@@ -579,13 +579,13 @@ onUnmounted(() => {
   overflow: visible;
 }
 
-/* XXXXXXXX */
+/* Simplified display when there is no project */
 .history-database.no-projects {
   min-height: auto;
   padding: 40px 0 20px;
 }
 
-/* XXXXXX */
+/* Technology grid background */
 .tech-grid-bg {
   position: absolute;
   top: 0;
@@ -596,7 +596,7 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* XXCSSXXXXXXXXXXXXXXXX */
+/* Create a fixed-spacing square grid using a CSS background pattern */
 .grid-pattern {
   position: absolute;
   top: 0;
@@ -607,7 +607,7 @@ onUnmounted(() => {
     linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 50px 50px;
-  /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+/* Start positioning from the upper left corner, and only expand at the bottom when the height changes, without affecting the existing grid position */
   background-position: top left;
 }
 
@@ -623,7 +623,7 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* XXXX */
+/* title area */
 .section-header {
   position: relative;
   z-index: 100;
@@ -651,7 +651,7 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-/* XXXX */
+/* Card container */
 .cards-container {
   position: relative;
   display: flex;
@@ -659,10 +659,10 @@ onUnmounted(() => {
   align-items: flex-start;
   padding: 0 40px;
   transition: min-height 700ms cubic-bezier(0.23, 1, 0.32, 1);
-  /* min-height X JS XXXXXXXXXXXXXX */
+/* min-height is dynamically calculated by JS and adaptive according to the number of cards */
 }
 
-/* XXXX */
+/* project card */
 .project-card {
   position: absolute;
   width: 280px;
@@ -685,7 +685,7 @@ onUnmounted(() => {
   z-index: 1000 !important;
 }
 
-/* XXXX */
+/* Card header */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -703,7 +703,7 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* XXXXXXX */
+/* Function status icon group */
 .card-status-icons {
   display: flex;
   align-items: center;
@@ -720,17 +720,17 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-/* XXXXXXX */
-.status-icon:nth-child(1).available { color: #3B82F6; } /* XXXX - XX */
-.status-icon:nth-child(2).available { color: #F59E0B; } /* XXXX - XX */
-.status-icon:nth-child(3).available { color: #10B981; } /* XXXX - XX */
+/* Colors for different functions */
+.status-icon:nth-child(1).available { color: #3B82F6; } /* Map construction - blue */
+.status-icon:nth-child(2).available { color: #F59E0B; } /* Environment setup - orange */
+.status-icon:nth-child(3).available { color: #10B981; } /* Analysis report - green */
 
 .status-icon.unavailable {
   color: #D1D5DB;
   opacity: 0.5;
 }
 
-/* XXXXXX */
+/* Round progress display */
 .card-progress {
   display: flex;
   align-items: center;
@@ -744,13 +744,13 @@ onUnmounted(() => {
   font-size: 0.5rem;
 }
 
-/* XXXXXX */
-.card-progress.completed { color: #10B981; }    /* XXX - XX */
-.card-progress.in-progress { color: #F59E0B; }  /* XXX - XX */
-.card-progress.not-started { color: #9CA3AF; }  /* XXX - XX */
+/* Progress status color */
+.card-progress.completed { color: #10B981; } /* Completed - Green */
+.card-progress.in-progress { color: #F59E0B; } /* In Progress - Orange */
+.card-progress.not-started { color: #9CA3AF; } /* Not started - gray */
 .card-status.pending { color: #9CA3AF; }
 
-/* XXXXXX */
+/* File list area */
 .card-files-wrapper {
   position: relative;
   width: 100%;
@@ -770,7 +770,7 @@ onUnmounted(() => {
   gap: 4px;
 }
 
-/* XXXXXX */
+/* More file tips */
 .files-more {
   display: flex;
   align-items: center;
@@ -800,7 +800,7 @@ onUnmounted(() => {
   border-color: #e5e7eb;
 }
 
-/* XXXXXXXX */
+/* Simple file label style */
 .file-tag {
   display: inline-flex;
   align-items: center;
@@ -818,7 +818,7 @@ onUnmounted(() => {
   min-width: 28px;
 }
 
-/* XXXXXXXX - MorandiXX */
+/* Low saturation color scheme - Morandi color system */
 .file-tag.pdf { background: #f2e6e6; color: #a65a5a; }
 .file-tag.doc { background: #e6eff5; color: #5a7ea6; }
 .file-tag.xls { background: #e6f2e8; color: #5aa668; }
@@ -839,7 +839,7 @@ onUnmounted(() => {
   letter-spacing: 0.1px;
 }
 
-/* XXXXXXX */
+/* Placeholder when there is no file */
 .files-empty {
   display: flex;
   align-items: center;
@@ -860,13 +860,13 @@ onUnmounted(() => {
   letter-spacing: 0.5px;
 }
 
-/* XXXXXXXXX */
+/* File area effect when hovering */
 .project-card:hover .card-files-wrapper {
   border-color: #d1d5db;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 }
 
-/* XXXX */
+/* Corner decoration */
 .corner-mark.top-left-only {
   position: absolute;
   top: 6px;
@@ -879,7 +879,7 @@ onUnmounted(() => {
   z-index: 10;
 }
 
-/* XXXX */
+/* card title */
 .card-title {
   font-family: 'Inter', -apple-system, sans-serif;
   font-size: 0.9rem;
@@ -897,7 +897,7 @@ onUnmounted(() => {
   color: #2563EB;
 }
 
-/* XXXX */
+/* Card description */
 .card-desc {
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
@@ -911,7 +911,7 @@ onUnmounted(() => {
   -webkit-box-orient: vertical;
 }
 
-/* XXXX */
+/* Bottom of card */
 .card-footer {
   position: relative;
   display: flex;
@@ -925,14 +925,14 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* XXXXXX */
+/* Date and time combination */
 .card-datetime {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* XXXXXXXX */
+/* Bottom round progress display */
 .card-footer .card-progress {
   display: flex;
   align-items: center;
@@ -946,12 +946,12 @@ onUnmounted(() => {
   font-size: 0.5rem;
 }
 
-/* XXXXXX - XX */
+/* Progress status color - bottom */
 .card-footer .card-progress.completed { color: #10B981; }
 .card-footer .card-progress.in-progress { color: #F59E0B; }
 .card-footer .card-progress.not-started { color: #9CA3AF; }
 
-/* XXXXX */
+/* Bottom decorative line */
 .card-bottom-line {
   position: absolute;
   bottom: 0;
@@ -967,7 +967,7 @@ onUnmounted(() => {
   width: 100%;
 }
 
-/* XXX */
+/* Empty state */
 .empty-state, .loading-state {
   display: flex;
   flex-direction: column;
@@ -995,7 +995,7 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
-/* XXX */
+/* Responsive */
 @media (max-width: 1200px) {
   .project-card {
     width: 240px;
@@ -1011,7 +1011,7 @@ onUnmounted(() => {
   }
 }
 
-/* ===== XXXXXXXXXX ===== */
+/* ===== Historical replay details pop-up window style ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1037,7 +1037,7 @@ onUnmounted(() => {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* XXXX */
+/* animation transition */
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;
@@ -1066,7 +1066,7 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* XXXX */
+/* Pop-up window header */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -1133,7 +1133,7 @@ onUnmounted(() => {
   color: #111827;
 }
 
-/* XXXX */
+/* Pop-up window content */
 .modal-body {
   padding: 24px 32px;
 }
@@ -1175,7 +1175,7 @@ onUnmounted(() => {
   padding-right: 4px;
 }
 
-/* XXXXXXXX */
+/* Custom scroll bar style */
 .modal-files::-webkit-scrollbar {
   width: 4px;
 }
@@ -1229,7 +1229,7 @@ onUnmounted(() => {
   text-align: center;
 }
 
-/* XXXXXXX */
+/* Deduction playback dividing line */
 .modal-divider {
   display: flex;
   align-items: center;
@@ -1253,7 +1253,7 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-/* XXXX */
+/* Navigation button */
 .modal-actions {
   display: flex;
   gap: 16px;
@@ -1320,7 +1320,7 @@ onUnmounted(() => {
   color: #111827;
 }
 
-/* XXXXXX */
+/* No playback prompt */
 .modal-playback-hint {
   display: flex;
   align-items: center;
