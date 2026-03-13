@@ -15,7 +15,7 @@
             :class="{ active: viewMode === mode }"
             @click="viewMode = mode"
           >
-            {{ { graph: 'XX', split: 'XX', workbench: 'XXX' }[mode] }}
+{{ { graph: 'graph', split: 'double column', workbench: 'workbench' }[mode] }}
           </button>
         </div>
       </div>
@@ -23,7 +23,7 @@
       <div class="header-right">
         <div class="workflow-step">
           <span class="step-num">Step 2/5</span>
-          <span class="step-name">XXXX</span>
+<span class="step-name">Environment setup</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
@@ -46,7 +46,7 @@
         />
       </div>
 
-      <!-- EN_Comment -->
+<!-- Right Panel: Step2 Environment Setup -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step2EnvSetup
           :simulationId="currentSimulationId"
@@ -137,7 +137,7 @@ const toggleMaximize = (target) => {
 }
 
 const handleGoBack = () => {
-  // EN_Comment
+//Return to process page
   if (projectData.value?.project_id) {
     router.push({ name: 'Process', params: { projectId: projectData.value.project_id } })
   } else {
@@ -146,122 +146,122 @@ const handleGoBack = () => {
 }
 
 const handleNextStep = (params = {}) => {
-  addLog('XX Step 3: XXXX')
+addLog('Enter Step 3: Start simulation')
   
-  // EN_Comment
+//Record simulation round number configuration
   if (params.maxRounds) {
-    addLog(`XXXXXXX: ${params.maxRounds} X`)
+addLog(`Customized number of simulation rounds: ${params.maxRounds} rounds`)
   } else {
-    addLog('XXXXXXXXXXX')
+addLog('Use automatically configured number of simulation rounds')
   }
   
-  // EN_Comment
+//Construct routing parameters
   const routeParams = {
     name: 'SimulationRun',
     params: { simulationId: currentSimulationId.value }
   }
   
-  // EN_Comment
+// If there is a custom number of rounds, pass it through the query parameter
   if (params.maxRounds) {
     routeParams.query = { maxRounds: params.maxRounds }
   }
   
-  // EN_Comment
+//Jump to Step 3 page
   router.push(routeParams)
 }
 
 // --- Data Logic ---
 
 /**
- * XXXXXXXXXXXX
- * XXXX Step 3 XXX Step 2 XXXXXXXXXXX
+* Check and close running simulations
+* When the user returns from Step 3 to Step 2, the user will exit the simulation by default
  */
 const checkAndStopRunningSimulation = async () => {
   if (!currentSimulationId.value) return
   
   try {
-    // EN_Comment
+// First check whether the simulation environment is alive
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
     
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
-      addLog('XXXXXXXXXXXXXXXX...')
+addLog('Detected that the simulation environment is running and is shutting down...')
       
-      // EN_Comment
+//Try to gracefully shut down the simulation environment
       try {
         const closeRes = await closeSimulationEnv({ 
           simulation_id: currentSimulationId.value,
-          timeout: 10  // EN_Comment
+timeout: 10 // 10 seconds timeout
         })
         
         if (closeRes.success) {
-          addLog('X XXXXXXX')
+addLog('✓ The simulation environment has been closed')
         } else {
-          addLog(`XXXXXXXX: ${closeRes.error || 'Unknown error'}`)
-          // EN_Comment
+addLog(`Failed to close simulation environment: ${closeRes.error || 'Unknown error'}`)
+// If graceful shutdown fails, try to force stop
           await forceStopSimulation()
         }
       } catch (closeErr) {
-        addLog(`XXXXXXXX: ${closeErr.message}`)
-        // EN_Comment
+addLog(`Close simulation environment exception: ${closeErr.message}`)
+// If graceful shutdown exception occurs, try to force stop
         await forceStopSimulation()
       }
     } else {
-      // EN_Comment
+// The environment is not running, but the process may still be there, check the simulation status
       const simRes = await getSimulation(currentSimulationId.value)
       if (simRes.success && simRes.data?.status === 'running') {
-        addLog('XXXXXXXXXXXXXXXX...')
+addLog('It is detected that the simulation status is running and stopping...')
         await forceStopSimulation()
       }
     }
   } catch (err) {
-    // EN_Comment
-    console.warn('XXXXXXXX:', err)
+// Failure to check the environment status will not affect subsequent processes
+console.warn('Failed to check simulation status:', err)
   }
 }
 
 /**
- * XXXXXX
+* Forced to stop simulation
  */
 const forceStopSimulation = async () => {
   try {
     const stopRes = await stopSimulation({ simulation_id: currentSimulationId.value })
     if (stopRes.success) {
-      addLog('X XXXXXXX')
+addLog('✓ The simulation has been forced to stop')
     } else {
-      addLog(`XXXXXXXX: ${stopRes.error || 'Unknown error'}`)
+addLog(`Force stop simulation failed: ${stopRes.error || 'Unknown error'}`)
     }
   } catch (err) {
-    addLog(`XXXXXXXX: ${err.message}`)
+addLog(`Force stop simulation exception: ${err.message}`)
   }
 }
 
 const loadSimulationData = async () => {
   try {
-    addLog(`XXXXXX: ${currentSimulationId.value}`)
+addLog(`Load simulation data: ${currentSimulationId.value}`)
     
-    // EN_Comment
+// Get simulation information
     const simRes = await getSimulation(currentSimulationId.value)
     if (simRes.success && simRes.data) {
       const simData = simRes.data
       
-      // EN_Comment
+// Get project information
       if (simData.project_id) {
         const projRes = await getProject(simData.project_id)
         if (projRes.success && projRes.data) {
           projectData.value = projRes.data
-          addLog(`XXXXXX: ${projRes.data.project_id}`)
+addLog(`Project loaded successfully: ${projRes.data.project_id}`)
           
-          // EN_Comment
+// Get graph data
           if (projRes.data.graph_id) {
             await loadGraph(projRes.data.graph_id)
           }
         }
       }
     } else {
-      addLog(`XXXXXXXX: ${simRes.error || 'Unknown error'}`)
+addLog(`Failed to load simulation data: ${simRes.error || 'Unknown error'}`)
     }
   } catch (err) {
-    addLog(`XXXX: ${err.message}`)
+addLog(`Loading exception: ${err.message}`)
   }
 }
 
@@ -271,10 +271,10 @@ const loadGraph = async (graphId) => {
     const res = await getGraphData(graphId)
     if (res.success) {
       graphData.value = res.data
-      addLog('XXXXXXXX')
+addLog('Chart data loaded successfully')
     }
   } catch (err) {
-    addLog(`XXXXXX: ${err.message}`)
+addLog(`Chart loading failed: ${err.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -287,12 +287,12 @@ const refreshGraph = () => {
 }
 
 onMounted(async () => {
-  addLog('SimulationView XXX')
+addLog('SimulationView initialization')
   
-  // EN_Comment
+// Check and close running simulation (when user returns from Step 3)
   await checkAndStopRunningSimulation()
   
-  // EN_Comment
+//Load simulation data
   loadSimulationData()
 })
 </script>

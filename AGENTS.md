@@ -24,7 +24,7 @@ This document contains the guidelines, rules, and coding conventions for all aut
   - Method and variable names should be camelCase.
 
 ## 4. Refactoring Instructions
-- **Safety First:** Do not break logic or data structures. When translating keys in JSON or dicts, ensure the counterpart in the frontend/backend is updated simultaneously. If a value is used for logic branching (e.g., `if status == '完成':`), update the logic appropriately to its English equivalent (`if status == 'Completed':`).
+- **Safety First:** Do not break logic or data structures. When translating keys in JSON or dicts, ensure the counterpart in the frontend/backend is updated simultaneously. If a value is used for logic branching (e.g., `if status == 'Finished':`), update the logic appropriately to its English equivalent (`if status == 'Completed':`).
 - **Tracking:** Use `STATUS.md` to track refactoring progress. Mark files as complete `[x]` only when thoroughly verified.
 - **Testing:** Always run the application (e.g., using `docker-compose up --build` or by starting the backend/frontend servers independently) to ensure the translation hasn't caused errors or UI breakages.
 

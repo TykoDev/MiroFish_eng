@@ -5,6 +5,8 @@
 - [x] `./docker-compose.yml`
 - [x] `./package.json`
 - [x] `./README.md`
+- [x] `./test_llm_google.py`
+- [x] `./test_trans.py`
 
 ## Backend
 ### Root & App

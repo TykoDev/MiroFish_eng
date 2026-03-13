@@ -58,7 +58,7 @@
                       <path d="M12 2a10 10 0 0 1 10 10" stroke-width="4" stroke="#4B5563" stroke-linecap="round"></path>
                     </svg>
                   </div>
-                  <span class="loading-text">XXXX{{ section.title }}...</span>
+<span class="loading-text">Generating {{ section.title }}...</span>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
               </svg>
-              <span>XReport AgentXX</span>
+<span>Talk to Report Agent</span>
             </button>
             <div class="agent-dropdown" v-if="profiles.length > 0">
               <button 
@@ -110,13 +110,13 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <span>{{ selectedAgent ? selectedAgent.username : 'XXXXXXXXXX' }}</span>
+<span>{{ selectedAgent ? selectedAgent.username : 'Converse with any individual in the world' }}</span>
                 <svg class="dropdown-arrow" :class="{ open: showAgentDropdown }" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </button>
               <div v-if="showAgentDropdown" class="dropdown-menu">
-                <div class="dropdown-header">XXXXXX</div>
+<div class="dropdown-header">Select conversation object</div>
                 <div 
                   v-for="(agent, idx) in profiles" 
                   :key="idx"
@@ -126,7 +126,7 @@
                   <div class="agent-avatar">{{ (agent.username || 'A')[0] }}</div>
                   <div class="agent-info">
                     <span class="agent-name">{{ agent.username }}</span>
-                    <span class="agent-role">{{ agent.profession || 'XXXX' }}</span>
+<span class="agent-role">{{ agent.profession || 'Unknown profession' }}</span>
                   </div>
                 </div>
               </div>
@@ -141,7 +141,7 @@
                 <path d="M9 11l3 3L22 4"></path>
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
               </svg>
-              <span>XXXXXXXXXX</span>
+<span>Send surveys into the world</span>
             </button>
           </div>
         </div>
@@ -155,7 +155,7 @@
               <div class="tools-card-avatar">R</div>
               <div class="tools-card-info">
                 <div class="tools-card-name">Report Agent - Chat</div>
-                <div class="tools-card-subtitle">XXXXXXXXXXXXXXXXXX 4 XXXXXXXXMiroFishXXXXX</div>
+<div class="tools-card-subtitle">Quick conversational version of the report generation agent, which can call 4 professional tools and has the complete memory of MiroFish</div>
               </div>
               <button class="tools-card-toggle" @click="showToolsDetail = !showToolsDetail">
                 <svg :class="{ 'is-expanded': showToolsDetail }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -172,8 +172,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">InsightForge XXXX</div>
-                    <div class="tool-desc">XXXXXXXXXXXXXXXXXXXXGlobal/Local MemoryXXXXXXXXXXXXXXX</div>
+<div class="tool-name">InsightForge Deep Attribution</div>
+<div class="tool-desc">Align real-world seed data and simulated environment status, combined with Global/Local Memory mechanism, to provide in-depth attribution analysis across time and space</div>
                   </div>
                 </div>
                 <div class="tool-item tool-blue">
@@ -184,8 +184,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">PanoramaSearch XXXX</div>
-                    <div class="tool-desc">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+<div class="tool-name">PanoramaSearch panoramic tracking</div>
+<div class="tool-desc">The breadth traversal algorithm based on the graph structure reconstructs the event propagation path and captures the topological structure of the full amount of information flow</div>
                   </div>
                 </div>
                 <div class="tool-item tool-orange">
@@ -195,8 +195,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">QuickSearch XXXX</div>
-                    <div class="tool-desc">XX GraphRAG XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+<div class="tool-name">QuickSearch Quick Search</div>
+<div class="tool-desc">An instant query interface based on GraphRAG, optimizing indexing efficiency and used to quickly extract specific node attributes and discrete facts</div>
                   </div>
                 </div>
                 <div class="tool-item tool-green">
@@ -208,8 +208,8 @@
                     </svg>
                   </div>
                   <div class="tool-content">
-                    <div class="tool-name">InterviewSubAgent XXXX</div>
-                    <div class="tool-desc">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+<div class="tool-name">InterviewSubAgent Virtual Interview</div>
+<div class="tool-desc">Autonomous interviews can conduct multiple rounds of conversations with individuals in the simulated world in parallel to collect unstructured opinion data and psychological states</div>
                   </div>
                 </div>
               </div>
@@ -224,7 +224,7 @@
                 <div class="profile-card-name">{{ selectedAgent.username }}</div>
                 <div class="profile-card-meta">
                   <span v-if="selectedAgent.name" class="profile-card-handle">@{{ selectedAgent.name }}</span>
-                  <span class="profile-card-profession">{{ selectedAgent.profession || 'XXXX' }}</span>
+<span class="profile-card-profession">{{ selectedAgent.profession || 'Unknown profession' }}</span>
                 </div>
               </div>
               <button class="profile-card-toggle" @click="showFullProfile = !showFullProfile">
@@ -235,7 +235,7 @@
             </div>
             <div v-if="showFullProfile && selectedAgent.bio" class="profile-card-body">
               <div class="profile-card-bio">
-                <div class="profile-card-label">XX</div>
+<div class="profile-card-label">Introduction</div>
                 <p>{{ selectedAgent.bio }}</p>
               </div>
             </div>
@@ -250,7 +250,7 @@
                 </svg>
               </div>
               <p class="empty-text">
-                {{ chatTarget === 'report_agent' ? 'X Report Agent XXXXXXXXXXX' : 'XXXXXXXXXXXXXXX' }}
+{{ chatTarget === 'report_agent' ? 'Talk to the Report Agent to learn more about the report content' : 'Talk to the simulated individual to understand their perspective' }}
               </p>
             </div>
             <div 
@@ -292,7 +292,7 @@
             <textarea 
               v-model="chatInput"
               class="chat-input"
-              placeholder="XXXXXX..."
+placeholder="Enter your question..."
               @keydown.enter.exact.prevent="sendMessage"
               :disabled="isSending || (!selectedAgent && chatTarget === 'agent')"
               rows="1"
@@ -317,8 +317,8 @@
           <div class="survey-setup">
             <div class="setup-section">
               <div class="section-header">
-                <span class="section-title">XXXXXX</span>
-                <span class="selection-count">XX {{ selectedAgents.size }} / {{ profiles.length }}</span>
+<span class="section-title">Select survey objects</span>
+<span class="selection-count">Selected {{ selectedAgents.size }} / {{ profiles.length }}</span>
               </div>
               <div class="agents-grid">
                 <label 
@@ -335,7 +335,7 @@
                   <div class="checkbox-avatar">{{ (agent.username || 'A')[0] }}</div>
                   <div class="checkbox-info">
                     <span class="checkbox-name">{{ agent.username }}</span>
-                    <span class="checkbox-role">{{ agent.profession || 'XXXX' }}</span>
+<span class="checkbox-role">{{ agent.profession || 'Unknown profession' }}</span>
                   </div>
                   <div class="checkbox-indicator">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3">
@@ -345,20 +345,20 @@
                 </label>
               </div>
               <div class="selection-actions">
-                <button class="action-link" @click="selectAllAgents">XX</button>
+<button class="action-link" @click="selectAllAgents">Select All</button>
                 <span class="action-divider">|</span>
-                <button class="action-link" @click="clearAgentSelection">XX</button>
+<button class="action-link" @click="clearAgentSelection">Clear</button>
               </div>
             </div>
 
             <div class="setup-section">
               <div class="section-header">
-                <span class="section-title">XXXX</span>
+<span class="section-title">Questionnaire questions</span>
               </div>
               <textarea 
                 v-model="surveyQuestion"
                 class="survey-input"
-                placeholder="XXXXXXXXXXXXXXX..."
+placeholder="Enter the question you want to ask all selected people..."
                 rows="3"
               ></textarea>
             </div>
@@ -369,15 +369,15 @@
               @click="submitSurvey"
             >
               <span v-if="isSurveying" class="loading-spinner"></span>
-              <span v-else>XXXX</span>
+<span v-else>Send questionnaire</span>
             </button>
           </div>
 
           <!-- Survey Results -->
           <div v-if="surveyResults.length > 0" class="survey-results">
             <div class="results-header">
-              <span class="results-title">XXXX</span>
-              <span class="results-count">{{ surveyResults.length }} XXX</span>
+<span class="results-title">Survey results</span>
+<span class="results-count">{{ surveyResults.length }} responses</span>
             </div>
             <div class="results-list">
               <div 
@@ -389,7 +389,7 @@
                   <div class="result-avatar">{{ (result.agent_name || 'A')[0] }}</div>
                   <div class="result-info">
                     <span class="result-name">{{ result.agent_name }}</span>
-                    <span class="result-role">{{ result.profession || 'XXXX' }}</span>
+<span class="result-role">{{ result.profession || 'Unknown profession' }}</span>
                   </div>
                 </div>
                 <div class="result-question">
@@ -434,7 +434,7 @@ const showToolsDetail = ref(true)
 // Chat State
 const chatInput = ref('')
 const chatHistory = ref([])
-const chatHistoryCache = ref({}) // EN_Comment
+const chatHistoryCache = ref({}) // Cache all conversation records: { 'report_agent': [], 'agent_0': [], 'agent_1': [], ... }
 const isSending = ref(false)
 const chatMessages = ref(null)
 const chatInputRef = ref(null)
@@ -484,7 +484,7 @@ const selectChatTarget = (target) => {
   }
 }
 
-// EN_Comment
+// Save the current conversation record to the cache
 const saveChatHistory = () => {
   if (chatHistory.value.length === 0) return
   
@@ -496,7 +496,7 @@ const saveChatHistory = () => {
 }
 
 const selectReportAgentChat = () => {
-  // EN_Comment
+//Save the current conversation record
   saveChatHistory()
   
   activeTab.value = 'chat'
@@ -505,7 +505,7 @@ const selectReportAgentChat = () => {
   selectedAgentIndex.value = null
   showAgentDropdown.value = false
   
-  // EN_Comment
+//Restore Report Agent's conversation history
   chatHistory.value = chatHistoryCache.value['report_agent'] || []
 }
 
@@ -525,7 +525,7 @@ const toggleAgentDropdown = () => {
 }
 
 const selectAgent = (agent, idx) => {
-  // EN_Comment
+//Save the current conversation record
   saveChatHistory()
   
   selectedAgent.value = agent
@@ -533,9 +533,9 @@ const selectAgent = (agent, idx) => {
   chatTarget.value = 'agent'
   showAgentDropdown.value = false
   
-  // EN_Comment
+//Restore the Agent's conversation history
   chatHistory.value = chatHistoryCache.value[`agent_${idx}`] || []
-  addLog(`XXXXXX: ${agent.username}`)
+addLog(`Select conversation object: ${agent.username}`)
 }
 
 const formatTime = (timestamp) => {
@@ -563,7 +563,7 @@ const renderMarkdown = (content) => {
   html = html.replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>')
   html = html.replace(/^> (.+)$/gm, '<blockquote class="md-quote">$1</blockquote>')
   
-  // EN_Comment
+// Process lists - supports sublists
   html = html.replace(/^(\s*)- (.+)$/gm, (match, indent, text) => {
     const level = Math.floor(indent.length / 2)
     return `<li class="md-li" data-level="${level}">${text}</li>`
@@ -573,17 +573,17 @@ const renderMarkdown = (content) => {
     return `<li class="md-oli" data-level="${level}">${text}</li>`
   })
   
-  // EN_Comment
+// wrap unordered list
   html = html.replace(/(<li class="md-li"[^>]*>.*?<\/li>\s*)+/g, '<ul class="md-ul">$&</ul>')
-  // EN_Comment
+// wrap the ordered list
   html = html.replace(/(<li class="md-oli"[^>]*>.*?<\/li>\s*)+/g, '<ol class="md-ol">$&</ol>')
   
-  // EN_Comment
+// Clean up all white space between list items
   html = html.replace(/<\/li>\s+<li/g, '</li><li')
-  // EN_Comment
+// Clean up the space after the start tag of the list
   html = html.replace(/<ul class="md-ul">\s+/g, '<ul class="md-ul">')
   html = html.replace(/<ol class="md-ol">\s+/g, '<ol class="md-ol">')
-  // EN_Comment
+// Clear the space before the end tag of the list
   html = html.replace(/\s+<\/ul>/g, '</ul>')
   html = html.replace(/\s+<\/ol>/g, '</ol>')
   
@@ -599,17 +599,17 @@ const renderMarkdown = (content) => {
   html = html.replace(/(<\/h[2-5]>)<\/p>/g, '$1')
   html = html.replace(/<p class="md-p">(<ul|<ol|<blockquote|<pre|<hr)/g, '$1')
   html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>|<\/pre>)<\/p>/g, '$1')
-  // EN_Comment
+// Clean up <br> tags before and after block-level elements
   html = html.replace(/<br>\s*(<ul|<ol|<blockquote)/g, '$1')
   html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>)\s*<br>/g, '$1')
-  // EN_Comment
+// Clean up <p><br> immediately following block-level elements (caused by extra blank lines)
   html = html.replace(/<p class="md-p">(<br>\s*)+(<ul|<ol|<blockquote|<pre|<hr)/g, '$2')
-  // EN_Comment
+// Clean up consecutive <br> tags
   html = html.replace(/(<br>\s*){2,}/g, '<br>')
-  // EN_Comment
+// Clean up <br> before the paragraph start tag immediately following the block-level element
   html = html.replace(/(<\/ol>|<\/ul>|<\/blockquote>)<br>(<p|<div)/g, '$1$2')
 
-  // EN_Comment
+// Fix numbering for non-consecutive ordered lists: keep numbering increasing when single item <ol> is separated by paragraph content
   const tokens = html.split(/(<ol class="md-ol">(?:<li class="md-oli"[^>]*>[\s\S]*?<\/li>)+<\/ol>)/g)
   let olCounter = 0
   let inSequence = false
@@ -662,22 +662,22 @@ const sendMessage = async () => {
       await sendToAgent(message)
     }
   } catch (err) {
-    addLog(`XXXX: ${err.message}`)
+addLog(`Failed to send: ${err.message}`)
     chatHistory.value.push({
       role: 'assistant',
-      content: `XXXXXXXX: ${err.message}`,
+content: `Sorry, an error occurred: ${err.message}`,
       timestamp: new Date().toISOString()
     })
   } finally {
     isSending.value = false
     scrollToBottom()
-    // EN_Comment
+// Automatically save conversation records to cache
     saveChatHistory()
   }
 }
 
 const sendToReportAgent = async (message) => {
-  addLog(`X Report Agent XX: ${message.substring(0, 50)}...`)
+addLog(`Send to Report Agent: ${message.substring(0, 50)}...`)
   
   // Build chat history for API
   const historyForApi = chatHistory.value
@@ -697,21 +697,21 @@ const sendToReportAgent = async (message) => {
   if (res.success && res.data) {
     chatHistory.value.push({
       role: 'assistant',
-      content: res.data.response || res.data.answer || 'XXX',
+content: res.data.response || res.data.answer || 'No response',
       timestamp: new Date().toISOString()
     })
-    addLog('Report Agent XXX')
+addLog('Report Agent has replied')
   } else {
-    throw new Error(res.error || 'XXXX')
+throw new Error(res.error || 'Request failed')
   }
 }
 
 const sendToAgent = async (message) => {
   if (!selectedAgent.value || selectedAgentIndex.value === null) {
-    throw new Error('XXXXXXXXXX')
+throw new Error('Please select a simulated individual first')
   }
   
-  addLog(`X ${selectedAgent.value.username} XX: ${message.substring(0, 50)}...`)
+addLog(`Send to ${selectedAgent.value.username}: ${message.substring(0, 50)}...`)
   
   // Build prompt with chat history
   let prompt = message
@@ -719,9 +719,9 @@ const sendToAgent = async (message) => {
     const historyContext = chatHistory.value
       .filter(msg => msg.content !== message)
       .slice(-6)
-      .map(msg => `${msg.role === 'user' ? 'XXX' : 'X'}X${msg.content}`)
+.map(msg => `${msg.role === 'user' ? 'Asker' : 'You'}: ${msg.content}`)
       .join('\n')
-    prompt = `XXXXXXXXXXX\n${historyContext}\n\nXXXXXXXXX${message}`
+prompt = `The following is our previous conversation:\n${historyContext}\n\nNow my new question is: ${message}`
   }
   
   const res = await interviewAgents({
@@ -733,17 +733,17 @@ const sendToAgent = async (message) => {
   })
   
   if (res.success && res.data) {
-    // EN_Comment
-    // EN_Comment
+// Correct data path: res.data.result.results is a dictionary of objects
+// Format: {"twitter_0": {...}, "reddit_0": {...}} or single platform {"reddit_0": {...}}
     const resultData = res.data.result || res.data
     const resultsDict = resultData.results || resultData
     
-    // EN_Comment
+//Convert the object dictionary to an array, and get replies from the reddit platform first
     let responseContent = null
     const agentId = selectedAgentIndex.value
     
     if (typeof resultsDict === 'object' && !Array.isArray(resultsDict)) {
-      // EN_Comment
+// Prioritize using the reddit platform to reply, followed by twitter
       const redditKey = `reddit_${agentId}`
       const twitterKey = `twitter_${agentId}`
       const agentResult = resultsDict[redditKey] || resultsDict[twitterKey] || Object.values(resultsDict)[0]
@@ -751,7 +751,7 @@ const sendToAgent = async (message) => {
         responseContent = agentResult.response || agentResult.answer
       }
     } else if (Array.isArray(resultsDict) && resultsDict.length > 0) {
-      // EN_Comment
+// Compatible array format
       responseContent = resultsDict[0].response || resultsDict[0].answer
     }
     
@@ -761,12 +761,12 @@ const sendToAgent = async (message) => {
         content: responseContent,
         timestamp: new Date().toISOString()
       })
-      addLog(`${selectedAgent.value.username} XXX`)
+addLog(`${selectedAgent.value.username} replied`)
     } else {
-      throw new Error('XXXXX')
+throw new Error('No response data')
     }
   } else {
-    throw new Error(res.error || 'XXXX')
+throw new Error(res.error || 'Request failed')
   }
 }
 
@@ -803,7 +803,7 @@ const submitSurvey = async () => {
   if (selectedAgents.value.size === 0 || !surveyQuestion.value.trim()) return
   
   isSurveying.value = true
-  addLog(`XXXXX ${selectedAgents.value.size} XXX...`)
+addLog(`Send questionnaire to ${selectedAgents.value.size} objects...`)
   
   try {
     const interviews = Array.from(selectedAgents.value).map(idx => ({
@@ -817,33 +817,33 @@ const submitSurvey = async () => {
     })
     
     if (res.success && res.data) {
-      // EN_Comment
-      // EN_Comment
+// Correct data path: res.data.result.results is a dictionary of objects
+// Format: {"twitter_0": {...}, "reddit_0": {...}, "twitter_1": {...}, ...}
       const resultData = res.data.result || res.data
       const resultsDict = resultData.results || resultData
       
-      // EN_Comment
+//Convert object dictionary to array format
       const surveyResultsList = []
       
       for (const interview of interviews) {
         const agentIdx = interview.agent_id
         const agent = profiles.value[agentIdx]
         
-        // EN_Comment
-        let responseContent = 'XXX'
+// Prioritize using the reddit platform to reply, followed by twitter
+let responseContent = 'No response'
         
         if (typeof resultsDict === 'object' && !Array.isArray(resultsDict)) {
           const redditKey = `reddit_${agentIdx}`
           const twitterKey = `twitter_${agentIdx}`
           const agentResult = resultsDict[redditKey] || resultsDict[twitterKey]
           if (agentResult) {
-            responseContent = agentResult.response || agentResult.answer || 'XXX'
+responseContent = agentResult.response || agentResult.answer || 'No response'
           }
         } else if (Array.isArray(resultsDict)) {
-          // EN_Comment
+// Compatible array format
           const matchedResult = resultsDict.find(r => r.agent_id === agentIdx)
           if (matchedResult) {
-            responseContent = matchedResult.response || matchedResult.answer || 'XXX'
+responseContent = matchedResult.response || matchedResult.answer || 'No response'
           }
         }
         
@@ -857,12 +857,12 @@ const submitSurvey = async () => {
       }
       
       surveyResults.value = surveyResultsList
-      addLog(`XX ${surveyResults.value.length} XXX`)
+addLog(`Received ${surveyResults.value.length} replies`)
     } else {
-      throw new Error(res.error || 'XXXX')
+throw new Error(res.error || 'Request failed')
     }
   } catch (err) {
-    addLog(`XXXXXX: ${err.message}`)
+addLog(`Questionnaire sending failed: ${err.message}`)
   } finally {
     isSurveying.value = false
   }
@@ -873,7 +873,7 @@ const loadReportData = async () => {
   if (!props.reportId) return
   
   try {
-    addLog(`XXXXXX: ${props.reportId}`)
+addLog(`Load report data: ${props.reportId}`)
     
     // Get report info
     const reportRes = await getReport(props.reportId)
@@ -882,7 +882,7 @@ const loadReportData = async () => {
       await loadAgentLogs()
     }
   } catch (err) {
-    addLog(`XXXXXX: ${err.message}`)
+addLog(`Loading report failed: ${err.message}`)
   }
 }
 
@@ -904,10 +904,10 @@ const loadAgentLogs = async () => {
         }
       })
       
-      addLog('XXXXXXXX')
+addLog('Report data loading completed')
     }
   } catch (err) {
-    addLog(`XXXXXXXX: ${err.message}`)
+addLog(`Failed to load report log: ${err.message}`)
   }
 }
 
@@ -918,10 +918,10 @@ const loadProfiles = async () => {
     const res = await getSimulationProfilesRealtime(props.simulationId, 'reddit')
     if (res.success && res.data) {
       profiles.value = res.data.profiles || []
-      addLog(`XXX ${profiles.value.length} XXXXX`)
+addLog(`Loaded ${profiles.value.length} simulated individuals`)
     }
   } catch (err) {
-    addLog(`XXXXXXXX: ${err.message}`)
+addLog(`Failed to load simulated individual: ${err.message}`)
   }
 }
 
@@ -935,7 +935,7 @@ const handleClickOutside = (e) => {
 
 // Lifecycle
 onMounted(() => {
-  addLog('Step5 XXXXXXX')
+addLog('Step5 Deep interactive initialization')
   loadReportData()
   loadProfiles()
   document.addEventListener('click', handleClickOutside)
@@ -980,7 +980,7 @@ watch(() => props.simulationId, (newId) => {
   overflow: hidden;
 }
 
-/* Left Panel - Report Style (X Step4Report.vue XXXX) */
+/* Left Panel - Report Style (exactly the same as Step4Report.vue) */
 .left-panel.report-style {
   width: 45%;
   min-width: 450px;
@@ -2028,7 +2028,7 @@ watch(() => props.simulationId, (newId) => {
   margin-bottom: 0;
 }
 
-/* XXXXXXXX - XX CSS XXXXXX ol XXXX */
+/* Fix ordered list numbering - use CSS counters to number multiple ols consecutively */
 .message-text {
   counter-reset: list-counter;
 }
@@ -2054,7 +2054,7 @@ watch(() => props.simulationId, (newId) => {
   flex-shrink: 0;
 }
 
-/* XXXXXX */
+/* Unordered list style */
 .message-text :deep(.md-ul) {
   padding-left: 20px;
   margin: 8px 0;
@@ -2533,7 +2533,7 @@ watch(() => props.simulationId, (newId) => {
   margin: 6px 0;
 }
 
-/* XX/XXXXXXXXX */
+/* Reference style for chat/questionnaire area */
 .chat-messages :deep(.md-quote),
 .result-answer :deep(.md-quote) {
   margin: 12px 0;

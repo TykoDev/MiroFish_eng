@@ -1,8 +1,8 @@
 import service, { requestWithRetry } from './index'
 
 /**
- * XXXXXXXXXXXXXXX
- * @param {Object} data - XXfiles, simulation_requirement, project_nameX
+* Generate ontology (upload documents and simulate requirements)
+* @param {Object} data - Contains files, simulation_requirement, project_name, etc.
  * @returns {Promise}
  */
 export function generateOntology(formData) {
@@ -19,8 +19,8 @@ export function generateOntology(formData) {
 }
 
 /**
- * XXXX
- * @param {Object} data - XXproject_id, graph_nameX
+* Build a map
+* @param {Object} data - includes project_id, graph_name, etc.
  * @returns {Promise}
  */
 export function buildGraph(data) {
@@ -34,8 +34,8 @@ export function buildGraph(data) {
 }
 
 /**
- * XXXXXX
- * @param {String} taskId - XXID
+* Query task status
+* @param {String} taskId - task ID
  * @returns {Promise}
  */
 export function getTaskStatus(taskId) {
@@ -46,8 +46,8 @@ export function getTaskStatus(taskId) {
 }
 
 /**
- * XXXXXX
- * @param {String} graphId - XXID
+* Get map data
+* @param {String} graphId - graph ID
  * @returns {Promise}
  */
 export function getGraphData(graphId) {
@@ -58,8 +58,8 @@ export function getGraphData(graphId) {
 }
 
 /**
- * XXXXXX
- * @param {String} projectId - XXID
+* Get project information
+* @param {String} projectId - project ID
  * @returns {Promise}
  */
 export function getProject(projectId) {

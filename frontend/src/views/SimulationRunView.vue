@@ -15,7 +15,7 @@
             :class="{ active: viewMode === mode }"
             @click="viewMode = mode"
           >
-            {{ { graph: 'XX', split: 'XX', workbench: 'XXX' }[mode] }}
+{{ { graph: 'graph', split: 'double column', workbench: 'workbench' }[mode] }}
           </button>
         </div>
       </div>
@@ -23,7 +23,7 @@
       <div class="header-right">
         <div class="workflow-step">
           <span class="step-num">Step 3/5</span>
-          <span class="step-name">XXXX</span>
+<span class="step-name">Start simulation</span>
         </div>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <!-- EN_Comment -->
+<!-- Right Panel: Step3 Start simulation -->
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step3Simulation
           :simulationId="currentSimulationId"
@@ -87,9 +87,9 @@ const viewMode = ref('split')
 
 // Data State
 const currentSimulationId = ref(route.params.simulationId)
-// EN_Comment
+// Get maxRounds directly from the query parameter during initialization to ensure that the subcomponent can get the value immediately
 const maxRounds = ref(route.query.maxRounds ? parseInt(route.query.maxRounds) : null)
-const minutesPerRound = ref(30) // EN_Comment
+const minutesPerRound = ref(30) // Default is 30 minutes per round
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
@@ -145,104 +145,104 @@ const toggleMaximize = (target) => {
 }
 
 const handleGoBack = async () => {
-  // EN_Comment
-  addLog('XXXX Step 2XXXXXXX...')
+// Close the running simulation before returning to Step 2
+addLog('Preparing to return to Step 2, closing simulation...')
   
-  // EN_Comment
+// Stop polling
   stopGraphRefresh()
   
   try {
-    // EN_Comment
+// First try to shut down the simulation environment gracefully
     const envStatusRes = await getEnvStatus({ simulation_id: currentSimulationId.value })
     
     if (envStatusRes.success && envStatusRes.data?.env_alive) {
-      addLog('XXXXXXXX...')
+addLog('Close the simulation environment...')
       try {
         await closeSimulationEnv({ 
           simulation_id: currentSimulationId.value,
           timeout: 10
         })
-        addLog('X XXXXXXX')
+addLog('✓ The simulation environment has been closed')
       } catch (closeErr) {
-        addLog(`XXXXXXXXXXXXXXX...`)
+addLog(`Failed to close the simulation environment, try to force stop...`)
         try {
           await stopSimulation({ simulation_id: currentSimulationId.value })
-          addLog('X XXXXXXX')
+addLog('✓ The simulation has been forced to stop')
         } catch (stopErr) {
-          addLog(`XXXXXX: ${stopErr.message}`)
+addLog(`Forced stop failed: ${stopErr.message}`)
         }
       }
     } else {
-      // EN_Comment
+// The environment is not running, check whether the process needs to be stopped
       if (isSimulating.value) {
-        addLog('XXXXXXXX...')
+addLog('Stopping the simulation process...')
         try {
           await stopSimulation({ simulation_id: currentSimulationId.value })
-          addLog('X XXXXX')
+addLog('✓ Simulation has stopped')
         } catch (err) {
-          addLog(`XXXXXX: ${err.message}`)
+addLog(`Stop simulation failed: ${err.message}`)
         }
       }
     }
   } catch (err) {
-    addLog(`XXXXXXXX: ${err.message}`)
+addLog(`Failed to check simulation status: ${err.message}`)
   }
   
-  // EN_Comment
+// Return to Step 2 (environment setup)
   router.push({ name: 'Simulation', params: { simulationId: currentSimulationId.value } })
 }
 
 const handleNextStep = () => {
-  // EN_Comment
-  // EN_Comment
-  addLog('XX Step 4: XXXX')
+// The Step3Simulation component will directly handle report generation and routing jumps
+//This method is only used as a backup
+addLog('Enter Step 4: Report generation')
 }
 
 // --- Data Logic ---
 const loadSimulationData = async () => {
   try {
-    addLog(`XXXXXX: ${currentSimulationId.value}`)
+addLog(`Load simulation data: ${currentSimulationId.value}`)
     
-    // EN_Comment
+// Get simulation information
     const simRes = await getSimulation(currentSimulationId.value)
     if (simRes.success && simRes.data) {
       const simData = simRes.data
       
-      // EN_Comment
+// Get simulation config for minutes_per_round
       try {
         const configRes = await getSimulationConfig(currentSimulationId.value)
         if (configRes.success && configRes.data?.time_config?.minutes_per_round) {
           minutesPerRound.value = configRes.data.time_config.minutes_per_round
-          addLog(`XXXX: XX ${minutesPerRound.value} XX`)
+addLog(`Time configuration: ${minutesPerRound.value} minutes per round`)
         }
       } catch (configErr) {
-        addLog(`XXXXXXXXXXXXXX: ${minutesPerRound.value}XX/X`)
+addLog(`Failed to obtain time configuration, use default value: ${minutesPerRound.value}minutes/round`)
       }
       
-      // EN_Comment
+// Get project information
       if (simData.project_id) {
         const projRes = await getProject(simData.project_id)
         if (projRes.success && projRes.data) {
           projectData.value = projRes.data
-          addLog(`XXXXXX: ${projRes.data.project_id}`)
+addLog(`Project loaded successfully: ${projRes.data.project_id}`)
           
-          // EN_Comment
+// Get graph data
           if (projRes.data.graph_id) {
             await loadGraph(projRes.data.graph_id)
           }
         }
       }
     } else {
-      addLog(`XXXXXXXX: ${simRes.error || 'Unknown error'}`)
+addLog(`Failed to load simulation data: ${simRes.error || 'Unknown error'}`)
     }
   } catch (err) {
-    addLog(`XXXX: ${err.message}`)
+addLog(`Loading exception: ${err.message}`)
   }
 }
 
 const loadGraph = async (graphId) => {
-  // EN_Comment
-  // EN_Comment
+// When simulating, auto-refresh does not display full-screen loading to avoid flickering
+// Displayed during manual refresh or initial loading loading
   if (!isSimulating.value) {
     graphLoading.value = true
   }
@@ -252,11 +252,11 @@ const loadGraph = async (graphId) => {
     if (res.success) {
       graphData.value = res.data
       if (!isSimulating.value) {
-        addLog('XXXXXXXX')
+addLog('Chart data loaded successfully')
       }
     }
   } catch (err) {
-    addLog(`XXXXXX: ${err.message}`)
+addLog(`Chart loading failed: ${err.message}`)
   } finally {
     graphLoading.value = false
   }
@@ -273,8 +273,8 @@ let graphRefreshTimer = null
 
 const startGraphRefresh = () => {
   if (graphRefreshTimer) return
-  addLog('XXXXXXXX (30s)')
-  // EN_Comment
+addLog('Turn on real-time map refresh (30s)')
+// Refresh immediately, then every 30 seconds
   graphRefreshTimer = setInterval(refreshGraph, 30000)
 }
 
@@ -282,7 +282,7 @@ const stopGraphRefresh = () => {
   if (graphRefreshTimer) {
     clearInterval(graphRefreshTimer)
     graphRefreshTimer = null
-    addLog('XXXXXXXX')
+addLog('Stop the real-time refresh of the map')
   }
 }
 
@@ -295,11 +295,11 @@ watch(isSimulating, (newValue) => {
 }, { immediate: true })
 
 onMounted(() => {
-  addLog('SimulationRunView XXX')
+addLog('SimulationRunView initialization')
   
-  // EN_Comment
+// Record the maxRounds configuration (the value has been obtained from the query parameter during initialization)
   if (maxRounds.value) {
-    addLog(`XXXXXXX: ${maxRounds.value}`)
+addLog(`Customized number of simulation rounds: ${maxRounds.value}`)
   }
   
   loadSimulationData()

@@ -58,7 +58,7 @@
                       <path d="M12 2a10 10 0 0 1 10 10" stroke-width="4" stroke="#4B5563" stroke-linecap="round"></path>
                     </svg>
                   </div>
-                  <span class="loading-text">XXXX{{ section.title }}...</span>
+<span class="loading-text">Generating {{ section.title }}...</span>
                 </div>
               </div>
             </div>
@@ -127,9 +127,9 @@
             </div>
           </div>
 
-          <!-- EN_Comment -->
+<!-- Next Step Button - displayed after completion -->
           <button v-if="isComplete" class="next-step-btn" @click="goToInteraction">
-            <span>XXXXXX</span>
+<span>Enter in-depth interaction</span>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -194,7 +194,7 @@
                     </div>
                   </template>
                   
-                  <!-- EN_Comment -->
+<!-- Section Content Generated (the content generation is completed, but the entire section may not be completed yet) -->
                   <template v-if="log.action === 'section_content'">
                     <div class="section-tag content-ready">
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
@@ -205,7 +205,7 @@
                     </div>
                   </template>
 
-                  <!-- EN_Comment -->
+<!-- Section Complete (Chapter generation is completed) -->
                   <template v-if="log.action === 'section_complete'">
                     <div class="section-tag completed">
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
@@ -315,7 +315,7 @@
                         Final: {{ log.details?.has_final_answer ? 'Yes' : 'No' }}
                       </span>
                     </div>
-                    <!-- EN_Comment -->
+<!-- When it is the final answer, display a special prompt -->
                     <div v-if="log.details?.has_final_answer" class="final-answer-hint">
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -431,22 +431,22 @@ const showRawResult = reactive({})
 
 // Toggle functions
 const toggleRawResult = (timestamp, event) => {
-  // EN_Comment
+//Save the button's position relative to the viewport
   const button = event?.target
   const buttonRect = button?.getBoundingClientRect()
   const buttonTopBeforeToggle = buttonRect?.top
   
-  // EN_Comment
+// switch state
   showRawResult[timestamp] = !showRawResult[timestamp]
   
-  // EN_Comment
+// After waiting for the DOM to update, adjust the scroll position to keep the button in the same position
   if (button && buttonTopBeforeToggle !== undefined && rightPanel.value) {
     nextTick(() => {
       const newButtonRect = button.getBoundingClientRect()
       const buttonTopAfterToggle = newButtonRect.top
       const scrollDelta = buttonTopAfterToggle - buttonTopBeforeToggle
       
-      // EN_Comment
+//Adjust scroll position
       rightPanel.value.scrollTop += scrollDelta
     })
   }
@@ -464,7 +464,7 @@ const toggleSectionContent = (idx) => {
 }
 
 const toggleSectionCollapse = (idx) => {
-  // EN_Comment
+// Only completed chapters can be collapsed
   if (!generatedSections.value[idx + 1]) return
   const newSet = new Set(collapsedSections.value)
   if (newSet.has(idx)) {
@@ -497,32 +497,32 @@ const toolConfig = {
   'insight_forge': {
     name: 'Deep Insight',
     color: 'purple',
-    icon: 'lightbulb' // EN_Comment
+icon: 'lightbulb' // Lightbulb icon - represents insight
   },
   'panorama_search': {
     name: 'Panorama Search',
     color: 'blue',
-    icon: 'globe' // EN_Comment
+icon: 'globe' // Globe icon - represents panoramic search
   },
   'interview_agents': {
     name: 'Agent Interview',
     color: 'green',
-    icon: 'users' // EN_Comment
+icon: 'users' // User icon - represents conversation
   },
   'quick_search': {
     name: 'Quick Search',
     color: 'orange',
-    icon: 'zap' // EN_Comment
+icon: 'zap' // Lightning icon - represents fast
   },
   'get_graph_statistics': {
     name: 'Graph Stats',
     color: 'cyan',
-    icon: 'chart' // EN_Comment
+icon: 'chart' // Chart icon - represents statistics
   },
   'get_entities_by_type': {
     name: 'Entity Query',
     color: 'pink',
-    icon: 'database' // EN_Comment
+icon: 'database' // Database icon - represents the entity
   }
 }
 
@@ -551,31 +551,31 @@ const parseInsightForge = (text) => {
   }
   
   try {
-    // EN_Comment
-    const queryMatch = text.match(/XXXX:\s*(.+?)(?:\n|$)/)
+//Extract analysis questions
+const queryMatch = text.match(/Analysis question:\s*(.+?)(?:\n|$)/)
     if (queryMatch) result.query = queryMatch[1].trim()
     
-    // EN_Comment
-    const reqMatch = text.match(/XXXX:\s*(.+?)(?:\n|$)/)
+//Extract prediction scenarios
+const reqMatch = text.match(/prediction scenario:\s*(.+?)(?:\n|$)/)
     if (reqMatch) result.simulationRequirement = reqMatch[1].trim()
     
-    // EN_Comment
-    const factMatch = text.match(/XXXXXX:\s*(\d+)/)
-    const entityMatch = text.match(/XXXX:\s*(\d+)/)
-    const relMatch = text.match(/XXX:\s*(\d+)/)
+// Extract statistics - match "Relevant prediction facts: X items" format
+const factMatch = text.match(/Related prediction facts:\s*(\d+)/)
+const entityMatch = text.match(/Involved entities:\s*(\d+)/)
+const relMatch = text.match(/relationship chain:\s*(\d+)/)
     if (factMatch) result.stats.facts = parseInt(factMatch[1])
     if (entityMatch) result.stats.entities = parseInt(entityMatch[1])
     if (relMatch) result.stats.relationships = parseInt(relMatch[1])
     
-    // EN_Comment
-    const subQSection = text.match(/### XXXXXX\n([\s\S]*?)(?=\n###|$)/)
+// Extract subproblems - complete extraction, no limit on number
+const subQSection = text.match(/### Analysis sub-question\n([\s\S]*?)(?=\n###|$)/)
     if (subQSection) {
       const lines = subQSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.subQueries = lines.map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean)
     }
     
-    // EN_Comment
-    const factsSection = text.match(/### XXXXXX[\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
+// Extract key facts - complete extraction, no limit on quantity
+const factsSection = text.match(/### [Key facts][\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
     if (factsSection) {
       const lines = factsSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.facts = lines.map(l => {
@@ -584,16 +584,16 @@ const parseInsightForge = (text) => {
       }).filter(Boolean)
     }
     
-    // EN_Comment
-    const entitySection = text.match(/### XXXXXX\n([\s\S]*?)(?=\n###|$)/)
+// Extract core entities - full extraction, including summary and related fact count
+const entitySection = text.match(/### [Core Entity]\n([\s\S]*?)(?=\n###|$)/)
     if (entitySection) {
       const entityText = entitySection[1]
-      // EN_Comment
+// Press "- **" to split the solid block
       const entityBlocks = entityText.split(/\n(?=- \*\*)/).filter(b => b.trim().startsWith('- **'))
       result.entities = entityBlocks.map(block => {
         const nameMatch = block.match(/^-\s*\*\*(.+?)\*\*\s*\((.+?)\)/)
-        const summaryMatch = block.match(/XX:\s*"?(.+?)"?(?:\n|$)/)
-        const relatedMatch = block.match(/XXXX:\s*(\d+)/)
+const summaryMatch = block.match(/summary:\s*"?(.+?)"?(?:\n|$)/)
+const relatedMatch = block.match(/related facts:\s*(\d+)/)
         return {
           name: nameMatch ? nameMatch[1].trim() : '',
           type: nameMatch ? nameMatch[2].trim() : '',
@@ -603,8 +603,8 @@ const parseInsightForge = (text) => {
       }).filter(e => e.name)
     }
     
-    // EN_Comment
-    const relSection = text.match(/### XXXXX\n([\s\S]*?)(?=\n###|$)/)
+// Extract relationship chain - complete extraction, no limit on quantity
+const relSection = text.match(/### [Relationship chain]\n([\s\S]*?)(?=\n###|$)/)
     if (relSection) {
       const lines = relSection[1].split('\n').filter(l => l.trim().startsWith('-'))
       result.relations = lines.map(l => {
@@ -632,33 +632,33 @@ const parsePanorama = (text) => {
   }
   
   try {
-    // EN_Comment
-    const queryMatch = text.match(/XX:\s*(.+?)(?:\n|$)/)
+//Extract query
+const queryMatch = text.match(/query:\s*(.+?)(?:\n|$)/)
     if (queryMatch) result.query = queryMatch[1].trim()
     
-    // EN_Comment
-    const nodesMatch = text.match(/XXXX:\s*(\d+)/)
-    const edgesMatch = text.match(/XXX:\s*(\d+)/)
-    const activeMatch = text.match(/XXXXXX:\s*(\d+)/)
-    const histMatch = text.match(/XX\/XXXX:\s*(\d+)/)
+//Extract statistics
+const nodesMatch = text.match(/Total number of nodes:\s*(\d+)/)
+const edgesMatch = text.match(/Total number of edges:\s*(\d+)/)
+const activeMatch = text.match(/currently valid facts:\s*(\d+)/)
+const histMatch = text.match(/history\/expired facts:\s*(\d+)/)
     if (nodesMatch) result.stats.nodes = parseInt(nodesMatch[1])
     if (edgesMatch) result.stats.edges = parseInt(edgesMatch[1])
     if (activeMatch) result.stats.activeFacts = parseInt(activeMatch[1])
     if (histMatch) result.stats.historicalFacts = parseInt(histMatch[1])
     
-    // EN_Comment
-    const activeSection = text.match(/### XXXXXXXX[\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
+// Extract currently valid facts - complete extraction, no limit on quantity
+const activeSection = text.match(/### [Current valid facts][\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
     if (activeSection) {
       const lines = activeSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.activeFacts = lines.map(l => {
-        // EN_Comment
+// Remove numbers and quotes
         const factText = l.replace(/^\d+\.\s*/, '').replace(/^"|"$/g, '').trim()
         return factText
       }).filter(Boolean)
     }
     
-    // EN_Comment
-    const histSection = text.match(/### XXX\/XXXXX[\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
+// Fetch history/expired facts - full fetch, no limit on quantity
+const histSection = text.match(/### [History\/Expired Facts][\s\S]*?\n([\s\S]*?)(?=\n###|$)/)
     if (histSection) {
       const lines = histSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.historicalFacts = lines.map(l => {
@@ -667,8 +667,8 @@ const parsePanorama = (text) => {
       }).filter(Boolean)
     }
     
-    // EN_Comment
-    const entitySection = text.match(/### XXXXXX\n([\s\S]*?)(?=\n###|$)/)
+//Extract entities involved - complete extraction, no limit on quantity
+const entitySection = text.match(/### [Entity involved]\n([\s\S]*?)(?=\n###|$)/)
     if (entitySection) {
       const lines = entitySection[1].split('\n').filter(l => l.trim().startsWith('-'))
       result.entities = lines.map(l => {
@@ -696,25 +696,25 @@ const parseInterview = (text) => {
   }
   
   try {
-    // EN_Comment
-    const topicMatch = text.match(/\*\*XXXX:\*\*\s*(.+?)(?:\n|$)/)
+//Extract interview topics
+const topicMatch = text.match(/\*\*Interview topic:\*\*\s*(.+?)(?:\n|$)/)
     if (topicMatch) result.topic = topicMatch[1].trim()
     
-    // EN_Comment
-    const countMatch = text.match(/\*\*XXXX:\*\*\s*(\d+)\s*\/\s*(\d+)/)
+// Extract the number of interviewees (such as "5 / 9 simulated agents")
+const countMatch = text.match(/\*\*Number of interviewees:\*\*\s*(\d+)\s*\/\s*(\d+)/)
     if (countMatch) {
       result.successCount = parseInt(countMatch[1])
       result.totalCount = parseInt(countMatch[2])
       result.agentCount = `${countMatch[1]} / ${countMatch[2]}`
     }
     
-    // EN_Comment
-    const reasonMatch = text.match(/### XXXXXXXX\n([\s\S]*?)(?=\n---\n|\n### XXXX)/)
+//Extract the reasons for selecting interviewees
+const reasonMatch = text.match(/### Reason for selecting interviewee\n([\s\S]*?)(?=\n---\n|\n### Interview record)/)
     if (reasonMatch) {
       result.selectionReason = reasonMatch[1].trim()
     }
     
-    // EN_Comment
+// Analyze the reasons for each person's choice
     const parseIndividualReasons = (reasonText) => {
       const reasons = {}
       if (!reasonText) return reasons
@@ -728,28 +728,28 @@ const parseInterview = (text) => {
         let name = null
         let reasonStart = null
         
-        // EN_Comment
-        // EN_Comment
-        headerMatch = line.match(/^\d+\.\s*\*\*([^*X(]+)(?:[X(]index\s*=?\s*\d+[)X])?\*\*[X:]\s*(.*)/)
+// Format 1: Number. **Name (index=X)**: Reason
+// For example: 1. **alumni_345 (index=1)**: As an alumnus of Wuhan University...
+        headerMatch = line.match(/^\d+\.\s*\*\*([^*（(]+)(?:[（(]index\s*=?\s*\d+[)）])?\*\*[：:]\s*(.*)/)
         if (headerMatch) {
           name = headerMatch[1].trim()
           reasonStart = headerMatch[2]
         }
         
-        // EN_Comment
-        // EN_Comment
+// Format 2: - Select name (index X): reason
+// For example: - Select Parents_601 (index 0): As a representative of the parent group...
         if (!headerMatch) {
-          headerMatch = line.match(/^-\s*XX([^X(]+)(?:[X(]index\s*=?\s*\d+[)X])?[X:]\s*(.*)/)
+headerMatch = line.match(/^-\s*select([^((]+)(?:[((]index\s*=?\s*\d+[))])?[::]\s*(.*)/)
           if (headerMatch) {
             name = headerMatch[1].trim()
             reasonStart = headerMatch[2]
           }
         }
         
-        // EN_Comment
-        // EN_Comment
+// Format 3: - **Name (index X)**: Reason
+// For example: - **Parent_601 (index 0)**: As a representative of the parent group...
         if (!headerMatch) {
-          headerMatch = line.match(/^-\s*\*\*([^*X(]+)(?:[X(]index\s*=?\s*\d+[)X])?\*\*[X:]\s*(.*)/)
+          headerMatch = line.match(/^-\s*\*\*([^*（(]+)(?:[（(]index\s*=?\s*\d+[)）])?\*\*[：:]\s*(.*)/)
           if (headerMatch) {
             name = headerMatch[1].trim()
             reasonStart = headerMatch[2]
@@ -757,20 +757,20 @@ const parseInterview = (text) => {
         }
         
         if (name) {
-          // EN_Comment
+// Save the reason for the previous person
           if (currentName && currentReason.length > 0) {
             reasons[currentName] = currentReason.join(' ').trim()
           }
-          // EN_Comment
+// start new person
           currentName = name
           currentReason = reasonStart ? [reasonStart.trim()] : []
-        } else if (currentName && line.trim() && !line.match(/^XX|^XX|^XXXX/)) {
-          // EN_Comment
+} else if (currentName && line.trim() && !line.match(/^Unselected|^In summary|^Final selection/)) {
+// continuation line of reasons (excluding the closing summary paragraph)
           currentReason.push(line.trim())
         }
       }
       
-      // EN_Comment
+//Reason for saving the last person
       if (currentName && currentReason.length > 0) {
         reasons[currentName] = currentReason.join(' ').trim()
       }
@@ -780,8 +780,8 @@ const parseInterview = (text) => {
     
     const individualReasons = parseIndividualReasons(result.selectionReason)
     
-    // EN_Comment
-    const interviewBlocks = text.split(/#### XX #\d+:/).slice(1)
+//Extract each interview record
+const interviewBlocks = text.split(/#### interview #\d+:/).slice(1)
     
     interviewBlocks.forEach((block, index) => {
       const interview = {
@@ -797,33 +797,33 @@ const parseInterview = (text) => {
         quotes: []
       }
       
-      // EN_Comment
+//Extract titles (such as "Student", "Education Practitioner", etc.)
       const titleMatch = block.match(/^(.+?)\n/)
       if (titleMatch) interview.title = titleMatch[1].trim()
       
-      // EN_Comment
+//Extract name and role
       const nameRoleMatch = block.match(/\*\*(.+?)\*\*\s*\((.+?)\)/)
       if (nameRoleMatch) {
         interview.name = nameRoleMatch[1].trim()
         interview.role = nameRoleMatch[2].trim()
-        // EN_Comment
+//Set the person's selection reason
         interview.selectionReason = individualReasons[interview.name] || ''
       }
       
-      // EN_Comment
-      const bioMatch = block.match(/_XX:\s*([\s\S]*?)_\n/)
+//Extract introduction
+const bioMatch = block.match(/_Introduction:\s*([\s\S]*?)_\n/)
       if (bioMatch) {
         interview.bio = bioMatch[1].trim().replace(/\.\.\.$/, '...')
       }
       
-      // EN_Comment
+//Extract the question list
       const qMatch = block.match(/\*\*Q:\*\*\s*([\s\S]*?)(?=\n\n\*\*A:\*\*|\*\*A:\*\*)/)
       if (qMatch) {
         const qText = qMatch[1].trim()
-        // EN_Comment
+// Split questions by number
         const questions = qText.split(/\n\d+\.\s+/).filter(q => q.trim())
         if (questions.length > 0) {
-          // EN_Comment
+// If the first question is preceded by "1.", special handling is required
           const firstQ = qText.match(/^1\.\s+(.+)/)
           if (firstQ) {
             interview.questions = [firstQ[1].trim(), ...questions.slice(1).map(q => q.trim())]
@@ -833,14 +833,14 @@ const parseInterview = (text) => {
         }
       }
       
-      // EN_Comment
-      const answerMatch = block.match(/\*\*A:\*\*\s*([\s\S]*?)(?=\*\*XXXX|$)/)
+// Extract answers - divided into Twitter and Reddit
+const answerMatch = block.match(/\*\*A:\*\*\s*([\s\S]*?)(?=\*\*Key Quote|$)/)
       if (answerMatch) {
         const answerText = answerMatch[1].trim()
         
-        // EN_Comment
-        const twitterMatch = answerText.match(/XTwitterXXXXX\n?([\s\S]*?)(?=XRedditXXXXX|$)/)
-        const redditMatch = answerText.match(/XRedditXXXXX\n?([\s\S]*?)$/)
+// Separate Twitter and Reddit answers
+const twitterMatch = answerText.match(/[Twitter platform answer]\n?([\s\S]*?)(?=[Reddit platform answer]|$)/)
+const redditMatch = answerText.match(/[Reddit platform answer]\n?([\s\S]*?)$/)
         
         if (twitterMatch) {
           interview.twitterAnswer = twitterMatch[1].trim()
@@ -849,29 +849,29 @@ const parseInterview = (text) => {
           interview.redditAnswer = redditMatch[1].trim()
         }
         
-        // EN_Comment
+// Platform fallback logic (compatible with old format: when there is only one platform tag)
         if (!twitterMatch && redditMatch) {
-          // EN_Comment
-          if (interview.redditAnswer && interview.redditAnswer !== 'XXXXXXXXXX') {
+// Reddit answers only, only copied as default when not placeholder text
+if (interview.redditAnswer && interview.redditAnswer !== '(The platform did not receive a reply)') {
             interview.twitterAnswer = interview.redditAnswer
           }
         } else if (twitterMatch && !redditMatch) {
-          if (interview.twitterAnswer && interview.twitterAnswer !== 'XXXXXXXXXX') {
+if (interview.twitterAnswer && interview.twitterAnswer !== '(The platform did not get a reply)') {
             interview.redditAnswer = interview.twitterAnswer
           }
         } else if (!twitterMatch && !redditMatch) {
-          // EN_Comment
+// There is no sub-platform mark (very old format), the whole answer is
           interview.twitterAnswer = answerText
         }
       }
       
-      // EN_Comment
-      const quotesMatch = block.match(/\*\*XXXX:\*\*\n([\s\S]*?)(?=\n---|\n####|$)/)
+//Extract key quotes (compatible with multiple quote formats)
+const quotesMatch = block.match(/\*\*Key quotes:\*\*\n([\s\S]*?)(?=\n---|\n####|$)/)
       if (quotesMatch) {
         const quotesText = quotesMatch[1]
-        // EN_Comment
+// Prioritize matching > "text" format
         let quoteMatches = quotesText.match(/> "([^"]+)"/g)
-        // EN_Comment
+// Fallback: matches > "text" or > \u201Ctext\u201D (Chinese quotation marks)
         if (!quoteMatches) {
           quoteMatches = quotesText.match(/> [\u201C""]([^\u201D""]+)[\u201D""]/g)
         }
@@ -887,8 +887,8 @@ const parseInterview = (text) => {
       }
     })
     
-    // EN_Comment
-    const summaryMatch = text.match(/### XXXXXXXXX\n([\s\S]*?)$/)
+//Extract interview summary
+const summaryMatch = text.match(/### Interview summary and core points\n([\s\S]*?)$/)
     if (summaryMatch) {
       result.summary = summaryMatch[1].trim()
     }
@@ -909,23 +909,23 @@ const parseQuickSearch = (text) => {
   }
   
   try {
-    // EN_Comment
-    const queryMatch = text.match(/XXXX:\s*(.+?)(?:\n|$)/)
+//Extract search query
+const queryMatch = text.match(/Search query:\s*(.+?)(?:\n|$)/)
     if (queryMatch) result.query = queryMatch[1].trim()
     
-    // EN_Comment
-    const countMatch = text.match(/XX\s*(\d+)\s*X/)
+//Extract the number of results
+const countMatch = text.match(/find\s*(\d+)\s*bar/)
     if (countMatch) result.count = parseInt(countMatch[1])
     
-    // EN_Comment
-    const factsSection = text.match(/### XXXX:\n([\s\S]*)$/)
+// Extract relevant facts - complete extraction, no limit on quantity
+const factsSection = text.match(/### Related facts:\n([\s\S]*)$/)
     if (factsSection) {
       const lines = factsSection[1].split('\n').filter(l => l.match(/^\d+\./))
       result.facts = lines.map(l => l.replace(/^\d+\.\s*/, '').trim()).filter(Boolean)
     }
     
-    // EN_Comment
-    const edgesSection = text.match(/### XXX:\n([\s\S]*?)(?=\n###|$)/)
+//Try to extract side information (if any)
+const edgesSection = text.match(/### Related edges:\n([\s\S]*?)(?=\n###|$)/)
     if (edgesSection) {
       const lines = edgesSection[1].split('\n').filter(l => l.trim().startsWith('-'))
       result.edges = lines.map(l => {
@@ -937,8 +937,8 @@ const parseQuickSearch = (text) => {
       }).filter(Boolean)
     }
     
-    // EN_Comment
-    const nodesSection = text.match(/### XXXX:\n([\s\S]*?)(?=\n###|$)/)
+//Try to extract node information (if any)
+const nodesSection = text.match(/### Related nodes:\n([\s\S]*?)(?=\n###|$)/)
     if (nodesSection) {
       const lines = nodesSection[1].split('\n').filter(l => l.trim().startsWith('-'))
       result.nodes = lines.map(l => {
@@ -997,13 +997,13 @@ const InsightDisplay = {
               h('span', { class: 'stat-value' }, props.result.stats.relationships || props.result.relations.length),
               h('span', { class: 'stat-label' }, 'Relations')
             ]),
-            props.resultLength && h('span', { class: 'stat-divider' }, 'X'),
+            props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
           ])
         ]),
         props.result.query && h('div', { class: 'header-topic' }, props.result.query),
         props.result.simulationRequirement && h('div', { class: 'header-scenario' }, [
-          h('span', { class: 'scenario-label' }, 'XXXX: '),
+h('span', { class: 'scenario-label' }, 'Prediction scenario: '),
           h('span', { class: 'scenario-text' }, props.result.simulationRequirement)
         ])
       ]),
@@ -1014,25 +1014,25 @@ const InsightDisplay = {
           class: ['insight-tab', { active: activeTab.value === 'facts' }],
           onClick: () => { activeTab.value = 'facts' }
         }, [
-          h('span', { class: 'tab-label' }, `XXXXXX (${props.result.facts.length})`)
+h('span', { class: 'tab-label' }, `Current key memory (${props.result.facts.length})`)
         ]),
         h('button', {
           class: ['insight-tab', { active: activeTab.value === 'entities' }],
           onClick: () => { activeTab.value = 'entities' }
         }, [
-          h('span', { class: 'tab-label' }, `XXXX (${props.result.entities.length})`)
+h('span', { class: 'tab-label' }, `Core Entities (${props.result.entities.length})`)
         ]),
         h('button', {
           class: ['insight-tab', { active: activeTab.value === 'relations' }],
           onClick: () => { activeTab.value = 'relations' }
         }, [
-          h('span', { class: 'tab-label' }, `XXX (${props.result.relations.length})`)
+h('span', { class: 'tab-label' }, `Relationship chain (${props.result.relations.length})`)
         ]),
         props.result.subQueries.length > 0 && h('button', {
           class: ['insight-tab', { active: activeTab.value === 'subqueries' }],
           onClick: () => { activeTab.value = 'subqueries' }
         }, [
-          h('span', { class: 'tab-label' }, `XXX (${props.result.subQueries.length})`)
+h('span', { class: 'tab-label' }, `Sub-question (${props.result.subQueries.length})`)
         ])
       ]),
       
@@ -1041,8 +1041,8 @@ const InsightDisplay = {
         // Facts Tab
         activeTab.value === 'facts' && props.result.facts.length > 0 && h('div', { class: 'facts-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXXXXXXXXXXXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.facts.length} X`)
+h('span', { class: 'panel-title' }, 'The latest key facts associated in the temporal memory'),
+h('span', { class: 'panel-count' }, `Total ${props.result.facts.length} items`)
           ]),
           h('div', { class: 'facts-list' },
             (expandedFacts.value ? props.result.facts : props.result.facts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1055,35 +1055,35 @@ const InsightDisplay = {
           props.result.facts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedFacts.value = !expandedFacts.value }
-          }, expandedFacts.value ? `XX X` : `XXXX ${props.result.facts.length} X X`)
+}, expandedFacts.value ? `Collapse ▲` : `Expand all ${props.result.facts.length} items ▼`)
         ]),
         
         // Entities Tab
         activeTab.value === 'entities' && props.result.entities.length > 0 && h('div', { class: 'entities-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.entities.length} X`)
+h('span', { class: 'panel-title' }, 'core entity'),
+h('span', { class: 'panel-count' }, `Total ${props.result.entities.length} items`)
           ]),
           h('div', { class: 'entities-grid' },
             (expandedEntities.value ? props.result.entities : props.result.entities.slice(0, 12)).map((entity, i) => 
               h('div', { class: 'entity-tag', key: i, title: entity.summary || '' }, [
                 h('span', { class: 'entity-name' }, entity.name),
                 h('span', { class: 'entity-type' }, entity.type),
-                entity.relatedFactsCount > 0 && h('span', { class: 'entity-fact-count' }, `${entity.relatedFactsCount}X`)
+entity.relatedFactsCount > 0 && h('span', { class: 'entity-fact-count' }, `${entity.relatedFactsCount} items`)
               ])
             )
           ),
           props.result.entities.length > 12 && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedEntities.value = !expandedEntities.value }
-          }, expandedEntities.value ? `XX X` : `XXXX ${props.result.entities.length} X X`)
+}, expandedEntities.value ? `Collapse ▲` : `Expand all ${props.result.entities.length} ▼`)
         ]),
         
         // Relations Tab
         activeTab.value === 'relations' && props.result.relations.length > 0 && h('div', { class: 'relations-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.relations.length} X`)
+h('span', { class: 'panel-title' }, 'relationship chain'),
+h('span', { class: 'panel-count' }, `Total ${props.result.relations.length} items`)
           ]),
           h('div', { class: 'relations-list' },
             (expandedRelations.value ? props.result.relations : props.result.relations.slice(0, INITIAL_SHOW_COUNT)).map((rel, i) => 
@@ -1101,14 +1101,14 @@ const InsightDisplay = {
           props.result.relations.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedRelations.value = !expandedRelations.value }
-          }, expandedRelations.value ? `XX X` : `XXXX ${props.result.relations.length} X X`)
+}, expandedRelations.value ? `Collapse ▲` : `Expand all ${props.result.relations.length} items ▼`)
         ]),
         
         // Sub-queries Tab
         activeTab.value === 'subqueries' && props.result.subQueries.length > 0 && h('div', { class: 'subqueries-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXXXXXXXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.subQueries.length} X`)
+h('span', { class: 'panel-title' }, 'Drift query generation analysis sub-problem'),
+h('span', { class: 'panel-count' }, `Total ${props.result.subQueries.length} items`)
           ]),
           h('div', { class: 'subqueries-list' },
             props.result.subQueries.map((sq, i) => 
@@ -1121,9 +1121,9 @@ const InsightDisplay = {
         ]),
         
         // Empty state
-        activeTab.value === 'facts' && props.result.facts.length === 0 && h('div', { class: 'empty-state' }, 'XXXXXXXX'),
-        activeTab.value === 'entities' && props.result.entities.length === 0 && h('div', { class: 'empty-state' }, 'XXXXXX'),
-        activeTab.value === 'relations' && props.result.relations.length === 0 && h('div', { class: 'empty-state' }, 'XXXXX')
+activeTab.value === 'facts' && props.result.facts.length === 0 && h('div', { class: 'empty-state' }, 'No current key memory'),
+activeTab.value === 'entities' && props.result.entities.length === 0 && h('div', { class: 'empty-state' }, 'No core entities yet'),
+activeTab.value === 'relations' && props.result.relations.length === 0 && h('div', { class: 'empty-state' }, 'No relationship chain yet')
       ])
     ])
   }
@@ -1163,7 +1163,7 @@ const PanoramaDisplay = {
               h('span', { class: 'stat-value' }, props.result.stats.edges),
               h('span', { class: 'stat-label' }, 'Edges')
             ]),
-            props.resultLength && h('span', { class: 'stat-divider' }, 'X'),
+            props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
           ])
         ]),
@@ -1176,19 +1176,19 @@ const PanoramaDisplay = {
           class: ['panorama-tab', { active: activeTab.value === 'active' }],
           onClick: () => { activeTab.value = 'active' }
         }, [
-          h('span', { class: 'tab-label' }, `XXXXXX (${props.result.activeFacts.length})`)
+h('span', { class: 'tab-label' }, `Current active memory (${props.result.activeFacts.length})`)
         ]),
         h('button', {
           class: ['panorama-tab', { active: activeTab.value === 'historical' }],
           onClick: () => { activeTab.value = 'historical' }
         }, [
-          h('span', { class: 'tab-label' }, `XXXX (${props.result.historicalFacts.length})`)
+h('span', { class: 'tab-label' }, `Historical memory (${props.result.historicalFacts.length})`)
         ]),
         h('button', {
           class: ['panorama-tab', { active: activeTab.value === 'entities' }],
           onClick: () => { activeTab.value = 'entities' }
         }, [
-          h('span', { class: 'tab-label' }, `XXXX (${props.result.entities.length})`)
+h('span', { class: 'tab-label' }, `Related entities (${props.result.entities.length})`)
         ])
       ]),
       
@@ -1197,8 +1197,8 @@ const PanoramaDisplay = {
         // Active Facts Tab
         activeTab.value === 'active' && h('div', { class: 'facts-panel active-facts' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.activeFacts.length} X`)
+h('span', { class: 'panel-title' }, 'Current effective memory'),
+h('span', { class: 'panel-count' }, `Total ${props.result.activeFacts.length} items`)
           ]),
           props.result.activeFacts.length > 0 ? h('div', { class: 'facts-list' },
             (expandedActive.value ? props.result.activeFacts : props.result.activeFacts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1207,25 +1207,25 @@ const PanoramaDisplay = {
                 h('div', { class: 'fact-content' }, fact)
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'XXXXXXXX'),
+): h('div', { class: 'empty-state' }, 'No currently valid memory'),
           props.result.activeFacts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedActive.value = !expandedActive.value }
-          }, expandedActive.value ? `XX X` : `XXXX ${props.result.activeFacts.length} X X`)
+}, expandedActive.value ? `Collapse ▲` : `Expand all ${props.result.activeFacts.length} items ▼`)
         ]),
         
         // Historical Facts Tab
         activeTab.value === 'historical' && h('div', { class: 'facts-panel historical-facts' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.historicalFacts.length} X`)
+h('span', { class: 'panel-title' }, 'Historical memory'),
+h('span', { class: 'panel-count' }, `Total ${props.result.historicalFacts.length} items`)
           ]),
           props.result.historicalFacts.length > 0 ? h('div', { class: 'facts-list' },
             (expandedHistorical.value ? props.result.historicalFacts : props.result.historicalFacts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
               h('div', { class: 'fact-item historical', key: i }, [
                 h('span', { class: 'fact-number' }, i + 1),
                 h('div', { class: 'fact-content' }, [
-                  // EN_Comment
+//Try to extract time information [time - time]
                   (() => {
                     const timeMatch = fact.match(/^\[(.+?)\]\s*(.*)$/)
                     if (timeMatch) {
@@ -1239,18 +1239,18 @@ const PanoramaDisplay = {
                 ])
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'XXXXXX'),
+): h('div', { class: 'empty-state' }, 'No historical memory'),
           props.result.historicalFacts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedHistorical.value = !expandedHistorical.value }
-          }, expandedHistorical.value ? `XX X` : `XXXX ${props.result.historicalFacts.length} X X`)
+}, expandedHistorical.value ? `Collapse ▲` : `Expand all ${props.result.historicalFacts.length} items ▼`)
         ]),
         
         // Entities Tab
         activeTab.value === 'entities' && h('div', { class: 'entities-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.entities.length} X`)
+h('span', { class: 'panel-title' }, 'Involved entities'),
+h('span', { class: 'panel-count' }, `Total ${props.result.entities.length} items`)
           ]),
           props.result.entities.length > 0 ? h('div', { class: 'entities-grid' },
             (expandedEntities.value ? props.result.entities : props.result.entities.slice(0, 8)).map((entity, i) => 
@@ -1259,11 +1259,11 @@ const PanoramaDisplay = {
                 entity.type && h('span', { class: 'entity-type' }, entity.type)
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'XXXXXX'),
+): h('div', { class: 'empty-state' }, 'No entities involved yet'),
           props.result.entities.length > 8 && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedEntities.value = !expandedEntities.value }
-          }, expandedEntities.value ? `XX X` : `XXXX ${props.result.entities.length} X X`)
+}, expandedEntities.value ? `Collapse ▲` : `Expand all ${props.result.entities.length} ▼`)
         ])
       ])
     ])
@@ -1286,22 +1286,22 @@ const InterviewDisplay = {
     // Clean quote text - remove leading list numbers to avoid double numbering
     const cleanQuoteText = (text) => {
       if (!text) return ''
-      // EN_Comment
-      return text.replace(/^\s*\d+[\.\X\)X]\s*/, '').trim()
+      // Remove leading patterns like "1. ", "2. ", "1、", "（1）", "(1)" etc.
+      return text.replace(/^\s*\d+[\.\、\)）]\s*/, '').trim()
     }
     
     const activeIndex = ref(0)
     const expandedAnswers = ref(new Set())
-    // EN_Comment
+// Maintain independent platform selection status for each question-answer pair
     const platformTabs = reactive({}) // { 'agentIdx-qIdx': 'twitter' | 'reddit' }
     
-    // EN_Comment
+// Get the current platform selection for a question
     const getPlatformTab = (agentIdx, qIdx) => {
       const key = `${agentIdx}-${qIdx}`
       return platformTabs[key] || 'twitter'
     }
     
-    // EN_Comment
+//Set the platform selection for a certain question
     const setPlatformTab = (agentIdx, qIdx, platform) => {
       const key = `${agentIdx}-${qIdx}`
       platformTabs[key] = platform
@@ -1323,26 +1323,26 @@ const InterviewDisplay = {
       return text.substring(0, 400) + '...'
     }
     
-    // EN_Comment
+// Check whether it is platform placeholder text
     const isPlaceholderText = (text) => {
       if (!text) return true
       const t = text.trim()
-      return t === 'XXXXXXXXXX' || t === '(XXXXXXXX)' || t === '[XXX]'
+return t === '(The platform did not receive a reply)' || t === '(The platform did not receive a reply)' || t === '[No reply]'
     }
 
-    // EN_Comment
+//Try to split answers by question number
     const splitAnswerByQuestions = (answerText, questionCount) => {
       if (!answerText || questionCount <= 0) return [answerText]
       if (isPlaceholderText(answerText)) return ['']
 
-      // EN_Comment
-      // EN_Comment
-      // EN_Comment
+// Supports two numbering formats:
+// 1. "Question X:" or "Question X:" (Chinese format, new backend format)
+// 2. "1. " or "\n1. " (number + point, old format compatible)
       let matches = []
       let match
 
-      // EN_Comment
-      const cnPattern = /(?:^|[\r\n]+)XX(\d+)[X:]\s*/g
+// Try the "Question X:" format first
+const cnPattern = /(?:^|[\r\n]+)Question(\d+)[::]\s*/g
       while ((match = cnPattern.exec(answerText)) !== null) {
         matches.push({
           num: parseInt(match[1]),
@@ -1351,7 +1351,7 @@ const InterviewDisplay = {
         })
       }
 
-      // EN_Comment
+// If no match is found, fall back to "number." format
       if (matches.length === 0) {
         const numPattern = /(?:^|[\r\n]+)(\d+)\.\s+/g
         while ((match = numPattern.exec(answerText)) !== null) {
@@ -1363,16 +1363,16 @@ const InterviewDisplay = {
         }
       }
 
-      // EN_Comment
+// If no number is found or only one is found, return the whole
       if (matches.length <= 1) {
         const cleaned = answerText
-          .replace(/^XX\d+[X:]\s*/, '')
+.replace(/^question\d+[::]\s*/, '')
           .replace(/^\d+\.\s+/, '')
           .trim()
         return [cleaned || answerText]
       }
 
-      // EN_Comment
+//Extract each part by number
       const parts = []
       for (let i = 0; i < matches.length; i++) {
         const current = matches[i]
@@ -1393,7 +1393,7 @@ const InterviewDisplay = {
       return [answerText]
     }
     
-    // EN_Comment
+// Get the answer corresponding to a question
     const getAnswerForQuestion = (interview, qIdx, platform) => {
       const answer = platform === 'twitter' ? interview.twitterAnswer : (interview.redditAnswer || interview.twitterAnswer)
       if (!answer || isPlaceholderText(answer)) return answer || ''
@@ -1401,21 +1401,21 @@ const InterviewDisplay = {
       const questionCount = interview.questions?.length || 1
       const answers = splitAnswerByQuestions(answer, questionCount)
 
-      // EN_Comment
+//The split is successful and the index is valid
       if (answers.length > 1 && qIdx < answers.length) {
         return answers[qIdx] || ''
       }
 
-      // EN_Comment
+// Splitting failed: the first question returns a complete answer, and the rest returns empty
       return qIdx === 0 ? answer : ''
     }
     
-    // EN_Comment
+// Check whether a question has dual-platform answers (filter placeholder text)
     const hasMultiplePlatforms = (interview, qIdx) => {
       if (!interview.twitterAnswer || !interview.redditAnswer) return false
       const twitterAnswer = getAnswerForQuestion(interview, qIdx, 'twitter')
       const redditAnswer = getAnswerForQuestion(interview, qIdx, 'reddit')
-      // EN_Comment
+//Both platforms have real answers (not placeholder text) and the content is different
       return !isPlaceholderText(twitterAnswer) && !isPlaceholderText(redditAnswer) && twitterAnswer !== redditAnswer
     }
     
@@ -1434,7 +1434,7 @@ const InterviewDisplay = {
               h('span', { class: 'stat-value' }, props.result.totalCount),
               h('span', { class: 'stat-label' }, 'Total')
             ]),
-            props.resultLength && h('span', { class: 'stat-divider' }, 'X'),
+            props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
           ])
         ]),
@@ -1465,13 +1465,13 @@ const InterviewDisplay = {
           ])
         ]),
         
-        // EN_Comment
+// Selection Reason - Selection reason
         props.result.interviews[activeIndex.value]?.selectionReason && h('div', { class: 'selection-reason' }, [
-          h('div', { class: 'reason-label' }, 'XXXX'),
+h('div', { class: 'reason-label' }, 'reason for selection'),
           h('div', { class: 'reason-content' }, props.result.interviews[activeIndex.value].selectionReason)
         ]),
         
-        // EN_Comment
+// Q&A Conversation Thread - one question and one answer style
         h('div', { class: 'qa-thread' }, 
           (props.result.interviews[activeIndex.value]?.questions?.length > 0 
             ? props.result.interviews[activeIndex.value].questions 
@@ -1501,7 +1501,7 @@ const InterviewDisplay = {
                 h('div', { class: 'qa-content' }, [
                   h('div', { class: 'qa-answer-header' }, [
                     h('div', { class: 'qa-sender' }, interview?.name || 'Agent'),
-                    // EN_Comment
+//Dual platform switching button (only displayed when there is a real dual platform answer)
                     hasDualPlatform && h('div', { class: 'platform-switch' }, [
                       h('button', {
                         class: ['platform-btn', { active: currentPlatform === 'twitter' }],
@@ -1512,7 +1512,7 @@ const InterviewDisplay = {
                           h('line', { x1: '2', y1: '12', x2: '22', y2: '12' }),
                           h('path', { d: 'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' })
                         ]),
-                        h('span', {}, 'World 1')
+h('span', {}, 'World 1')
                       ]),
                       h('button', {
                         class: ['platform-btn', { active: currentPlatform === 'reddit' }],
@@ -1521,7 +1521,7 @@ const InterviewDisplay = {
                         h('svg', { class: 'platform-icon', viewBox: '0 0 24 24', width: 12, height: 12, fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
                           h('path', { d: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z' })
                         ]),
-                        h('span', {}, 'World 2')
+h('span', {}, 'World 2')
                       ])
                     ])
                   ]),
@@ -1533,7 +1533,7 @@ const InterviewDisplay = {
                           .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                           .replace(/\n/g, '<br>')
                   }),
-                  // EN_Comment
+// Expand/Collapse Button (the placeholder text is not displayed)
                   !isPlaceholder && answerText.length > 400 && h('button', {
                     class: 'expand-answer-btn',
                     onClick: () => toggleAnswer(expandKey)
@@ -1605,12 +1605,12 @@ const QuickSearchDisplay = {
               h('span', { class: 'stat-value' }, props.result.count || props.result.facts.length),
               h('span', { class: 'stat-label' }, 'Results')
             ]),
-            props.resultLength && h('span', { class: 'stat-divider' }, 'X'),
+            props.resultLength && h('span', { class: 'stat-divider' }, '·'),
             props.resultLength && h('span', { class: 'stat-size' }, formatSize(props.resultLength))
           ])
         ]),
         props.result.query && h('div', { class: 'header-query' }, [
-          h('span', { class: 'query-label' }, 'XX: '),
+h('span', { class: 'query-label' }, 'Search: '),
           h('span', { class: 'query-text' }, props.result.query)
         ])
       ]),
@@ -1621,19 +1621,19 @@ const QuickSearchDisplay = {
           class: ['quicksearch-tab', { active: activeTab.value === 'facts' }],
           onClick: () => { activeTab.value = 'facts' }
         }, [
-          h('span', { class: 'tab-label' }, `XX (${props.result.facts.length})`)
+h('span', { class: 'tab-label' }, `Facts (${props.result.facts.length})`)
         ]),
         hasEdges.value && h('button', {
           class: ['quicksearch-tab', { active: activeTab.value === 'edges' }],
           onClick: () => { activeTab.value = 'edges' }
         }, [
-          h('span', { class: 'tab-label' }, `XX (${props.result.edges.length})`)
+h('span', { class: 'tab-label' }, `Relations (${props.result.edges.length})`)
         ]),
         hasNodes.value && h('button', {
           class: ['quicksearch-tab', { active: activeTab.value === 'nodes' }],
           onClick: () => { activeTab.value = 'nodes' }
         }, [
-          h('span', { class: 'tab-label' }, `XX (${props.result.nodes.length})`)
+h('span', { class: 'tab-label' }, `Nodes (${props.result.nodes.length})`)
         ])
       ]),
       
@@ -1642,8 +1642,8 @@ const QuickSearchDisplay = {
         // Facts (always show if no tabs, or when facts tab is active)
         ((!showTabs.value) || activeTab.value === 'facts') && h('div', { class: 'facts-panel' }, [
           !showTabs.value && h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.facts.length} X`)
+h('span', { class: 'panel-title' }, 'search results'),
+h('span', { class: 'panel-count' }, `Total ${props.result.facts.length} items`)
           ]),
           props.result.facts.length > 0 ? h('div', { class: 'facts-list' },
             (expandedFacts.value ? props.result.facts : props.result.facts.slice(0, INITIAL_SHOW_COUNT)).map((fact, i) => 
@@ -1652,18 +1652,18 @@ const QuickSearchDisplay = {
                 h('div', { class: 'fact-content' }, fact)
               ])
             )
-          ) : h('div', { class: 'empty-state' }, 'XXXXXXX'),
+): h('div', { class: 'empty-state' }, 'No relevant results found'),
           props.result.facts.length > INITIAL_SHOW_COUNT && h('button', {
             class: 'expand-btn',
             onClick: () => { expandedFacts.value = !expandedFacts.value }
-          }, expandedFacts.value ? `XX X` : `XXXX ${props.result.facts.length} X X`)
+}, expandedFacts.value ? `Collapse ▲` : `Expand all ${props.result.facts.length} items ▼`)
         ]),
         
         // Edges Tab
         activeTab.value === 'edges' && hasEdges.value && h('div', { class: 'edges-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.edges.length} X`)
+h('span', { class: 'panel-title' }, 'Relationship'),
+h('span', { class: 'panel-count' }, `Total ${props.result.edges.length} items`)
           ]),
           h('div', { class: 'edges-list' },
             props.result.edges.map((edge, i) => 
@@ -1683,8 +1683,8 @@ const QuickSearchDisplay = {
         // Nodes Tab
         activeTab.value === 'nodes' && hasNodes.value && h('div', { class: 'nodes-panel' }, [
           h('div', { class: 'panel-header' }, [
-            h('span', { class: 'panel-title' }, 'XXXX'),
-            h('span', { class: 'panel-count' }, `X ${props.result.nodes.length} X`)
+h('span', { class: 'panel-title' }, 'Related nodes'),
+h('span', { class: 'panel-count' }, `Total ${props.result.nodes.length} items`)
           ]),
           h('div', { class: 'nodes-grid' },
             props.result.nodes.map((node, i) => 
@@ -1764,19 +1764,19 @@ const isFinalizing = computed(() => {
   return !isComplete.value && isPlanningDone.value && totalSections.value > 0 && completedSections.value >= totalSections.value
 })
 
-// EN_Comment
+// Currently active step (for top display)
 const activeStep = computed(() => {
   const steps = workflowSteps.value
-  // EN_Comment
+// Find the currently active step
   const active = steps.find(s => s.status === 'active')
   if (active) return active
   
-  // EN_Comment
+// If there is no active, return to the last done step
   const doneSteps = steps.filter(s => s.status === 'done')
   if (doneSteps.length > 0) return doneSteps[doneSteps.length - 1]
   
-  // EN_Comment
-  return steps[0] || { noLabel: '--', title: 'XXXX', status: 'todo', meta: '' }
+// Otherwise return to the first step
+return steps[0] || { noLabel: '--', title: 'Waiting to start', status: 'todo', meta: '' }
 })
 
 const workflowSteps = computed(() => {
@@ -1869,25 +1869,25 @@ const truncateText = (text, maxLen) => {
 const renderMarkdown = (content) => {
   if (!content) return ''
   
-  // EN_Comment
+// Remove the secondary title at the beginning (## xxx), because the chapter title is already displayed on the outer layer
   let processedContent = content.replace(/^##\s+.+\n+/, '')
   
-  // EN_Comment
+// Process code block
   let html = processedContent.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>')
   
-  // EN_Comment
+// handle inline code
   html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
   
-  // EN_Comment
+// handle title
   html = html.replace(/^#### (.+)$/gm, '<h5 class="md-h5">$1</h5>')
   html = html.replace(/^### (.+)$/gm, '<h4 class="md-h4">$1</h4>')
   html = html.replace(/^## (.+)$/gm, '<h3 class="md-h3">$1</h3>')
   html = html.replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>')
   
-  // EN_Comment
+// Handle reference block
   html = html.replace(/^> (.+)$/gm, '<blockquote class="md-quote">$1</blockquote>')
   
-  // EN_Comment
+// Process lists - supports sublists
   html = html.replace(/^(\s*)- (.+)$/gm, (match, indent, text) => {
     const level = Math.floor(indent.length / 2)
     return `<li class="md-li" data-level="${level}">${text}</li>`
@@ -1897,52 +1897,52 @@ const renderMarkdown = (content) => {
     return `<li class="md-oli" data-level="${level}">${text}</li>`
   })
 
-  // EN_Comment
+// wrap unordered list
   html = html.replace(/(<li class="md-li"[^>]*>.*?<\/li>\s*)+/g, '<ul class="md-ul">$&</ul>')
-  // EN_Comment
+// wrap the ordered list
   html = html.replace(/(<li class="md-oli"[^>]*>.*?<\/li>\s*)+/g, '<ol class="md-ol">$&</ol>')
 
-  // EN_Comment
+// Clean up all white space between list items
   html = html.replace(/<\/li>\s+<li/g, '</li><li')
-  // EN_Comment
+// Clean up the space after the start tag of the list
   html = html.replace(/<ul class="md-ul">\s+/g, '<ul class="md-ul">')
   html = html.replace(/<ol class="md-ol">\s+/g, '<ol class="md-ol">')
-  // EN_Comment
+// Clear the space before the end tag of the list
   html = html.replace(/\s+<\/ul>/g, '</ul>')
   html = html.replace(/\s+<\/ol>/g, '</ol>')
   
-  // EN_Comment
+// Handle bold and italics
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
   html = html.replace(/_(.+?)_/g, '<em>$1</em>')
   
-  // EN_Comment
+// handle separator lines
   html = html.replace(/^---$/gm, '<hr class="md-hr">')
   
-  // EN_Comment
+// Handle line breaks - empty lines become paragraph breaks, single line breaks become <br>
   html = html.replace(/\n\n/g, '</p><p class="md-p">')
   html = html.replace(/\n/g, '<br>')
   
-  // EN_Comment
+// Wrap in paragraph
   html = '<p class="md-p">' + html + '</p>'
   
-  // EN_Comment
+// Clean up empty paragraphs
   html = html.replace(/<p class="md-p"><\/p>/g, '')
   html = html.replace(/<p class="md-p">(<h[2-5])/g, '$1')
   html = html.replace(/(<\/h[2-5]>)<\/p>/g, '$1')
   html = html.replace(/<p class="md-p">(<ul|<ol|<blockquote|<pre|<hr)/g, '$1')
   html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>|<\/pre>)<\/p>/g, '$1')
-  // EN_Comment
+// Clean up <br> tags before and after block-level elements
   html = html.replace(/<br>\s*(<ul|<ol|<blockquote)/g, '$1')
   html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>)\s*<br>/g, '$1')
-  // EN_Comment
+// Clean up <p><br> immediately following block-level elements (caused by extra blank lines)
   html = html.replace(/<p class="md-p">(<br>\s*)+(<ul|<ol|<blockquote|<pre|<hr)/g, '$2')
-  // EN_Comment
+// Clean up consecutive <br> tags
   html = html.replace(/(<br>\s*){2,}/g, '<br>')
-  // EN_Comment
+// Clean up <br> before the paragraph start tag immediately following the block-level element
   html = html.replace(/(<\/ol>|<\/ul>|<\/blockquote>)<br>(<p|<div)/g, '$1$2')
 
-  // EN_Comment
+// Fix numbering for non-consecutive ordered lists: keep numbering increasing when single item <ol> is separated by paragraph content
   const tokens = html.split(/(<ol class="md-ol">(?:<li class="md-oli"[^>]*>[\s\S]*?<\/li>)+<\/ol>)/g)
   let olCounter = 0
   let inSequence = false
@@ -2006,9 +2006,9 @@ const getActionLabel = (action) => {
 }
 
 const getLogLevelClass = (log) => {
-  if (log.includes('ERROR') || log.includes('XX')) return 'error'
-  if (log.includes('WARNING') || log.includes('XX')) return 'warning'
-  // EN_Comment
+if (log.includes('ERROR') || log.includes('ERROR')) return 'error'
+if (log.includes('WARNING') || log.includes('WARNING')) return 'warning'
+// INFO uses default color and is not marked as success
   return ''
 }
 
@@ -2037,11 +2037,11 @@ const fetchAgentLog = async () => {
             currentSectionIndex.value = log.section_index
           }
 
-          // EN_Comment
+// section_complete - section generation is complete
           if (log.action === 'section_complete') {
             if (log.details?.content) {
               generatedSections.value[log.section_index] = log.details.content
-              // EN_Comment
+// Automatically expand the newly generated chapter
               expandedContent.value.add(log.section_index - 1)
               currentSectionIndex.value = null
             }
@@ -2049,10 +2049,10 @@ const fetchAgentLog = async () => {
           
           if (log.action === 'report_complete') {
             isComplete.value = true
-            currentSectionIndex.value = null  // EN_Comment
+currentSectionIndex.value = null // Make sure loading state is cleared
             emit('update-status', 'completed')
             stopPolling()
-            // EN_Comment
+// The scrolling logic is unified and processed in nextTick after the loop ends.
           }
           
           if (log.action === 'report_start') {
@@ -2064,7 +2064,7 @@ const fetchAgentLog = async () => {
         
         nextTick(() => {
           if (rightPanel.value) {
-            // EN_Comment
+// If the task is completed, scroll to the top; otherwise scroll to the bottom to follow the latest log
             if (isComplete.value) {
               rightPanel.value.scrollTop = 0
             } else {
@@ -2079,39 +2079,39 @@ const fetchAgentLog = async () => {
   }
 }
 
-// EN_Comment
+//Extract final answer content - extract chapter content from LLM response
 const extractFinalContent = (response) => {
   if (!response) return null
   
-  // EN_Comment
+// Try to extract the content within the <final_answer> tag
   const finalAnswerTagMatch = response.match(/<final_answer>([\s\S]*?)<\/final_answer>/)
   if (finalAnswerTagMatch) {
     return finalAnswerTagMatch[1].trim()
   }
   
-  // EN_Comment
-  // EN_Comment
-  // EN_Comment
+// Try to find the content behind Final Answer: (supports multiple formats)
+// Format 1: Final Answer:\n\nContent
+// Format 2: Final Answer: Content
   const finalAnswerMatch = response.match(/Final\s*Answer:\s*\n*([\s\S]*)$/i)
   if (finalAnswerMatch) {
     return finalAnswerMatch[1].trim()
   }
   
-  // EN_Comment
-  const chineseFinalMatch = response.match(/XXXX[:X]\s*\n*([\s\S]*)$/i)
+// Try to find the final answer: the following content
+const chineseFinalMatch = response.match(/final answer[::]\s*\n*([\s\S]*)$/i)
   if (chineseFinalMatch) {
     return chineseFinalMatch[1].trim()
   }
   
-  // EN_Comment
+// If it starts with ## or # or >, it may be direct markdown content
   const trimmedResponse = response.trim()
   if (trimmedResponse.match(/^[#>]/)) {
     return trimmedResponse
   }
   
-  // EN_Comment
+// If the content is long and contains markdown format, try to remove the thinking process and return
   if (response.length > 300 && (response.includes('**') || response.includes('>'))) {
-    // EN_Comment
+// Remove Thought: the thinking process at the beginning
     const thoughtMatch = response.match(/^Thought:[\s\S]*?(?=\n\n[^T]|\n\n$)/i)
     if (thoughtMatch) {
       const afterThought = response.substring(thoughtMatch[0].length).trim()
@@ -2456,7 +2456,7 @@ watch(() => props.reportId, (newId) => {
 .section-number {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
-  color: #9CA3AF; /* XXXXXXXXXX */
+color: #9CA3AF; /* dark gray, does not change with status */
   font-weight: 500;
 }
 
@@ -3898,7 +3898,7 @@ watch(() => props.reportId, (newId) => {
   overflow: hidden;
 }
 
-/* Selection Reason - XXXX */
+/* Selection Reason - Selection reason */
 :deep(.interview-display .selection-reason) {
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
@@ -5097,7 +5097,7 @@ watch(() => props.reportId, (newId) => {
   border-radius: 4px;
 }
 
-/* Console Logs - X Step3Simulation.vue XXXX */
+/* Console Logs - consistent with Step3Simulation.vue */
 .console-logs {
   background: #000;
   color: #DDD;
