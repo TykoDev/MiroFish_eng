@@ -44,21 +44,11 @@ htmlcov/
 # Cursor
 .cursor/
 .claude/
-CLAUDE.md
 
 # Documentation and test programs
 mydoc/
 mytest/
 STATUS.md
-REFAC.md
-translations.json
-translations_lines.json
-translations_completed.json
-find_non_ascii.py
-bulk_translate.py
-AGENTS.md
-mark_status.py
-convert_by_sed.py
 
 
 # Log files
