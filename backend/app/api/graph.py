@@ -4,6 +4,7 @@ Adopt project context mechanism to persist state on the server side
 """
 
 import os
+import time
 import traceback
 import threading
 from flask import request, jsonify
@@ -20,6 +21,10 @@ from ..models.project import ProjectManager, ProjectStatus
 
 # Get the logger
 logger = get_logger('mirofish.api')
+
+# Simple in-memory cache for graph data to avoid repeated DB queries on polls
+_graph_data_cache: dict = {}  # {graph_id: {"data": ..., "ts": time.time()}}
+_GRAPH_CACHE_TTL = 60  # seconds
 
 
 def allowed_file(filename: str) -> bool:
@@ -282,17 +287,6 @@ Return:
     try:
         logger.info("=== Start building the graph ===")
         
-        # Check configuration
-        errors = []
-        if not Config.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY is not configured")
-        if errors:
-            logger.error(f"Configuration error: {errors}")
-            return jsonify({
-                "success": False,
-                "error": "Configuration error: " + "; ".join(errors)
-            }), 500
-        
         # Parse the request
         data = request.get_json() or {}
         project_id = data.get('project_id')
@@ -382,7 +376,7 @@ Return:
                 )
                 
                 #Create a graph construction service
-                builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+                builder = GraphBuilderService()
                 
                 # Chunking
                 task_manager.update_task(
@@ -400,7 +394,7 @@ Return:
                 #Create graph
                 task_manager.update_task(
                     task_id,
-                    message="Create a Zep map...",
+                    message="Create graph...",
                     progress=10
                 )
                 graph_id = builder.create_graph(name=graph_name)
@@ -432,30 +426,13 @@ Return:
                     progress=15
                 )
                 
-                episode_uuids = builder.add_text_batches(
-                    graph_id, 
+                builder.add_text_batches(
+                    graph_id,
                     chunks,
                     batch_size=3,
                     progress_callback=add_progress_callback
                 )
-                
-                # Wait for Zep processing to complete (query the processed status of each episode)
-                task_manager.update_task(
-                    task_id,
-                    message="Waiting for Zep to process data...",
-                    progress=55
-                )
-                
-                def wait_progress_callback(msg, progress_ratio):
-                    progress = 55 + int(progress_ratio * 35)  # 55% - 90%
-                    task_manager.update_task(
-                        task_id,
-                        message=msg,
-                        progress=progress
-                    )
-                
-                builder._wait_for_episodes(episode_uuids, wait_progress_callback)
-                
+
                 # Get map data
                 task_manager.update_task(
                     task_id,
@@ -564,24 +541,40 @@ List all tasks
 @graph_bp.route('/data/<graph_id>', methods=['GET'])
 def get_graph_data(graph_id: str):
     """
-Get graph data (nodes and edges)
+Get graph data (nodes and edges). Uses in-memory cache to avoid excessive DB queries.
 """
     try:
-        if not Config.ZEP_API_KEY:
+        # Check cache first
+        cached = _graph_data_cache.get(graph_id)
+        now = time.time()
+        if cached and (now - cached["ts"]) < _GRAPH_CACHE_TTL:
             return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY is not configured"
-            }), 500
-        
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+                "success": True,
+                "data": cached["data"]
+            })
+
+        builder = GraphBuilderService()
         graph_data = builder.get_graph_data(graph_id)
-        
+
+        # Store in cache
+        _graph_data_cache[graph_id] = {"data": graph_data, "ts": now}
+
         return jsonify({
             "success": True,
             "data": graph_data
         })
-        
+
     except Exception as e:
+        # If we have stale cached data, serve it instead of erroring
+        cached = _graph_data_cache.get(graph_id)
+        if cached:
+            logger.warning(f"DB error for graph {graph_id}, serving cached data: {str(e)[:100]}")
+            return jsonify({
+                "success": True,
+                "data": cached["data"]
+            })
+
+        logger.error(f"Failed to fetch graph data for {graph_id}: {str(e)[:200]}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -592,16 +585,10 @@ Get graph data (nodes and edges)
 @graph_bp.route('/delete/<graph_id>', methods=['DELETE'])
 def delete_graph(graph_id: str):
     """
-Delete Zep map
+Delete graph
 """
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY is not configured"
-            }), 500
-        
-        builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
+        builder = GraphBuilderService()
         builder.delete_graph(graph_id)
         
         return jsonify({

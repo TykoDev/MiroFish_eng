@@ -1,6 +1,6 @@
 """
 Simulate related API routing
-Step2: Zep entity reading and filtering, OASIS simulation preparation and running (full automation)
+Step2: Entity reading and filtering, OASIS simulation preparation and running (full automation)
 """
 
 import os
@@ -9,7 +9,7 @@ from flask import request, jsonify, send_file
 
 from . import simulation_bp
 from ..config import Config
-from ..services.zep_entity_reader import ZepEntityReader
+from ..services.lightrag_entity_reader import EntityReader as ZepEntityReader
 from ..services.oasis_profile_generator import OasisProfileGenerator
 from ..services.simulation_manager import SimulationManager, SimulationStatus
 from ..services.simulation_runner import SimulationRunner, RunnerStatus
@@ -56,12 +56,6 @@ entity_types: comma separated list of entity types (optional, for further filter
 enrich: whether to obtain relevant edge information (default true)
 """
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY is not configured"
-            }), 500
-        
         entity_types_str = request.args.get('entity_types', '')
         entity_types = [t.strip() for t in entity_types_str.split(',') if t.strip()] if entity_types_str else None
         enrich = request.args.get('enrich', 'true').lower() == 'true'
@@ -93,12 +87,6 @@ enrich: whether to obtain relevant edge information (default true)
 def get_entity_detail(graph_id: str, entity_uuid: str):
     """Get details of a single entity"""
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY is not configured"
-            }), 500
-        
         reader = ZepEntityReader()
         entity = reader.get_entity_with_context(graph_id, entity_uuid)
         
@@ -126,12 +114,6 @@ def get_entity_detail(graph_id: str, entity_uuid: str):
 def get_entities_by_type(graph_id: str, entity_type: str):
     """Get all entities of the specified type"""
     try:
-        if not Config.ZEP_API_KEY:
-            return jsonify({
-                "success": False,
-                "error": "ZEP_API_KEY is not configured"
-            }), 500
-        
         enrich = request.args.get('enrich', 'true').lower() == 'true'
         
         reader = ZepEntityReader()

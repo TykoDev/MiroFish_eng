@@ -5,7 +5,7 @@ Business service module
 from .ontology_generator import OntologyGenerator
 from .graph_builder import GraphBuilderService
 from .text_processor import TextProcessor
-from .zep_entity_reader import ZepEntityReader, EntityNode, FilteredEntities
+from .lightrag_entity_reader import EntityReader as ZepEntityReader, EntityNode, FilteredEntities
 from .oasis_profile_generator import OasisProfileGenerator, OasisAgentProfile
 from .simulation_manager import SimulationManager, SimulationState, SimulationStatus
 from .simulation_config_generator import (
@@ -23,9 +23,9 @@ from .simulation_runner import (
     AgentAction,
     RoundSummary
 )
-from .zep_graph_memory_updater import (
-    ZepGraphMemoryUpdater,
-    ZepGraphMemoryManager,
+from .lightrag_memory_updater import (
+    GraphMemoryUpdater as ZepGraphMemoryUpdater,
+    GraphMemoryManager as ZepGraphMemoryManager,
     AgentActivity
 )
 from .simulation_ipc import (

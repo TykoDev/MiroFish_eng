@@ -66,7 +66,7 @@ Please output JSON format, containing the following structure:
 "attributes": []
 }
 ],
-"analysis_summary": "A brief analysis of the text content (Chinese)"
+"analysis_summary": "A brief analysis of the text content (English)"
 }
 ```
 
@@ -157,74 +157,70 @@ B. **Specific types (8, designed according to text content)**:
 
 class OntologyGenerator:
     """
-ontology generator
-Analyze text content and generate entity and relationship type definitions
-"""
-    
+    ontology generator
+    Analyze text content and generate entity and relationship type definitions
+    """
+
     def __init__(self, llm_client: Optional[LLMClient] = None):
         self.llm_client = llm_client or LLMClient()
-    
+
     def generate(
         self,
         document_texts: List[str],
         simulation_requirement: str,
-        additional_context: Optional[str] = None
+        additional_context: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-Generate ontology definition
+        Generate ontology definition
 
-Args:
-document_texts: document text list
-simulation_requirement: simulation requirement description
-additional_context: additional context
+        Args:
+        document_texts: document text list
+        simulation_requirement: simulation requirement description
+        additional_context: additional context
 
-Returns:
-Ontology definition (entity_types, edge_types, etc.)
-"""
+        Returns:
+        Ontology definition (entity_types, edge_types, etc.)
+        """
         # Build user message
         user_message = self._build_user_message(
-            document_texts, 
-            simulation_requirement,
-            additional_context
+            document_texts, simulation_requirement, additional_context
         )
-        
+
         messages = [
             {"role": "system", "content": ONTOLOGY_SYSTEM_PROMPT},
-            {"role": "user", "content": user_message}
+            {"role": "user", "content": user_message},
         ]
-        
+
         # Call LLM
         result = self.llm_client.chat_json(
-            messages=messages,
-            temperature=0.3,
-            max_tokens=4096
+            messages=messages, temperature=0.3, max_tokens=4096
         )
-        
+
         # Verification and post-processing
         result = self._validate_and_process(result)
-        
+
         return result
-    
+
     # The maximum length of text passed to LLM (50,000 words)
     MAX_TEXT_LENGTH_FOR_LLM = 50000
-    
+
     def _build_user_message(
         self,
         document_texts: List[str],
         simulation_requirement: str,
-        additional_context: Optional[str]
+        additional_context: Optional[str],
     ) -> str:
         """Build user message"""
-        
+
         # Merge text
         combined_text = "\n\n---\n\n".join(document_texts)
         original_length = len(combined_text)
-        
+
         # If the text exceeds 50,000 words, truncate it (only affects the content passed to LLM, not the map construction)
         if len(combined_text) > self.MAX_TEXT_LENGTH_FOR_LLM:
-            combined_text = combined_text[:self.MAX_TEXT_LENGTH_FOR_LLM]
+            combined_text = combined_text[: self.MAX_TEXT_LENGTH_FOR_LLM]
             combined_text += f"\n\n...(The original text has a total of {original_length} words, the first {self.MAX_TEXT_LENGTH_FOR_LLM} words have been intercepted for ontology analysis)..."
-        
+
         message = f"""## Simulation requirements
 
 {simulation_requirement}
@@ -233,14 +229,14 @@ Ontology definition (entity_types, edge_types, etc.)
 
 {combined_text}
 """
-        
+
         if additional_context:
             message += f"""
 ## Additional instructions
 
 {additional_context}
 """
-        
+
         message += """
 Please design entity types and relationship types suitable for social public opinion simulation based on the above content.
 
@@ -250,13 +246,14 @@ Please design entity types and relationship types suitable for social public opi
 3. The first 8 are specific types designed based on text content
 4. All entity types must be subjects that can speak in reality and cannot be abstract concepts.
 5. Attribute names cannot use reserved words such as name, uuid, group_id, etc., use full_name, org_name, etc. instead
+6. All generated text must be in English
 """
-        
+
         return message
-    
+
     def _validate_and_process(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """Validation and post-processing results"""
-        
+
         # Make sure necessary fields exist
         if "entity_types" not in result:
             result["entity_types"] = []
@@ -264,7 +261,7 @@ Please design entity types and relationship types suitable for social public opi
             result["edge_types"] = []
         if "analysis_summary" not in result:
             result["analysis_summary"] = ""
-        
+
         # Verify entity type
         for entity in result["entity_types"]:
             if "attributes" not in entity:
@@ -274,7 +271,7 @@ Please design entity types and relationship types suitable for social public opi
             # Make sure the description does not exceed 100 characters
             if len(entity.get("description", "")) > 100:
                 entity["description"] = entity["description"][:97] + "..."
-        
+
         # Verify relationship type
         for edge in result["edge_types"]:
             if "source_targets" not in edge:
@@ -283,171 +280,185 @@ Please design entity types and relationship types suitable for social public opi
                 edge["attributes"] = []
             if len(edge.get("description", "")) > 100:
                 edge["description"] = edge["description"][:97] + "..."
-        
-        # Zep API limitations: up to 10 custom entity types, up to 10 custom edge types
+
+        # Limit: up to 10 custom entity types, up to 10 custom edge types
         MAX_ENTITY_TYPES = 10
         MAX_EDGE_TYPES = 10
-        
+
         # Bottom type definition
         person_fallback = {
             "name": "Person",
             "description": "Any individual person not fitting other specific person types.",
             "attributes": [
-                {"name": "full_name", "type": "text", "description": "Full name of the person"},
-                {"name": "role", "type": "text", "description": "Role or occupation"}
+                {
+                    "name": "full_name",
+                    "type": "text",
+                    "description": "Full name of the person",
+                },
+                {"name": "role", "type": "text", "description": "Role or occupation"},
             ],
-            "examples": ["ordinary citizen", "anonymous netizen"]
+            "examples": ["ordinary citizen", "anonymous netizen"],
         }
-        
+
         organization_fallback = {
             "name": "Organization",
             "description": "Any organization not fitting other specific organization types.",
             "attributes": [
-                {"name": "org_name", "type": "text", "description": "Name of the organization"},
-                {"name": "org_type", "type": "text", "description": "Type of organization"}
+                {
+                    "name": "org_name",
+                    "type": "text",
+                    "description": "Name of the organization",
+                },
+                {
+                    "name": "org_type",
+                    "type": "text",
+                    "description": "Type of organization",
+                },
             ],
-            "examples": ["small business", "community group"]
+            "examples": ["small business", "community group"],
         }
-        
+
         # Check if there is already a pocket type
         entity_names = {e["name"] for e in result["entity_types"]}
         has_person = "Person" in entity_names
         has_organization = "Organization" in entity_names
-        
+
         # The type of cover that needs to be added
         fallbacks_to_add = []
         if not has_person:
             fallbacks_to_add.append(person_fallback)
         if not has_organization:
             fallbacks_to_add.append(organization_fallback)
-        
+
         if fallbacks_to_add:
             current_count = len(result["entity_types"])
             needed_slots = len(fallbacks_to_add)
-            
+
             # If there will be more than 10 after adding, some existing types need to be removed
             if current_count + needed_slots > MAX_ENTITY_TYPES:
                 # Calculate how many need to be removed
                 to_remove = current_count + needed_slots - MAX_ENTITY_TYPES
                 # Remove from the end (keep the more important concrete types at the front)
                 result["entity_types"] = result["entity_types"][:-to_remove]
-            
-            #Add a cover type
+
+            # Add a cover type
             result["entity_types"].extend(fallbacks_to_add)
-        
+
         # Ultimately ensure that limits are not exceeded (defensive programming)
         if len(result["entity_types"]) > MAX_ENTITY_TYPES:
             result["entity_types"] = result["entity_types"][:MAX_ENTITY_TYPES]
-        
+
         if len(result["edge_types"]) > MAX_EDGE_TYPES:
             result["edge_types"] = result["edge_types"][:MAX_EDGE_TYPES]
-        
+
         return result
-    
+
     def generate_python_code(self, ontology: Dict[str, Any]) -> str:
         """
-Convert ontology definitions into Python code (similar to ontology.py)
+        Convert ontology definitions into Python code (similar to ontology.py)
 
-Args:
-ontology: ontology definition
+        Args:
+        ontology: ontology definition
 
-Returns:
-Python code string
-"""
+        Returns:
+        Python code string
+        """
         code_lines = [
             '"""',
-            'Custom entity type definition',
-            'Automatically generated by MiroFish for social opinion simulation',
+            "Custom entity type definition",
+            "Automatically generated by MiroFish for social opinion simulation",
             '"""',
-            '',
-            'from pydantic import Field',
-            'from zep_cloud.external_clients.ontology import EntityModel, EntityText, EdgeModel',
-            '',
-            '',
-            '# ============== Entity type definition ==============',
-            '',
+            "",
+            "from pydantic import BaseModel, Field",
+            "from typing import Optional",
+            "",
+            "",
+            "# ============== Entity type definition ==============",
+            "",
         ]
-        
+
         # Generate entity type
         for entity in ontology.get("entity_types", []):
             name = entity["name"]
             desc = entity.get("description", f"A {name} entity.")
-            
-            code_lines.append(f'class {name}(EntityModel):')
+
+            code_lines.append(f"class {name}(BaseModel):")
             code_lines.append(f'    """{desc}"""')
-            
+
             attrs = entity.get("attributes", [])
             if attrs:
                 for attr in attrs:
                     attr_name = attr["name"]
                     attr_desc = attr.get("description", attr_name)
-                    code_lines.append(f'    {attr_name}: EntityText = Field(')
+                    code_lines.append(f"    {attr_name}: Optional[str] = Field(")
                     code_lines.append(f'        description="{attr_desc}",')
-                    code_lines.append(f'        default=None')
-                    code_lines.append(f'    )')
+                    code_lines.append(f"        default=None")
+                    code_lines.append(f"    )")
             else:
-                code_lines.append('    pass')
-            
-            code_lines.append('')
-            code_lines.append('')
-        
-        code_lines.append('# ============== Relationship type definition ==============')
-        code_lines.append('')
-        
+                code_lines.append("    pass")
+
+            code_lines.append("")
+            code_lines.append("")
+
+        code_lines.append(
+            "# ============== Relationship type definition =============="
+        )
+        code_lines.append("")
+
         # Generate relationship type
         for edge in ontology.get("edge_types", []):
             name = edge["name"]
-            # Convert to PascalCase class name
-            class_name = ''.join(word.capitalize() for word in name.split('_'))
+            class_name = "".join(word.capitalize() for word in name.split("_"))
             desc = edge.get("description", f"A {name} relationship.")
-            
-            code_lines.append(f'class {class_name}(EdgeModel):')
+
+            code_lines.append(f"class {class_name}(BaseModel):")
             code_lines.append(f'    """{desc}"""')
-            
+
             attrs = edge.get("attributes", [])
             if attrs:
                 for attr in attrs:
                     attr_name = attr["name"]
                     attr_desc = attr.get("description", attr_name)
-                    code_lines.append(f'    {attr_name}: EntityText = Field(')
+                    code_lines.append(f"    {attr_name}: Optional[str] = Field(")
                     code_lines.append(f'        description="{attr_desc}",')
-                    code_lines.append(f'        default=None')
-                    code_lines.append(f'    )')
+                    code_lines.append(f"        default=None")
+                    code_lines.append(f"    )")
             else:
-                code_lines.append('    pass')
-            
-            code_lines.append('')
-            code_lines.append('')
-        
+                code_lines.append("    pass")
+
+            code_lines.append("")
+            code_lines.append("")
+
         # Generate type dictionary
-        code_lines.append('# ============== Type configuration ==============')
-        code_lines.append('')
-        code_lines.append('ENTITY_TYPES = {')
+        code_lines.append("# ============== Type configuration ==============")
+        code_lines.append("")
+        code_lines.append("ENTITY_TYPES = {")
         for entity in ontology.get("entity_types", []):
             name = entity["name"]
             code_lines.append(f'    "{name}": {name},')
-        code_lines.append('}')
-        code_lines.append('')
-        code_lines.append('EDGE_TYPES = {')
+        code_lines.append("}")
+        code_lines.append("")
+        code_lines.append("EDGE_TYPES = {")
         for edge in ontology.get("edge_types", []):
             name = edge["name"]
-            class_name = ''.join(word.capitalize() for word in name.split('_'))
+            class_name = "".join(word.capitalize() for word in name.split("_"))
             code_lines.append(f'    "{name}": {class_name},')
-        code_lines.append('}')
-        code_lines.append('')
-        
+        code_lines.append("}")
+        code_lines.append("")
+
         # Generate edge source_targets mapping
-        code_lines.append('EDGE_SOURCE_TARGETS = {')
+        code_lines.append("EDGE_SOURCE_TARGETS = {")
         for edge in ontology.get("edge_types", []):
             name = edge["name"]
             source_targets = edge.get("source_targets", [])
             if source_targets:
-                st_list = ', '.join([
-                    f'{{"source": "{st.get("source", "Entity")}", "target": "{st.get("target", "Entity")}"}}'
-                    for st in source_targets
-                ])
+                st_list = ", ".join(
+                    [
+                        f'{{"source": "{st.get("source", "Entity")}", "target": "{st.get("target", "Entity")}"}}'
+                        for st in source_targets
+                    ]
+                )
                 code_lines.append(f'    "{name}": [{st_list}],')
-        code_lines.append('}')
-        
-        return '\n'.join(code_lines)
+        code_lines.append("}")
 
+        return "\n".join(code_lines)

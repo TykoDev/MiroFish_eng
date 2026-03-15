@@ -1,8 +1,8 @@
 FROM python:3.11
 
-# Install Node.js (requires >=18) and essential tools
+# Install Node.js (requires >=18), build tools, and PostgreSQL dev headers
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends nodejs npm \
+  && apt-get install -y --no-install-recommends nodejs npm gcc libpq-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy uv from the official uv image

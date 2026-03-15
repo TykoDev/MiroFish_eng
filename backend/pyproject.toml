@@ -16,8 +16,11 @@ dependencies = [
     #LLM related
     "openai>=1.0.0",
     
-    # Zep Cloud
-    "zep-cloud==3.13.0",
+    # LightRAG + PostgreSQL
+    "lightrag-hku>=1.0.0",
+    "asyncpg>=0.30.0",
+    "pgvector>=0.4.1",
+    "psycopg2-binary>=2.9.0",
     
     #OASIS Social Media Simulation
     "camel-oasis==0.2.5",

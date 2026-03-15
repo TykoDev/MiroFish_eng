@@ -952,7 +952,7 @@ Request (JSON):
                 "error": "Please provide graph_id and query"
             }), 400
         
-        from ..services.zep_tools import ZepToolsService
+        from ..services.lightrag_tools import GraphToolsService as ZepToolsService
         
         tools = ZepToolsService()
         result = tools.search_graph(
@@ -996,7 +996,7 @@ Request (JSON):
                 "error": "Please provide graph_id"
             }), 400
         
-        from ..services.zep_tools import ZepToolsService
+        from ..services.lightrag_tools import GraphToolsService as ZepToolsService
         
         tools = ZepToolsService()
         result = tools.get_graph_statistics(graph_id)

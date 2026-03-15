@@ -32,9 +32,11 @@ class Config:
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
     
-    # Zep configuration
-    ZEP_API_KEY = os.environ.get('ZEP_API_KEY')
-    
+    # PostgreSQL + LightRAG configuration
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    EMBEDDING_MODEL = os.environ.get('EMBEDDING_MODEL', 'text-embedding-3-small')
+    EMBEDDING_DIMENSIONS = int(os.environ.get('EMBEDDING_DIMENSIONS', '1536'))
+
     #File upload configuration
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '../uploads')
@@ -69,7 +71,7 @@ class Config:
         errors = []
         if not cls.LLM_API_KEY:
             errors.append("LLM_API_KEY not configured")
-        if not cls.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY not configured")
+        if not cls.DATABASE_URL:
+            errors.append("DATABASE_URL not configured")
         return errors
 

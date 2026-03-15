@@ -108,6 +108,8 @@ const systemLogs = ref([])
 // Polling timers
 let pollTimer = null
 let graphPollTimer = null
+let graphPollFailures = 0
+const MAX_GRAPH_POLL_FAILURES = 5
 
 // --- Computed Layout Styles ---
 const leftPanelStyle = computed(() => {
@@ -291,6 +293,7 @@ const startBuildGraph = async () => {
 
 const startGraphPolling = () => {
   addLog('Started polling for graph data...')
+  graphPollFailures = 0
   fetchGraphData()
   graphPollTimer = setInterval(fetchGraphData, 10000)
 }
@@ -302,6 +305,7 @@ const fetchGraphData = async () => {
     if (projRes.success && projRes.data.graph_id) {
       const gRes = await getGraphData(projRes.data.graph_id)
       if (gRes.success) {
+        graphPollFailures = 0
         graphData.value = gRes.data
         const nodeCount = gRes.data.node_count || gRes.data.nodes?.length || 0
         const edgeCount = gRes.data.edge_count || gRes.data.edges?.length || 0
@@ -309,7 +313,14 @@ const fetchGraphData = async () => {
       }
     }
   } catch (err) {
-    console.warn('Graph fetch error:', err)
+    graphPollFailures++
+    const errMsg = err?.response?.data?.error || err.message || 'Unknown error'
+    if (graphPollFailures >= MAX_GRAPH_POLL_FAILURES) {
+      stopGraphPolling()
+      addLog(`Graph polling stopped after ${MAX_GRAPH_POLL_FAILURES} consecutive failures: ${errMsg}`)
+    } else {
+      addLog(`Graph fetch error (${graphPollFailures}/${MAX_GRAPH_POLL_FAILURES}): ${errMsg}`)
+    }
   }
 }
 

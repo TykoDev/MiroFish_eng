@@ -1,14 +1,44 @@
 services:
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    container_name: mirofish-postgres
+    environment:
+      POSTGRES_DB: mirofish
+      POSTGRES_USER: mirofish
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mirofish_secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mirofish"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   mirofish:
-    image: ghcr.io/666ghj/mirofish:latest
-    # Accelerated image (replace the address above if pulling is slow)
-    # image: ghcr.nju.edu.cn/666ghj/mirofish:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mirofish:local
     container_name: mirofish
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql://mirofish:${POSTGRES_PASSWORD:-mirofish_secret}@postgres:5432/mirofish
     ports:
       - "3000:3000"
       - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     volumes:
       - ./backend/uploads:/app/backend/uploads
+
+volumes:
+  pgdata:
